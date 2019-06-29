@@ -209,8 +209,9 @@ Gui, Add, DropDownList, x212 y79 w60 h21 vconvert_fps r8 ggui_update, 15|23.976|
 Gui, Add, CheckBox, x12 y109 w160 h20 vaudio_extract Checked ggui_update, Extract Audio
 Gui, Add, Text, x12 y129 w70 h20 , Output Audio :
 Gui, Add, Edit, x92 y129 w180 h20 vaudio_out_path ggui_update, %vp_out_path%
-Gui, Add, Text, x12 y169 w70 h20 , Image Quality :
-Gui, Add, Edit, x92 y169 w180 h20 vvp_quality ggui_update, 1
+Gui, Add, Text, x12 y169 w70 h20 , JPG Quality :
+Gui, Add, Slider, x92 y169 w180 h30 vvp_quality Range1-31 ggui_update, 1
+Gui, Add, Text, x276 y174 w36 h35 vvp_quality_show , 1
 Gui, Add, Button, x272 y129 w30 h20 gvid_to_pic_out_audio, ...
 Gui, Add, Text, x12 y309 w70 h20 right, Input Ext :
 Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext1 r8 ggui_update, .mp4||.mkv|.wma|.flv|.mov
@@ -556,6 +557,7 @@ gui_update:
 	}
 	
 	GuiControl,,scalev_show,%scalev%
+	GuiControl,,vp_quality_show,%vp_quality%
 	
 }
 return
@@ -1335,10 +1337,8 @@ Return
 vid_to_pic_out_audio:
 {
 	Thread, NoTimers
-	FileSelectFile, audio_out_path, s,,, *.wav
+	FileSelectFolder, audio_out_path,, 3
 	Thread, NoTimers, false
-	StringReplace, audio_out_path, audio_out_path, .wav, , All
-	audio_out_path := audio_out_path ".wav"
 	GuiControl,,audio_out_path,%audio_out_path%
 }
 Return
@@ -1404,6 +1404,12 @@ run_vid_to_pic:
 		{
 			FileCreateDir, %vp_out_path%\%filename%
 		}
+		
+		IfNotExist, %audio_out_path%
+		{
+			FileCreateDir, %audio_out_path%
+		}
+		
 		if(convert_enable = 1)
 		{
 			attribute3 := " -vsync 1 -vf fps=" convert_fps
