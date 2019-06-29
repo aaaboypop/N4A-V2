@@ -584,6 +584,9 @@ check_file:
 	
 	StartTime := A_TickCount
 	
+	c_main_h := 0
+	c_main_w := 0
+	c_size_count := 0
 	Loop, Files, %in_path%\*.*, FR
 	{
 		if A_LoopFileExt in png,jpg,jpeg,tif,tiff,bmp,tga
@@ -593,17 +596,41 @@ check_file:
 			{
 				break
 			}
+			
 			imagefile := A_LoopFilePath
 			GDIPToken := Gdip_Startup()                                     
 			pBM := Gdip_CreateBitmapFromFile( imagefile )
 			img_w:= Gdip_GetImageWidth( pBM ) 
+			img_h:= Gdip_GetImageHeight( pBM ) 
 			Gdip_DisposeImage( pBM )
 			Gdip_Shutdown( GDIPToken ) 
 			
 			
-			
 			if(img_w>0)
 			{
+				if(c_size_count>0)
+				{
+					if(img_w <> c_main_w) || (img_w <> c_main_w)
+					{
+						while(LV_GetCount() >= log_limit)
+						{
+							LV_Delete(1)
+						}
+						LV_Add("","Not Match Main Size : " A_LoopFilePath)
+						damage_count++
+					}
+				}
+				else
+				{
+					c_main_h := img_h
+					c_main_w := img_w
+					while(LV_GetCount() >= log_limit)
+					{
+						LV_Delete(1)
+					}
+					LV_Add("","Main Size : " img_w "x" img_h )
+				}
+				c_size_count++
 			}
 			else
 			{
@@ -614,6 +641,8 @@ check_file:
 				LV_Add("","Damaged File : " A_LoopFilePath)
 				damage_count++
 			}
+			
+			
 			if(f_count<2000)
 			{
 				per := (l_count/f_count)*100
