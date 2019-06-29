@@ -95,20 +95,22 @@ Gui, Add, Edit, x112 y29 w180 h20 vin_pathv ggui_update, %in_pathv%
 Gui, Add, Text, x22 y49 w80 h20 , Output Folder :
 Gui, Add, Edit, x112 y49 w180 h20 vout_pathv ggui_update, %out_pathv%
 Gui, Add, GroupBox, x22 y79 w310 h70 , Conversion Mode
-Gui, Add, Radio, x32 y99 w140 h20 vmodev1 Disabled Group Checked ggui_update, Denoise+Magnify
+Gui, Add, Radio, x32 y99 w140 h20 vmodev1 Group Checked ggui_update, Denoise+Magnify
 Gui, Add, Radio, x182 y99 w140 h20 vmodev2 Hide ggui_update, Magnify
 Gui, Add, Radio, x32 y119 w140 h20 vmodev3 Hide ggui_update, Denoise
 Gui, Add, Radio, x182 y119 w140 h20 vmodev4 Hide ggui_update, Magnify+AutoDenoise
 
-Gui, Add, Radio, x22 y159 w80 h20 Group vby_scalev Disabled Checked ggui_update, Scale
+Gui, Add, Radio, x22 y159 w80 h20 Group vby_scalev Checked ggui_update, Scale
 
-Gui, Add, Edit, x112 y159 w150 h20 vscalev ggui_update, %scale%
+Gui, Add, Slider, x112 y159 w180 h20 vscalev Range1-2 ggui_update, 2
+Gui, Add, Text, x292 y159 w40 h20 vscalev_show, 2
 
 Gui, Add, Text, x22 y249 w70 h20 , Noise Level :
 Gui, Add, Radio, x112 y249 w30 h20 vnlvv0 Group ggui_update, 0
 Gui, Add, Radio, x152 y249 w30 h20 vnlvv1 ggui_update, 1
 Gui, Add, Radio, x192 y249 w30 h20 vnlvv2 ggui_update, 2
 Gui, Add, Radio, x232 y249 w30 h20 vnlvv3 Checked ggui_update, 3
+Gui, Add, Radio, x112 y269 w60 h20 vnlvv4 ggui_update, Disable
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
 Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
@@ -475,6 +477,8 @@ gui_update:
 	noise_levelv := 2
 	else if (nlvv3 == 1) 
 	noise_levelv := 3
+	else if (nlvv4 == 1) 
+	noise_levelv := -1
 	
 	i:=1
 	while(i<=8)
@@ -550,6 +554,8 @@ gui_update:
 	{
 		mode_select := "auto_scale"
 	}
+	
+	GuiControl,,scalev_show,%scalev%
 	
 }
 return
