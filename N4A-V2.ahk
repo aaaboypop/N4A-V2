@@ -106,14 +106,13 @@ Gui, Add, Slider, x112 y159 w180 h20 vscalev Range1-2 ggui_update, 2
 Gui, Add, Text, x292 y159 w40 h20 vscalev_show, 2
 
 Gui, Add, Text, x22 y249 w70 h20 , Noise Level :
-Gui, Add, Radio, x112 y249 w30 h20 vnlvv0 Group ggui_update, 0
-Gui, Add, Radio, x152 y249 w30 h20 vnlvv1 ggui_update, 1
-Gui, Add, Radio, x192 y249 w30 h20 vnlvv2 ggui_update, 2
-Gui, Add, Radio, x232 y249 w30 h20 vnlvv3 Checked ggui_update, 3
-Gui, Add, Radio, x112 y269 w60 h20 vnlvv4 ggui_update, Disable
+Gui, Add, Slider, x112 y249 w180 h20 vnoise_levelv Range-1-3 ggui_update, 3
+Gui, Add, Text, x292 y249 w40 h20 vnoise_levelv_show, %noise_levelv%
+Gui, Add, Text, x22 y279 w40 h20 , Model :
+Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet||models-upconv_7_anime_style_art_rgb
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
-Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
+Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png|| .jpg
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
 Gui, Add, DropDownList, x112 y339 w50 h21 vwin_modev r6 ggui_update, |Max|Min|Hide||
 Gui, Add, Text, x202 y339 w40 h20 , Sleep :
@@ -123,28 +122,28 @@ Gui, Add, CheckBox, x182 y369 w70 h20 vth_enablev Checked ggui_update, Thumbnail
 Gui, Add, GroupBox, x22 y399 w310 h110 , GPU Setting
 Gui, Add, CheckBox, x32 y419 w20 h20 venable_processv1 checked ggui_update, 
 Gui, Add, Text, x52 y419 w60 h20 vtconfig_gpuvv1, Process 1 :
-Gui, Add, DropDownList, x112 y419 w50 h21 vconfig_gpuv1 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x112 y419 w50 h21 vconfig_gpuv1 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x32 y439 w20 h20 venable_processv2 ggui_update, 
 Gui, Add, Text, x52 y439 w60 h20 vtconfig_gpuvv2, Process 2 :
-Gui, Add, DropDownList, x112 y439 w50 h21 vconfig_gpuv2 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x112 y439 w50 h21 vconfig_gpuv2 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x32 y459 w20 h20 venable_processv3 ggui_update, 
 Gui, Add, Text, x52 y459 w60 h20 vtconfig_gpuvv3, Process 3 :
-Gui, Add, DropDownList, x112 y459 w50 h21 vconfig_gpuv3 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x112 y459 w50 h21 vconfig_gpuv3 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x32 y479 w20 h20 venable_processv4 ggui_update, 
 Gui, Add, Text, x52 y479 w60 h20 vtconfig_gpuvv4, Process 4 :
-Gui, Add, DropDownList, x112 y479 w50 h21 vconfig_gpuv4 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x112 y479 w50 h21 vconfig_gpuv4 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y419 w20 h20 venable_processv5 ggui_update, 
 Gui, Add, Text, x202 y419 w60 h20 vtconfig_gpuvv5, Process 5 :
-Gui, Add, DropDownList, x262 y419 w50 h21 vconfig_gpuv5 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x262 y419 w50 h21 vconfig_gpuv5 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y439 w20 h20 venable_processv6 ggui_update, 
 Gui, Add, Text, x202 y439 w60 h20 vtconfig_gpuvv6, Process 6 :
-Gui, Add, DropDownList, x262 y439 w50 h21 vconfig_gpuv6 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x262 y439 w50 h21 vconfig_gpuv6 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y459 w20 h20 venable_processv7 ggui_update, 
 Gui, Add, Text, x202 y459 w60 h20 vtconfig_gpuvv7, Process 7 :
-Gui, Add, DropDownList, x262 y459 w50 h21 vconfig_gpuv7 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x262 y459 w50 h21 vconfig_gpuv7 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y479 w20 h20 venable_processv8 ggui_update, 
 Gui, Add, Text, x202 y479 w60 h20 vtconfig_gpuvv8, Process 8 :
-Gui, Add, DropDownList, x262 y479 w50 h21 vconfig_gpuv8 r8 Disabled ggui_update, 0||1|2|3|4|5|6|7
+Gui, Add, DropDownList, x262 y479 w50 h21 vconfig_gpuv8 r8 ggui_update, 0||1|2|3|4|5|6|7
 
 Gui, Add, GroupBox, x342 y29 w550 h510 , Status
 Gui, Add, Text, x352 y49 w60 h20 , Total Files :
@@ -470,17 +469,6 @@ gui_update:
 	else if (nlv3 == 1) 
 	noise_level := 3
 	
-	if (nlvv0 == 1) 
-	noise_levelv := 0
-	else if (nlvv1 == 1) 
-	noise_levelv := 1
-	else if (nlvv2 == 1) 
-	noise_levelv := 2
-	else if (nlvv3 == 1) 
-	noise_levelv := 3
-	else if (nlvv4 == 1) 
-	noise_levelv := -1
-	
 	i:=1
 	while(i<=8)
 	{
@@ -558,6 +546,7 @@ gui_update:
 	
 	GuiControl,,scalev_show,%scalev%
 	GuiControl,,vp_quality_show,%vp_quality%
+	GuiControl,,noise_levelv_show,%noise_levelv%
 	
 }
 return
@@ -1590,7 +1579,7 @@ run_startv:
 					{
 						FileCreateDir, %out_pathv%%sub_dir%
 					}
-					run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" """ A_LoopFilePath """ """ out_pathv sub_dir "\" out_filename config_extv """ " noise_levelv " " scalev
+					run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ A_LoopFilePath """ -o """ out_pathv sub_dir "\" out_filename config_extv """ -n " noise_levelv " -s " scalev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
 					run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
 					if(log_enable = 1)
 					{
