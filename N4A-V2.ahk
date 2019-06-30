@@ -113,6 +113,8 @@ Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
 Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png|| .jpg
+Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
+Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 400
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
 Gui, Add, DropDownList, x112 y339 w50 h21 vwin_modev r6 ggui_update, |Max|Min|Hide||
 Gui, Add, Text, x202 y339 w40 h20 , Sleep :
@@ -1579,7 +1581,7 @@ run_startv:
 					{
 						FileCreateDir, %out_pathv%%sub_dir%
 					}
-					run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ A_LoopFilePath """ -o """ out_pathv sub_dir "\" out_filename config_extv """ -n " noise_levelv " -s " scalev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
+					run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ A_LoopFilePath """ -o """ out_pathv sub_dir "\" out_filename config_extv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
 					run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
 					if(log_enable = 1)
 					{
