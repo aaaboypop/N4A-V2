@@ -711,7 +711,7 @@ check_file:
 							}
 							else if(check_action = "Move")
 							{
-								FileMove, %A_LoopFileName%, %check_action_move_path%\%A_LoopFileName%
+								FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
 								LV_Add("","Moved : " A_LoopFileName)
 							}
 							
@@ -742,7 +742,7 @@ check_file:
 									}
 									else if(check_action = "Move")
 									{
-										FileMove, %A_LoopFileName%, %check_action_move_path%\%A_LoopFileName%
+										FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
 										LV_Add("","Moved : " A_LoopFileName)
 									}
 								}
@@ -788,7 +788,7 @@ check_file:
 				}
 				else if(check_action = "Move")
 				{
-					FileMove, %A_LoopFileName%, %check_action_move_path%\%A_LoopFileName%
+					FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
 					LV_Add("","Moved : " A_LoopFileName)
 				}
 				damage_count++
