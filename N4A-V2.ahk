@@ -86,7 +86,7 @@ Loop, Files, %A_WorkingDir%\models\*info.json, FR
 
 StringReplace, model_list, model_list, |ukbench , , All
 
-Gui, Add, Tab3, x2 y0 w900 h570 , Video>Image|Image>Video|Waifu2X Launcher|Test Mode|Waifu2X Vulkan|Console Log
+Gui, Add, Tab3, x2 y0 w900 h570 , Video>Image|Image>Video|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
 Gui, Color, FFFFFF
 
 Gui, Tab, Waifu2X Vulkan
@@ -112,7 +112,7 @@ Gui, Add, Text, x22 y279 w40 h20 , Model :
 Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet||models-upconv_7_anime_style_art_rgb
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
-Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png|| .jpg
+Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||.jpg
 Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
 Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 400
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
@@ -213,9 +213,21 @@ Gui, Add, Edit, x92 y129 w180 h20 vaudio_out_path ggui_update, %vp_out_path%
 Gui, Add, Text, x12 y169 w70 h20 , JPG Quality :
 Gui, Add, Slider, x92 y169 w180 h30 vvp_quality Range1-31 ggui_update, 1
 Gui, Add, Text, x276 y174 w36 h35 vvp_quality_show , 1
+
+Gui, Add, CheckBox, x12 y209 w80 h20 venable_th_mode ggui_update, Thumbnail :
+Gui, Add, Edit, x92 y209 w180 h20 vt_fps ggui_update, 1
+Gui, Add, DropDownList, x272 y209 w60 h21 vt_fps_mode r8 ggui_update, 1 sec|1 min||10 min|1 hours
+
+Gui, Add, CheckBox, x12 y239 w80 h20 venable_resize ggui_update, Resize :
+Gui, Add, Edit, x92 y239 w60 h20 vresize_w ggui_update,
+Gui, Add, Text, x162 y239 w80 h20 , x
+Gui, Add, Edit, x172 y239 w60 h20 vresize_h ggui_update, 
+Gui, Add, DropDownList, x92 y269 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
+
+
 Gui, Add, Button, x272 y129 w30 h20 gvid_to_pic_out_audio, ...
 Gui, Add, Text, x12 y309 w70 h20 right, Input Ext :
-Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext1 r8 ggui_update, .mp4||.mkv|.wma|.flv|.mov
+Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext1 r8 ggui_update, .mp4||.mkv|.wmv|.flv|.mov
 Gui, Add, Text, x12 y329 w70 h20 right, Output Ext :
 Gui, Add, DropDownList, x92 y329 w50 h21 vconfig_ext2 r8 ggui_update, .jpg|.png||.bmp
 Gui, Add, button, x12 y379 w150 h20 vb_start2 grun_vid_to_pic, Start
@@ -245,7 +257,7 @@ Gui, Add, button, x12 y379 w150 h20 vb_start3 grun_pic_to_vid, Start
 
 
 
-Gui, Tab, Waifu2X Launcher
+Gui, Tab, Waifu2X CUDA
 Gui, Add, Text, x22 y29 w80 h20 , Input Folder :
 Gui, Add, Edit, x112 y29 w180 h20 vin_path ggui_update, %in_path%
 Gui, Add, Text, x22 y49 w80 h20 , Output Folder :
@@ -353,7 +365,6 @@ Gui, Add, Button, x292 y29 w30 h20 gin_folder, ...
 Gui, Add, Button, x292 y49 w30 h20 gout_folder, ...
 Gui, Add, button, x22 y529 w80 h20 vb_start grun_start, Start
 Gui, Add, button, x102 y529 w80 h20 vb_stop grun_stop Disabled, Stop
-Gui, Add, button, x182 y529 w80 h20 vb_check gcheck_file, Check File
 Gui, Add, button, x262 y529 w70 h20 gsave, Save Setting
 Gui, Add, Text, x22 y509 w70 h20 vs_s, Ready ..
 
@@ -376,6 +387,29 @@ Gui, Add, Text, x22 y239 w140 h20 , Original Scaling Algorithm :
 Gui, Add, DropDownList, x162 y239 w220 h21 r10 vt_scale ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline|
 Gui, Add, button, x282 y269 w100 h20 vb_start1 grun_test, Start
 Gui, Add, button, x172 y269 w100 h20 vb_stop1 grun_stop Disabled, Stop
+
+Gui, Add, GroupBox, x12 y309 w590 h200 , Check Files Setting
+Gui, Add, CheckBox, x22 y329 w130 h20 venable_check_bad ggui_update, Bad File
+
+Gui, Add, CheckBox, x22 y349 w130 h20 venable_check_res ggui_update, Mismatch Resolution
+Gui, Add, DropDownList, x162 y349 w100 h20 r2 vcheck_res_mode ggui_update, First File||Custom
+Gui, Add, Edit, x382 y349 w80 h20 vcheck_custom_w ggui_update,
+Gui, Add, Text, x362 y349 w10 h10 , X
+Gui, Add, Edit, x272 y349 w80 h20 vcheck_custom_h ggui_update,
+
+Gui, Add, CheckBox, x22 y369 w130 h20 venable_check_ssim ggui_update, SSIM (Slow)
+Gui, Add, Edit, x162 y369 w100 h20 vcheck_bad_ssim ggui_update, 80
+Gui, Add, Text, x272 y369 w20 h20 , `%
+
+Gui, Add, Text, x42 y419 w100 h20 , Action :
+Gui, Add, DropDownList, x162 y419 w100 h20 r3 vcheck_action ggui_update, Delete|Move|Nothing||
+
+Gui, Add, Text, x42 y449 w100 h20 , Move to :
+Gui, Add, Edit, x162 y449 w220 h20 vcheck_action_move_path ggui_update,
+
+Gui, Add, Text, x22 y+30 w110 h20 , (Experiment Function)
+
+Gui, Add, button, x182 y529 w80 h20 vb_check gcheck_file, Check File
 
 Gui, Tab, Console Log
 Gui, Add, ListView, x12 y29 w880 h500 gconsole_log, Command
@@ -550,6 +584,64 @@ gui_update:
 	GuiControl,,vp_quality_show,%vp_quality%
 	GuiControl,,noise_levelv_show,%noise_levelv%
 	
+	if(t_fps_mode="1 sec")
+	{
+		t_fpsx := 1
+	}
+	else if(t_fps_mode="1 min")
+	{
+		t_fpsx := 60
+	}
+	else if(t_fps_mode="10 min")
+	{
+		t_fpsx := 600
+	}
+	else
+	{
+		t_fpsx := 3600
+	}
+	
+	if(check_res_mode = "First File")
+	{
+		GuiControl,Disable,check_custom_w
+		GuiControl,Disable,check_custom_h
+	}
+	else
+	{
+		GuiControl,Enable,check_custom_w
+		GuiControl,Enable,check_custom_h
+	}
+	
+	if(enable_check_res = "0")
+	{
+		GuiControl,Disable,enable_check_ssim
+		enable_check_ssim := 0
+	}
+	else
+	{
+		GuiControl,Enable,enable_check_ssim
+	}
+	
+	if(convert_enable = 1)
+	{
+		GuiControl,Disable,enable_th_mode
+		enable_th_mode := 0
+	}
+	else
+	{
+		GuiControl,Enable,enable_th_mode
+	}
+	
+	if(enable_resize = 1)
+	{
+		GuiControl,Enable,t_scale1
+	}
+	else
+	{
+		GuiControl,Disable,t_scale1
+	}
+	
+	
 }
 return
 
@@ -588,48 +680,117 @@ check_file:
 				break
 			}
 			
-			imagefile := A_LoopFilePath
-			GDIPToken := Gdip_Startup()                                     
-			pBM := Gdip_CreateBitmapFromFile( imagefile )
-			img_w:= Gdip_GetImageWidth( pBM ) 
-			img_h:= Gdip_GetImageHeight( pBM ) 
-			Gdip_DisposeImage( pBM )
-			Gdip_Shutdown( GDIPToken ) 
+
+				imagefile := A_LoopFilePath
+				GDIPToken := Gdip_Startup()                                     
+				pBM := Gdip_CreateBitmapFromFile( imagefile )
+				img_w:= Gdip_GetImageWidth( pBM ) 
+				img_h:= Gdip_GetImageHeight( pBM ) 
+				Gdip_DisposeImage( pBM )
+				Gdip_Shutdown( GDIPToken ) 
 			
 			
 			if(img_w>0)
 			{
-				if(c_size_count>0)
+				if(enable_check_res = 1)
 				{
-					if(img_w <> c_main_w) || (img_w <> c_main_w)
+					if(c_size_count>0)
 					{
+						if(img_w <> c_main_w) || (img_w <> c_main_w)
+						{
+							while(LV_GetCount() >= log_limit)
+							{
+								LV_Delete(1)
+							}
+							LV_Add("","Not Match Main Size : " A_LoopFilePath)
+							
+							if(check_action = "Delete")
+							{
+								FileDelete, %A_LoopFilePath%
+								LV_Add("","Deleted : " A_LoopFileName)
+							}
+							else if(check_action = "Move")
+							{
+								FileMove, %A_LoopFileName%, %check_action_move_path%\%A_LoopFileName%
+								LV_Add("","Moved : " A_LoopFileName)
+							}
+							
+							damage_count++
+						}
+						else if(enable_check_ssim = 1)
+						{
+							outpathfile := out_path "\" A_LoopFileName
+							if FileExist(outpathfile)
+							{
+								run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim.log"" -f null -"
+								RunWait, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,hide
+								FileRead, ssim_log, ssim.log
+								StringTrimLeft, ssim_log, ssim_log, 41
+								StringTrimRight, ssim_log, ssim_log, 13
+								ssim_log := ssim_log*100
+								while(LV_GetCount() >= log_limit)
+								{
+									LV_Delete(1)
+								}
+								if(ssim_log<check_bad_ssim)
+								{
+									LV_Add("", "Bad SSIM : " ssim_log " : " A_LoopFilePath)
+									if(check_action = "Delete")
+									{
+										FileDelete, %A_LoopFilePath%
+										LV_Add("","Deleted : " A_LoopFileName)
+									}
+									else if(check_action = "Move")
+									{
+										FileMove, %A_LoopFileName%, %check_action_move_path%\%A_LoopFileName%
+										LV_Add("","Moved : " A_LoopFileName)
+									}
+								}
+							}
+							else
+							{
+								LV_Add("","Not Found : " outpathfile)
+							}
+						}
+					}
+					else
+					{
+						if(check_res_mode = "First File")
+						{
+							c_main_w := img_w
+							c_main_h := img_h
+						}
+						else
+						{
+							c_main_w := check_custom_w
+							c_main_h := check_custom_h
+						}
 						while(LV_GetCount() >= log_limit)
 						{
 							LV_Delete(1)
 						}
-						LV_Add("","Not Match Main Size : " A_LoopFilePath)
-						damage_count++
+						LV_Add("","Main Size : " img_w "x" img_h )
 					}
+					c_size_count++
 				}
-				else
-				{
-					c_main_h := img_h
-					c_main_w := img_w
-					while(LV_GetCount() >= log_limit)
-					{
-						LV_Delete(1)
-					}
-					LV_Add("","Main Size : " img_w "x" img_h )
-				}
-				c_size_count++
 			}
-			else
+			else if(enable_check_bad = 1)
 			{
 				while(LV_GetCount() >= log_limit)
 				{
 					LV_Delete(1)
 				}
-				LV_Add("","Damaged File : " A_LoopFilePath)
+				LV_Add("","Bad File : " A_LoopFilePath)
+				if(check_action = "Delete")
+				{
+				FileDelete, %A_LoopFilePath%
+				LV_Add("","Deleted : " A_LoopFileName)
+				}
+				else if(check_action = "Move")
+				{
+					FileMove, %A_LoopFileName%, %check_action_move_path%\%A_LoopFileName%
+					LV_Add("","Moved : " A_LoopFileName)
+				}
 				damage_count++
 			}
 			
@@ -1059,17 +1220,26 @@ run_test:
 							
 
 							test_count += 1
+							p_all := 0
+							i := 1
+							while(i<=8)
+							{
+								if(enable_process%i% = 1)
+								{
+									p_all++
+								}
+								i++
+							}
 							if (test_count = 1)
 							{
 								StartTime := A_TickCount
 							}
-							if test_count <= %process_limit%
+							if test_count <= %p_all%
 							{
 								break
 							}
-							ElapsedTime := A_TickCount - StartTime
-							t_sec := ElapsedTime/1000
-							speed := Round((test_count-process_limit)/t_sec,3)
+							t_sec := (A_TickCount-StartTime)/1000
+							speed := Round((test_count-p_all)/t_sec,3)
 							GuiControl,,tspeed,%speed%
 							Break
 						}
@@ -1262,17 +1432,27 @@ run_start:
 					GuiControl,,s_percen,%per% `%
 
 					test_count += 1
+					
+					p_all := 0
+					i := 1
+					while(i<=8)
+					{
+						if(enable_process%i% = 1)
+						{
+							p_all++
+						}
+						i++
+					}
 					if (test_count = 1)
 					{
 						StartTime := A_TickCount
 					}
-					if test_count <= %process_limit%
+					if test_count <= %p_all%
 					{
 						break
 					}
-					ElapsedTime := A_TickCount - StartTime
-					t_sec := ElapsedTime/1000
-					speed := Round((test_count-process_limit)/t_sec,3)
+					t_sec := (A_TickCount-StartTime)/1000
+					speed := Round((test_count-p_all)/t_sec,3)
 					GuiControl,,tspeed,%speed%
 					Break
 				}
@@ -1434,25 +1614,46 @@ run_vid_to_pic:
 		{
 			attribute3 := " -vsync 1 -vf fps=" convert_fps
 		}
-		else
+		else if(enable_th_mode = 1)
+		{
+			attribute3 := " -vf ""fps=" t_fps "/" t_fpsx """"
+		}
+		
+		if(enable_resize = 1)
+		{
+			attribute3 := " -vf ""scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
+		}
+		
+		if(enable_resize = 0) && (convert_enable = 0) && (enable_resize = 0)
 		{
 			attribute3 := ""
+		}
+
+		
+		if(enable_th_mode = 1) && (enable_resize = 1)
+		{
+			attribute3 := " -vf ""fps=" t_fps "/" t_fpsx "[vid1];[vid1]scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
+		}
+		
+		if(convert_enable = 1) && (enable_resize = 1)
+		{
+			attribute3 := " -vsync 1 -vf ""fps=" convert_fps "[vid1];[vid1]scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
 		}
 		
 		if(audio_extract = 1)
 		{
-			attribute5 := " """ audio_out_path "\" filename ".wav"""
+			attribute6 := " """ audio_out_path "\" filename ".wav"""
 		}
 		else
 		{
-			attribute5 := ""
+			attribute6 := ""
 		}
 		
 		if(config_ext2 = ".jpg")
 		{
 			attribute4 := " -q:v " vp_quality
 		}
-		run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """" attribute3 attribute4 " """ vp_out_path "\" filename "\image%06d" config_ext2 """" attribute5
+		run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """" attribute3 attribute4 " """ vp_out_path "\" filename "\image%06d" config_ext2 """" attribute6
 		gosub,log_console
 		RunWait,  %run_command%, ,
 	}
@@ -1601,17 +1802,26 @@ run_startv:
 					GuiControl,,s_percenv,%per% `%
 
 					test_count += 1
+					p_all := 0
+					i := 1
+					while(i<=8)
+					{
+						if(enable_process%i% = 1)
+						{
+							p_all++
+						}
+						i++
+					}
 					if (test_count = 1)
 					{
 						StartTime := A_TickCount
 					}
-					if test_count <= %process_limit%
+					if test_count <= %p_all%
 					{
 						break
 					}
-					ElapsedTime := A_TickCount - StartTime
-					t_sec := ElapsedTime/1000
-					speed := Round((test_count-process_limit)/t_sec,3)
+					t_sec := (A_TickCount-StartTime)/1000
+					speed := Round((test_count-p_all)/t_sec,3)
 					GuiControl,,tspeedv,%speed%
 					Break
 				}
