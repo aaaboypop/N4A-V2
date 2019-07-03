@@ -1596,6 +1596,7 @@ Return
 
 run_vid_to_pic:
 {
+	attribute3 := ""
 	loopc := vp_in_path "\*" config_ext1
 	Loop, Files, %loopc%, F
 	{
@@ -1610,11 +1611,14 @@ run_vid_to_pic:
 			FileCreateDir, %audio_out_path%
 		}
 		
+
+		
 		if(convert_enable = 1)
 		{
 			attribute3 := " -vsync 1 -vf fps=" convert_fps
 		}
-		else if(enable_th_mode = 1)
+		
+		if(enable_th_mode = 1)
 		{
 			attribute3 := " -vf ""fps=" t_fps "/" t_fpsx """"
 		}
@@ -1622,11 +1626,6 @@ run_vid_to_pic:
 		if(enable_resize = 1)
 		{
 			attribute3 := " -vf ""scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
-		}
-		
-		if(enable_resize = 0) && (convert_enable = 0) && (enable_resize = 0)
-		{
-			attribute3 := ""
 		}
 
 		
@@ -1653,6 +1652,7 @@ run_vid_to_pic:
 		{
 			attribute4 := " -q:v " vp_quality
 		}
+		
 		run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """" attribute3 attribute4 " """ vp_out_path "\" filename "\image%06d" config_ext2 """" attribute6
 		gosub,log_console
 		RunWait,  %run_command%, ,
