@@ -737,7 +737,7 @@ check_file:
 									LV_Add("", "Bad SSIM : " ssim_log " : " A_LoopFilePath)
 									if(check_action = "Delete")
 									{
-										FileDelete, %A_LoopFilePath%
+										FileDelete, %out_path%\%A_LoopFileName%
 										LV_Add("","Deleted : " A_LoopFileName)
 									}
 									else if(check_action = "Move")
@@ -783,7 +783,7 @@ check_file:
 				LV_Add("","Bad File : " A_LoopFilePath)
 				if(check_action = "Delete")
 				{
-				FileDelete, %A_LoopFilePath%
+				FileDelete, %A_LoopFileName%
 				LV_Add("","Deleted : " A_LoopFileName)
 				}
 				else if(check_action = "Move")
