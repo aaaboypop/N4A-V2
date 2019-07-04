@@ -783,7 +783,7 @@ check_file:
 				LV_Add("","Bad File : " A_LoopFilePath)
 				if(check_action = "Delete")
 				{
-				FileDelete, %A_LoopFileName%
+				FileDelete, %A_LoopFilePath%
 				LV_Add("","Deleted : " A_LoopFileName)
 				}
 				else if(check_action = "Move")
