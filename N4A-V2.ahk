@@ -112,7 +112,7 @@ Gui, Add, Text, x22 y279 w40 h20 , Model :
 Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet||models-upconv_7_anime_style_art_rgb
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
-Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||.jpg
+Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
 Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
 Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 400
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
@@ -227,9 +227,9 @@ Gui, Add, DropDownList, x92 y269 w220 h21 r10 vt_scale1 ggui_update, bilinear|bi
 
 Gui, Add, Button, x272 y129 w30 h20 gvid_to_pic_out_audio, ...
 Gui, Add, Text, x12 y309 w70 h20 right, Input Ext :
-Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext1 r8 ggui_update, .mp4||.mkv|.wmv|.flv|.mov
+Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext1 r12 ggui_update, .3gp|.avi|.f4v|.flv|.m4v|.mp4||.mkv|.wmv|.mov|.vob
 Gui, Add, Text, x12 y329 w70 h20 right, Output Ext :
-Gui, Add, DropDownList, x92 y329 w50 h21 vconfig_ext2 r8 ggui_update, .jpg|.png||.bmp
+Gui, Add, DropDownList, x92 y329 w50 h21 vconfig_ext2 r8 ggui_update, .jpg||.png|.bmp
 Gui, Add, button, x12 y379 w150 h20 vb_start2 grun_vid_to_pic, Start
 
 Gui, Tab, Image>Video
