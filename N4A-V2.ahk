@@ -86,7 +86,7 @@ Loop, Files, %A_WorkingDir%\models\*info.json, FR
 
 StringReplace, model_list, model_list, |ukbench , , All
 
-Gui, Add, Tab3, x2 y0 w900 h570 , Video>Image|Image>Video|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
+Gui, Add, Tab3, x2 y0 w900 h570 vcurrent_tab ggui_update, Video>Image|Image>Video|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
 Gui, Color, FFFFFF
 
 Gui, Tab, Waifu2X Vulkan
@@ -389,16 +389,16 @@ Gui, Add, button, x282 y269 w100 h20 vb_start1 grun_test, Start
 Gui, Add, button, x172 y269 w100 h20 vb_stop1 grun_stop Disabled, Stop
 
 Gui, Add, GroupBox, x12 y309 w590 h200 , Check Files Setting
-Gui, Add, CheckBox, x22 y329 w130 h20 venable_check_bad ggui_update, Bad File
+Gui, Add, CheckBox, x22 y329 w130 h20 Checked Disabled venable_check_bad ggui_update, Bad File
 
-Gui, Add, CheckBox, x22 y349 w130 h20 venable_check_res ggui_update, Mismatch Resolution
+Gui, Add, CheckBox, x22 y349 w130 h20 venable_check_res Checked Disabled ggui_update, Mismatch Resolution
 Gui, Add, DropDownList, x162 y349 w100 h20 r2 vcheck_res_mode ggui_update, First File||Custom
 Gui, Add, Edit, x382 y349 w80 h20 vcheck_custom_w ggui_update,
 Gui, Add, Text, x362 y349 w10 h10 , X
 Gui, Add, Edit, x272 y349 w80 h20 vcheck_custom_h ggui_update,
 
 Gui, Add, CheckBox, x22 y369 w130 h20 venable_check_ssim ggui_update, SSIM (Slow)
-Gui, Add, Edit, x162 y369 w100 h20 vcheck_bad_ssim ggui_update, 80
+Gui, Add, Edit, x162 y369 w100 h20 vcheck_bad_ssim ggui_update, 90
 Gui, Add, Text, x272 y369 w20 h20 , `%
 
 Gui, Add, Text, x42 y419 w100 h20 , Action :
@@ -670,6 +670,12 @@ check_file:
 	c_main_h := 0
 	c_main_w := 0
 	c_size_count := 0
+	
+	; SSIM Config
+	ssim_cycle := 0
+	ssim_limit_thread := 4
+	ssim_file_count := 0
+	
 	Loop, Files, %in_path%\*.*, FR
 	{
 		if A_LoopFileExt in png,jpg,jpeg,tif,tiff,bmp,tga
@@ -722,29 +728,63 @@ check_file:
 							outpathfile := out_path "\" A_LoopFileName
 							if FileExist(outpathfile)
 							{
-								run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim.log"" -f null -"
-								RunWait, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,hide
-								FileRead, ssim_log, ssim.log
-								StringTrimLeft, ssim_log, ssim_log, 41
-								StringTrimRight, ssim_log, ssim_log, 13
-								ssim_log := ssim_log*100
-								while(LV_GetCount() >= log_limit)
+								loop
 								{
-									LV_Delete(1)
-								}
-								if(ssim_log<check_bad_ssim)
-								{
-									LV_Add("", "Bad SSIM : " ssim_log " : " A_LoopFilePath)
-									if(check_action = "Delete")
+									ssim_cycle++
+									if(ssim_cycle=ssim_limit_thread)
 									{
-										FileDelete, %out_path%\%A_LoopFileName%
-										LV_Add("","Deleted : " A_LoopFileName)
+										sleep,50
 									}
-									else if(check_action = "Move")
+									process_name := "ffmpeg_p" ssim_cycle ".exe"
+									Process, Exist, %process_name%
+									If (!ErrorLevel= 1)
 									{
-										FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
-										LV_Add("","Moved : " A_LoopFileName)
+										ssim_file_count++
+										if (ssim_cycle>ssim_limit_thread)
+										{
+											ssim_cycle := 1
+										}
+										;SSIM Read Log
+										if(ssim_file_count>ssim_limit_thread)
+										{
+											re_read:
+											ssim_filename := ssim_filename_%ssim_cycle%
+											ssim_filepath := ssim_filepath_%ssim_cycle%
+											FileRead, ssim_log, ssim_%ssim_cycle%.log
+											if(ssim_log="")
+											{
+												sleep,33
+												goto,re_read
+											}
+											StringTrimLeft, ssim_log, ssim_log, 41
+											StringTrimRight, ssim_log, ssim_log, 13
+											ssim_log := ssim_log*100
+											while(LV_GetCount() >= log_limit)
+											{
+												LV_Delete(1)
+											}
+											if(ssim_log<check_bad_ssim)
+											{
+												LV_Add("", "Bad SSIM : " ssim_log " : " ssim_filename)
+												if(check_action = "Delete")
+												{
+													FileDelete, %out_path%\ssim_filename
+													LV_Add("","Deleted : " ssim_filename)
+												}
+												else if(check_action = "Move")
+												{
+													FileMove, ssim_filepath, %check_action_move_path%\%ssim_filename%
+													LV_Add("","Moved : " ssim_filename)
+												}
+											}
+										}
+										run_command := """" A_WorkingDir "\bin\ffmpeg_p" ssim_cycle ".exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim_" ssim_cycle ".log"" -f null -"
+										Run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,hide
+										ssim_filename_%ssim_cycle% := A_LoopFileName
+										ssim_filepath_%ssim_cycle% := A_LoopFilePath
+										break
 									}
+									
 								}
 							}
 							else
