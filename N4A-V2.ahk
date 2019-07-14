@@ -91,9 +91,9 @@ Gui, Color, FFFFFF
 
 Gui, Tab, Waifu2X Vulkan
 Gui, Add, Text, x22 y29 w80 h20 , Input Folder :
-Gui, Add, Edit, x112 y29 w180 h20 vin_pathv ggui_update, %in_pathv%
+Gui, Add, Edit, x112 y29 w180 h20 vin_pathv ggui_update, %in_path%
 Gui, Add, Text, x22 y49 w80 h20 , Output Folder :
-Gui, Add, Edit, x112 y49 w180 h20 vout_pathv ggui_update, %out_pathv%
+Gui, Add, Edit, x112 y49 w180 h20 vout_pathv ggui_update, %out_path%
 Gui, Add, GroupBox, x22 y79 w310 h70 , Conversion Mode
 Gui, Add, Radio, x32 y99 w140 h20 vmodev1 Group Checked ggui_update, Denoise+Magnify
 Gui, Add, Radio, x182 y99 w140 h20 vmodev2 Hide ggui_update, Magnify
@@ -105,22 +105,25 @@ Gui, Add, Radio, x22 y159 w80 h20 Group vby_scalev Checked ggui_update, Scale
 Gui, Add, Slider, x112 y159 w180 h20 vscalev Range1-2 ggui_update, 2
 Gui, Add, Text, x292 y159 w40 h20 vscalev_show, 2
 
+Gui, Add, Text, x172 y209 w80 h20 ,Batch/Process : 
+Gui, Add, Edit, x262 y209 w50 h21 vbatch_size ggui_update, 200
+
 Gui, Add, Text, x22 y249 w70 h20 , Noise Level :
 Gui, Add, Slider, x112 y249 w180 h20 vnoise_levelv Range-1-3 ggui_update, 3
 Gui, Add, Text, x292 y249 w40 h20 vnoise_levelv_show, %noise_levelv%
 Gui, Add, Text, x22 y279 w40 h20 , Model :
-Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet||models-upconv_7_anime_style_art_rgb
+Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet|models-upconv_7_anime_style_art_rgb||
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
 Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
 Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
-Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 400
+Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 200
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
 Gui, Add, DropDownList, x112 y339 w50 h21 vwin_modev r6 ggui_update, |Max|Min|Hide||
 Gui, Add, Text, x202 y339 w40 h20 , Sleep :
-Gui, Add, DropDownList, x262 y339 w50 h21 vsleep_timev r10 ggui_update, 10|20|50|100||200|333|500|1000
+Gui, Add, DropDownList, x262 y339 w50 h21 vsleep_timev r10 ggui_update, 10|20|50|100|200|333|500|1000||2000|3000|4000|5000|10000
 Gui, Add, CheckBox, x22 y369 w90 h20 vskip_existv Checked ggui_update, Skip Exist File
-Gui, Add, CheckBox, x182 y369 w70 h20 vth_enablev Checked ggui_update, Thumbnail
+Gui, Add, CheckBox, x182 y369 w70 h20 vth_enablev Disabled ggui_update, Thumbnail
 Gui, Add, GroupBox, x22 y399 w310 h110 , GPU Setting
 Gui, Add, CheckBox, x32 y419 w20 h20 venable_processv1 checked ggui_update, 
 Gui, Add, Text, x52 y419 w60 h20 vtconfig_gpuvv1, Process 1 :
@@ -1709,6 +1712,11 @@ run_startv:
 	process_limitv := 8
 	while(i<=8)
 	{
+		v_run%i% := 0
+		batch_count%i% := 0
+		copy_buffer%i% := 0
+		buffer_dir%i% := ""
+
 		s_process_countv%i% := 0
 		GuiControl,,s_file_processv%i%,-
 		GuiControl,,s_process_countv%i%,-
@@ -1719,6 +1727,8 @@ run_startv:
 	f_count := 0
 	p_count := 0
 	p_cycle := 0
+	
+	next_loop := 0
 	gpu_select := 0
 	test_count := 0
 	last_files_svkiping := 0
@@ -1736,7 +1746,11 @@ run_startv:
 	
 	GuiControl,Disable,scalev
 	
-	Loop, Files, %in_pathv%\*.*, FR
+
+	FileRemoveDir, %in_pathv%\temp, 1
+
+	
+	Loop, Files, %in_pathv%\*.*, F
 	{
 		if A_LoopFileExt in png,jpg,jpeg,tif,tiff,bmp,tga
 		{
@@ -1747,16 +1761,30 @@ run_startv:
 	
 	GuiControl,,f_totalv,%f_count%
 	
-	Loop, Files, %in_pathv%\*.*, FR
+	IfNotExist, %in_pathv%\temp
 	{
-		if A_LoopFileExt in png,bmp,jpg,jp2,sr,tif,hdr,exr,ppm,webp,tga
+		FileCreateDir, %in_pathv%\temp
+		i := 1
+		while(i<=8)
+		{
+			FileCreateDir, %in_pathv%\temp\%i%
+			i++
+		}
+	}
+	
+	IfNotExist, %out_pathv%
+	{
+		FileCreateDir, %out_pathv%
+	}
+	
+	Loop, Files, %in_pathv%\*.*, F
+	{
+		if A_LoopFileExt in png,jpg
 		{
 			if(stop = 1)
 			{
 				break
 			}
-			
-			StringTrimLeft, sub_dir, A_LoopFileDir, %in_len%
 			
 			if A_LoopFileExt in webp
 			{
@@ -1770,10 +1798,19 @@ run_startv:
 
 			p_count += 1
 			
-			out_file_config := """" out_pathv sub_dir "\" out_filename config_extv """"
+			out_file_config := """" out_pathv "\" out_filename config_extv """"
 			if skip_exist = 1
 			{
-				IfExist, %out_pathv%%sub_dir%\%out_filename%%config_extv%
+				IfExist, %out_pathv%\%out_filename%%config_extv%.png
+				{
+					last_files_svkiping += 1
+					if(last_files_svkiping = 1)
+					{
+						GuiControl,,f_ppv,Skipping..
+					}
+					Continue
+				}
+				else IfExist, %out_pathv%\%out_filename%%config_extv%
 				{
 					last_files_svkiping += 1
 					if(last_files_svkiping = 1)
@@ -1793,81 +1830,223 @@ run_startv:
 				GuiControl,,f_ppv,%p_count%
 			}
 			
+			
+			buffer:
 
+			fill_buuffer := 0
+			while(fill_buuffer<=7)
+			{
+				fill_buuffer++
 
-			Loop
-			{	
-				p_cycle += 1
-				If p_cycle > %process_limitv%
-				{
-					Sleep, %sleep_timev%
-					p_cycle := 1
-				}
-				
-				if(enable_processv%p_cycle% = 0)
+				if(enable_processv%fill_buuffer% = 0)
 				{
 					continue
 				}
 				
-				
-				if(stop = 1)
+				IfNotExist %in_pathv%\temp\%fill_buuffer%_buffer
 				{
-					break
+					FileCreateDir, %in_pathv%\temp\%fill_buuffer%_buffer
 				}
-				process_name := "waifu2x-ncnn-vulkan-p" p_cycle ".exe"
-				Process, Exist, %process_name%
-				If (!ErrorLevel= 1)
+				
+				batch_count%fill_buuffer% := 0
+				Loop, Files, %in_pathv%\temp\%fill_buuffer%_buffer\*.*, F
 				{
-					IfNotExist, %out_pathv%%sub_dir%
+					batch_count%fill_buuffer%++
+				}
+				
+				if(batch_count%fill_buuffer% < batch_size)
+				{
+					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
+					if(p_count<f_count)
 					{
-						FileCreateDir, %out_pathv%%sub_dir%
+						next_loop := 1
+						break
 					}
-					run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ A_LoopFilePath """ -o """ out_pathv sub_dir "\" out_filename config_extv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
-					run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
-					if(log_enable = 1)
-					{
-						gosub,log_console
-					}
-					GuiControl,,s_file_processv%p_cycle%,%A_LoopFilePath%
-					if(th_enablev = 1)
-					{
-						gosub, load_imgv
-					}
-					s_process_countv%p_cycle% += 1
-					dv := s_process_countv%p_cycle%
-					GuiControl,,s_process_countv%p_cycle%,%dv%
-					per := (p_count/f_count)*100
-					GuiControl,,p_prov,%per%
-					per := Round(per,2)
-					GuiControl,,s_percenv,%per% `%
+				}
+				else
+				{
+					next_loop := 0
+				}
 
-					test_count += 1
-					p_all := 0
-					i := 1
-					while(i<=8)
+			}
+			
+			if(A_index = f_count)
+			{
+				break
+			}
+			
+			if(next_loop<>1)
+			{
+				Loop
+				{
+					p_cycle += 1
+					If p_cycle > %process_limitv%
 					{
-						if(enable_process%i% = 1)
-						{
-							p_all++
-						}
-						i++
+						p_cycle := 1
 					}
-					if (test_count = 1)
-					{
-						StartTime := A_TickCount
-					}
-					if test_count <= %p_all%
+					if(stop = 1)
 					{
 						break
 					}
-					t_sec := (A_TickCount-StartTime)/1000
-					speed := Round((test_count-p_all)/t_sec,3)
-					GuiControl,,tspeedv,%speed%
-					Break
+					if(enable_processv%p_cycle% = 0)
+					{
+						continue
+					}
+
+					process_name := "waifu2x-ncnn-vulkan-p" p_cycle ".exe"
+					Process, Exist, %process_name%
+					If (!ErrorLevel= 1)
+					{
+						FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
+						FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
+						run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
+						run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
+						
+						if(log_enable = 1)
+						{
+							gosub,log_console
+						}
+						GuiControl,,s_file_processv%p_cycle%,%A_LoopFilePath%
+						if(th_enablev = 1)
+						{
+							gosub, load_imgv
+						}
+						s_process_countv%p_cycle% += 1
+						dv := s_process_countv%p_cycle%
+						GuiControl,,s_process_countv%p_cycle%,%dv%
+						per := (p_count/f_count)*100
+						GuiControl,,p_prov,%per%
+						per := Round(per,2)
+						GuiControl,,s_percenv,%per% `%
+						
+							test_count++
+							if (test_count = 1)
+							{
+								StartTime := A_TickCount
+							}
+						
+						wait_process:
+						Process, Exist, %process_name%
+						If (!ErrorLevel= 1)
+						{
+							sleep,100
+							goto,wait_process
+						}
+						
+						goto,buffer
+					}
+					
+					If p_cycle > %process_limitv%
+					{
+						Sleep, %sleep_timev%
+					}
 				}
 			}
 		}
 	}
+	
+	Loop
+	{
+		p_cycle += 1
+		If p_cycle > %process_limitv%
+		{
+			p_cycle := 1
+		}
+		if(stop = 1)
+		{
+			break
+		}
+		if(enable_processv%p_cycle% = 0)
+		{
+			continue
+		}
+		
+		process_name := "waifu2x-ncnn-vulkan-p" p_cycle ".exe"
+		Process, Exist, %process_name%
+		If (!ErrorLevel= 1)
+		{
+			FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
+			FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
+			run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
+			run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
+			
+			if(log_enable = 1)
+			{
+				gosub,log_console
+			}
+			GuiControl,,s_file_processv%p_cycle%,%A_LoopFilePath%
+			if(th_enablev = 1)
+			{
+				gosub, load_imgv
+			}
+			s_process_countv%p_cycle% += 1
+			dv := s_process_countv%p_cycle%
+			GuiControl,,s_process_countv%p_cycle%,%dv%
+			per := (p_count/f_count)*100
+			GuiControl,,p_prov,%per%
+			per := Round(per,2)
+			GuiControl,,s_percenv,%per% `%
+			
+				test_count++
+				if (test_count = 1)
+				{
+					StartTime := A_TickCount
+				}
+			
+			sleep,200
+
+			
+			a:=0
+			loop, Files, %in_pathv%\temp\*.*,F R
+			{
+				a++
+			}
+			
+			if(a=0)
+			{
+				FileRemoveDir, %in_pathv%\temp, 1
+				Break
+			}
+			else
+			{
+				continue
+			}
+			
+		}
+		
+		If p_cycle > %process_limitv%
+		{
+			Sleep, %sleep_timev%
+		}
+	}
+
+
+	
+	t_sec := (A_TickCount-StartTime)/1000
+	speed := Round(test_count/t_sec,3)
+	GuiControl,,tspeedv,%speed%
+
+	MsgBox, 4,, Finished do you want to Rename?
+	IfMsgBox Yes
+	{
+		Loop, Files, %out_pathv%\*.png.png , F
+		{
+			loop_ext := SubStr(A_LoopFileName, -7)
+			StringTrimLeft, loop_ext, loop_ext, 4
+			StringTrimRight, loop_fpath, A_LoopFilePath, 8
+			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
+		}
+		
+		Loop, Files, %out_pathv%\*.jpg.png , F
+		{
+			loop_ext := SubStr(A_LoopFileName, -7)
+			StringTrimLeft, loop_ext, loop_ext, 4
+			StringTrimRight, loop_fpath, A_LoopFilePath, 8
+			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
+		}
+		MsgBox,Finished!
+	}
+
 	GuiControl,,f_ppv,%p_count%
 	GuiControl,Enabled,b_start
 	GuiControl,Enabled,b_startv
