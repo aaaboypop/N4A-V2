@@ -117,11 +117,11 @@ Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
 Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
 Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
-Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 200
+Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 256
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
 Gui, Add, DropDownList, x112 y339 w50 h21 vwin_modev r6 ggui_update, |Max|Min|Hide||
 Gui, Add, Text, x202 y339 w40 h20 , Sleep :
-Gui, Add, DropDownList, x262 y339 w50 h21 vsleep_timev r10 ggui_update, 10|20|50|100|200|333|500|1000||2000|3000|4000|5000|10000
+Gui, Add, DropDownList, x262 y339 w50 h21 vsleep_timev r10 ggui_update, 10|20|50|100|200|333||500|1000|2000|3000|4000|5000|10000
 Gui, Add, CheckBox, x22 y369 w90 h20 vskip_existv Checked ggui_update, Skip Exist File
 Gui, Add, CheckBox, x182 y369 w70 h20 vth_enablev Disabled ggui_update, Thumbnail
 Gui, Add, GroupBox, x22 y399 w310 h110 , GPU Setting
@@ -243,8 +243,13 @@ Gui, Add, Text, x12 y99 w70 h20 , Input Audio :
 Gui, Add, Edit, x92 y99 w180 h20 vpv_in_audio ggui_update, %pv_in_audio%
 Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
 Gui, Add, Edit, x92 y49 w180 h20 vpv_out_path ggui_update, %pv_out_path%
-Gui, Add, Text, x12 y149 w70 h20 , CRF :
-Gui, Add, Edit, x92 y149 w180 h20 vcrf ggui_update, %crf%
+
+Gui, Add, Radio, x12 y129 w70 h20 Group Checked, CQP :
+Gui, Add, Radio, x12 y149 w70 h20 , CRF :
+
+Gui, Add, Edit, x92 y129 w180 h20 vcqp_value ggui_update, 18
+Gui, Add, Edit, x92 y149 w180 h20 vcrf_value ggui_update, %crf%
+
 Gui, Add, Text, x12 y169 w70 h20 , Frame Rate :
 Gui, Add, Edit, x92 y169 w180 h20 vfps ggui_update, %fps%
 Gui, Add, Text, x332 y29 w70 h20 , Extra :
@@ -1613,7 +1618,14 @@ run_pic_to_vid:
 		;video
 			video_c1 := " -framerate " fps 
 			video_c2 := " -i """ pv_in_path "\" out_filename "%06d." A_LoopFileExt """"
-			video_c3 := " -c:v libx264 -vf fps=" fps " -pix_fmt yuv420p -crf " crf " " ex_command
+			if(cqp=1)
+			{
+				quality_control = "-cqp " cqp_value
+			}else if(crf=1)
+			{
+				quality_control = "-crf " crf_value
+			}
+			video_c3 := " -c:v libx264 -vf fps=" fps " -pix_fmt yuv420p " quality_control " " ex_command
 			video_c4 := " """ pv_out_path "\" out_filename config_ext4 """"
 
 		;audio
@@ -1777,6 +1789,8 @@ run_startv:
 		FileCreateDir, %out_pathv%
 	}
 	
+	StartTime := A_TickCount
+	
 	Loop, Files, %in_pathv%\*.*, F
 	{
 		if A_LoopFileExt in png,jpg
@@ -1857,6 +1871,7 @@ run_startv:
 				if(batch_count%fill_buuffer% < batch_size)
 				{
 					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
+					test_count++
 					if(p_count<f_count)
 					{
 						next_loop := 1
@@ -1872,6 +1887,16 @@ run_startv:
 			
 			if(A_index = f_count)
 			{
+				fill_buuffer := 0
+				while(fill_buuffer<8)
+				{
+					fill_buuffer++
+					if(enable_processv%fill_buuffer% = 0)
+					{
+						continue
+					}
+					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
+				}
 				break
 			}
 			
@@ -1918,13 +1943,7 @@ run_startv:
 						GuiControl,,p_prov,%per%
 						per := Round(per,2)
 						GuiControl,,s_percenv,%per% `%
-						
-							test_count++
-							if (test_count = 1)
-							{
-								StartTime := A_TickCount
-							}
-						
+
 						wait_process:
 						Process, Exist, %process_name%
 						If (!ErrorLevel= 1)
@@ -1974,28 +1993,15 @@ run_startv:
 			{
 				gosub,log_console
 			}
-			GuiControl,,s_file_processv%p_cycle%,%A_LoopFilePath%
+			
 			if(th_enablev = 1)
 			{
 				gosub, load_imgv
 			}
-			s_process_countv%p_cycle% += 1
-			dv := s_process_countv%p_cycle%
-			GuiControl,,s_process_countv%p_cycle%,%dv%
-			per := (p_count/f_count)*100
-			GuiControl,,p_prov,%per%
-			per := Round(per,2)
-			GuiControl,,s_percenv,%per% `%
-			
-				test_count++
-				if (test_count = 1)
-				{
-					StartTime := A_TickCount
-				}
-			
+
+
 			sleep,200
 
-			
 			a:=0
 			loop, Files, %in_pathv%\temp\*.*,F R
 			{
@@ -2004,7 +2010,6 @@ run_startv:
 			
 			if(a=0)
 			{
-				FileRemoveDir, %in_pathv%\temp, 1
 				Break
 			}
 			else
@@ -2025,6 +2030,7 @@ run_startv:
 	t_sec := (A_TickCount-StartTime)/1000
 	speed := Round(test_count/t_sec,3)
 	GuiControl,,tspeedv,%speed%
+	GuiControl,,s_percenv,100 `%
 
 	MsgBox, 4,, Finished do you want to Rename?
 	IfMsgBox Yes
@@ -2045,8 +2051,9 @@ run_startv:
 			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
 		}
 		MsgBox,Finished!
+		
 	}
-
+	FileRemoveDir, %in_pathv%\temp, 1
 	GuiControl,,f_ppv,%p_count%
 	GuiControl,Enabled,b_start
 	GuiControl,Enabled,b_startv
