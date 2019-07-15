@@ -400,7 +400,7 @@ Gui, Add, GroupBox, x12 y309 w590 h200 , Check Files Setting
 Gui, Add, CheckBox, x22 y329 w130 h20 Checked Disabled venable_check_bad ggui_update, Bad File
 
 Gui, Add, CheckBox, x22 y349 w130 h20 venable_check_res Checked Disabled ggui_update, Mismatch Resolution
-Gui, Add, DropDownList, x162 y349 w100 h20 r2 vcheck_res_mode ggui_update, First File||Custom
+Gui, Add, DropDownList, x162 y349 w100 h20 r2 vcheck_res_mode ggui_update, First File||
 Gui, Add, Edit, x382 y349 w80 h20 vcheck_custom_w ggui_update,
 Gui, Add, Text, x362 y349 w10 h10 , X
 Gui, Add, Edit, x272 y349 w80 h20 vcheck_custom_h ggui_update,
@@ -673,6 +673,14 @@ check_file:
 		}
 	}
 	
+	IfNotExist, %A_WorkingDir%\bin\ffmpeg_p1.exe
+	{
+		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p1.exe
+		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p2.exe
+		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p3.exe
+		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p4.exe
+	}
+	
 	StartTime := A_TickCount
 	
 	c_main_h := 0
@@ -703,8 +711,17 @@ check_file:
 				Gdip_DisposeImage( pBM )
 				Gdip_Shutdown( GDIPToken ) 
 			
+				loop_out_filepath := out_path "\" A_LoopFileName
 			
-			if(img_w>0)
+				imagefile := loop_out_filepath
+				GDIPToken := Gdip_Startup()                                     
+				pBM := Gdip_CreateBitmapFromFile( imagefile )
+				img_w1:= Gdip_GetImageWidth( pBM ) 
+				img_h1:= Gdip_GetImageHeight( pBM ) 
+				Gdip_DisposeImage( pBM )
+				Gdip_Shutdown( GDIPToken ) 
+			
+			if(img_w>0) && (img_w1>0)
 			{
 				if(enable_check_res = 1)
 				{
@@ -716,7 +733,7 @@ check_file:
 							{
 								LV_Delete(1)
 							}
-							LV_Add("","Not Match Main Size : " A_LoopFilePath)
+							LV_Add("","Not Match Input Size : " A_LoopFilePath)
 							
 							if(check_action = "Delete")
 							{
@@ -731,10 +748,30 @@ check_file:
 							
 							damage_count++
 						}
-						else if(enable_check_ssim = 1)
+						else if(img_w1 <> c_main_w1) || (img_w1 <> c_main_w1)
 						{
-							outpathfile := out_path "\" A_LoopFileName
-							if FileExist(outpathfile)
+							while(LV_GetCount() >= log_limit)
+							{
+								LV_Delete(1)
+							}
+							LV_Add("","Not Match Output Size : " loop_out_filepath)
+							
+							if(check_action = "Delete")
+							{
+								FileDelete, %loop_out_filepath%
+								LV_Add("","Deleted : " A_LoopFileName)
+							}
+							else if(check_action = "Move")
+							{
+								FileMove, %loop_out_filepath%, %check_action_move_path%\%A_LoopFileName%
+								LV_Add("","Moved : " A_LoopFileName)
+							}
+							
+							damage_count++
+						}
+						if(enable_check_ssim = 1)
+						{
+							if FileExist(loop_out_filepath)
 							{
 								loop
 								{
@@ -797,16 +834,18 @@ check_file:
 							}
 							else
 							{
-								LV_Add("","Not Found : " outpathfile)
+								LV_Add("","Output Not Found : " loop_out_filepath)
 							}
 						}
 					}
-					else
+					else ;setup first file
 					{
 						if(check_res_mode = "First File")
 						{
 							c_main_w := img_w
 							c_main_h := img_h
+							c_main_w1 := img_w1
+							c_main_h1 := img_h1
 						}
 						else
 						{
@@ -817,29 +856,56 @@ check_file:
 						{
 							LV_Delete(1)
 						}
-						LV_Add("","Main Size : " img_w "x" img_h )
+						LV_Add("","Input Size : " img_w "x" img_h )
+						if(LV_GetCount() >= log_limit)
+						{
+							LV_Delete(1)
+						}
+						LV_Add("","Output Size : " img_w1 "x" img_h1 )
 					}
 					c_size_count++
 				}
 			}
 			else if(enable_check_bad = 1)
 			{
-				while(LV_GetCount() >= log_limit)
+				if(img_w1>0)
 				{
-					LV_Delete(1)
+					while(LV_GetCount() >= log_limit)
+					{
+						LV_Delete(1)
+					}
+					LV_Add("","Bad File : " loop_out_filepath)
+					if(check_action = "Delete")
+					{
+					FileDelete, %loop_out_filepath%
+					LV_Add("","Deleted : " A_LoopFileName)
+					}
+					else if(check_action = "Move")
+					{
+						FileMove, %loop_out_filepath%, %check_action_move_path%\%A_LoopFileName%
+						LV_Add("","Moved : " A_LoopFileName)
+					}
+					damage_count++
 				}
-				LV_Add("","Bad File : " A_LoopFilePath)
-				if(check_action = "Delete")
+				else
 				{
-				FileDelete, %A_LoopFilePath%
-				LV_Add("","Deleted : " A_LoopFileName)
+					while(LV_GetCount() >= log_limit)
+					{
+						LV_Delete(1)
+					}
+					LV_Add("","Bad File : " A_LoopFilePath)
+					if(check_action = "Delete")
+					{
+					FileDelete, %A_LoopFilePath%
+					LV_Add("","Deleted : " A_LoopFileName)
+					}
+					else if(check_action = "Move")
+					{
+						FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
+						LV_Add("","Moved : " A_LoopFileName)
+					}
+					damage_count++
 				}
-				else if(check_action = "Move")
-				{
-					FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
-					LV_Add("","Moved : " A_LoopFileName)
-				}
-				damage_count++
 			}
 			
 			
