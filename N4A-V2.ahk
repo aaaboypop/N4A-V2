@@ -256,7 +256,7 @@ Gui, Add, Text, x372 y319 w60 h20, Preset :
 
 Gui, Add, DropDownList, x422 y319 w120 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
 
-Gui, Add, CheckBox, x372 y349 w140 h20 venable_a_copy ggui_update, Copy Audio [MKV]
+Gui, Add, CheckBox, x372 y349 w240 h20 venable_a_aac ggui_update, Audio Encode : High Quality AAC-LC
 
 
 Gui, Tab, Image Input
@@ -511,24 +511,6 @@ while(i<=3)
 	{
 		GuiControl,,mode%i%, 0
 	}
-	
-	if(deinter_mode=Frame)
-	{
-		deinter_m := 0
-	}
-	else
-	{
-		deinter_m := 1
-	}
-	
-	if(deinter_field=Top)
-	{
-		deinter_f := 0
-	}
-	else
-	{
-		deinter_f := 1
-	}
 }
 
 ;==== GUI Window ====
@@ -712,6 +694,24 @@ gui_update:
 		GuiControl,Hide,resize_w
 		GuiControl,Hide,resize_h
 		GuiControl,Hide,resize_x
+	}
+	
+	if(deinter_mode="Frame")
+	{
+		deinter_m := 0
+	}
+	else
+	{
+		deinter_m := 1
+	}
+	
+	if(deinter_field="Top")
+	{
+		deinter_f := 0
+	}
+	else
+	{
+		deinter_f := 1
 	}
 }
 return
@@ -1896,12 +1896,13 @@ run_vid_to_pic:
 			
 			run_command5 .= " -preset " enc_preset
 			
-			if(enable_a_copy=1)
+			if(enable_a_aac=1)
 			{
-				if(config_ext2=".mkv")
-				{
-					run_command5 .= " -acodec copy "
-				}
+				run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
+			}
+			else
+			{
+				run_command5 .= " -an"
 			}
 		}
 		
