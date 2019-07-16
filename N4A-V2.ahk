@@ -232,7 +232,7 @@ Gui, Add, Edit, x172 y289 w60 h20 vresize_h ggui_update,
 Gui, Add, DropDownList, x92 y319 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
 Gui, Add, Button, x272 y179 w30 h20 gvid_to_pic_out_audio, ...
 Gui, Add, Text, x12 y359 w70 h20 right, Input Ext :
-Gui, Add, DropDownList, x92 y359 w50 h21 vconfig_ext1 r12 ggui_update, .3gp|.avi|.f4v|.flv|.m4v|.mp4||.mkv|.wmv|.mov|.vob
+Gui, Add, DropDownList, x92 y359 w50 h21 vconfig_ext1 r12 ggui_update, .3gp|.avi|.f4v|.flv|.m2ts|.m4v|.mp4||.mkv|.wmv|.mov|.vob
 Gui, Add, Text, x12 y379 w70 h20 right, Output Ext :
 Gui, Add, DropDownList, x92 y379 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
 Gui, Add, button, x12 y429 w150 h20 vb_start2 grun_vid_to_pic, Start
@@ -1813,7 +1813,8 @@ run_vid_to_pic:
 	loopc := vp_in_path "\*" config_ext1
 	Loop, Files, %loopc%, F
 	{
-		StringTrimRight, filename, A_LoopFileName, 4
+		in_len := StrLen(A_LoopFileExt)+1
+		StringTrimRight, filename, A_LoopFileName, in_len
 		IfNotExist, %vp_out_path%\%filename%
 		{
 			FileCreateDir, %vp_out_path%\%filename%
