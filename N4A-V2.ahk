@@ -86,7 +86,7 @@ Loop, Files, %A_WorkingDir%\models\*info.json, FR
 
 StringReplace, model_list, model_list, |ukbench , , All
 
-Gui, Add, Tab3, x2 y0 w900 h570 vcurrent_tab ggui_update, Video>Image|Image>Video|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
+Gui, Add, Tab3, x2 y0 w900 h570 vcurrent_tab ggui_update, Video Input|Image Input|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
 Gui, Color, FFFFFF
 
 Gui, Tab, Waifu2X Vulkan
@@ -201,41 +201,65 @@ Gui, Add, Text, x22 y509 w70 h20 vs_sv, Ready ..
 
 
 
-Gui, Tab, Video>Image
+Gui, Tab, Video Input
 Gui, Add, Text, x12 y29 w70 h20 , Input Folder :
 Gui, Add, Edit, x92 y29 w180 h20 vvp_in_path ggui_update, %vp_in_path%
 Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
 Gui, Add, Edit, x92 y49 w180 h20 vvp_out_path ggui_update, %vp_out_path%
+
+Gui, Add, GroupBox, x312 y29 w380 h60 , Output Type
+Gui, Add, Radio, x322 y49 w100 h30 Checked voutput_pic galt_guiupdate, Picture
+Gui, Add, Radio, x432 y49 w100 h30 voutput_vid galt_guiupdate, Video
+
+Gui, Add, GroupBox, x2 y99 w690 h360 , Setting
 Gui, Add, Button, x272 y29 w30 h20 gvid_to_pic_in_folder, ...
 Gui, Add, Button, x272 y49 w30 h20 gvid_to_pic_out_folder, ...
-Gui, Add, CheckBox, x12 y79 w190 h20 vconvert_enable Checked ggui_update, Convert to Constant Frame Rate
-Gui, Add, DropDownList, x212 y79 w60 h21 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120
-Gui, Add, CheckBox, x12 y109 w160 h20 vaudio_extract Checked ggui_update, Extract Audio
-Gui, Add, Text, x12 y129 w70 h20 , Output Audio :
-Gui, Add, Edit, x92 y129 w180 h20 vaudio_out_path ggui_update, %vp_out_path%
-Gui, Add, Text, x12 y169 w70 h20 , JPG Quality :
-Gui, Add, Slider, x92 y169 w180 h30 vvp_quality Range1-31 ggui_update, 1
-Gui, Add, Text, x276 y174 w36 h35 vvp_quality_show , 1
+Gui, Add, CheckBox, x12 y129 w190 h20 vconvert_enable Checked ggui_update, Convert to Constant Frame Rate
+Gui, Add, DropDownList, x212 y129 w60 h21 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120
+Gui, Add, CheckBox, x12 y159 w160 h20 vaudio_extract Checked ggui_update, Extract Audio
+Gui, Add, Text, x12 y179 w70 h20 , Output Audio :
+Gui, Add, Edit, x92 y179 w180 h20 vaudio_out_path ggui_update, %vp_out_path%
+Gui, Add, Text, x12 y219 w70 h20 , JPG Quality :
+Gui, Add, Slider, x92 y219 w180 h30 vvp_quality Range1-31 ggui_update, 1
+Gui, Add, Text, x272 y229 w20 h20 vvp_quality_show, 1
+Gui, Add, CheckBox, x12 y259 w80 h20 venable_th_mode ggui_update, Thumbnail :
+Gui, Add, Edit, x92 y259 w180 h20 vt_fps ggui_update, 1
+Gui, Add, DropDownList, x272 y259 w60 h20 vt_fps_mode r8 ggui_update, 1 sec|1 min||10 min|1 hours
+Gui, Add, CheckBox, x12 y289 w80 h20 venable_resize ggui_update, Resize :
+Gui, Add, Edit, x92 y289 w60 h20 vresize_w ggui_update, 
+Gui, Add, Text, x162 y289 w80 h20 vresize_x, x
+Gui, Add, Edit, x172 y289 w60 h20 vresize_h ggui_update, 
+Gui, Add, DropDownList, x92 y319 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
+Gui, Add, Button, x272 y179 w30 h20 gvid_to_pic_out_audio, ...
+Gui, Add, Text, x12 y359 w70 h20 right, Input Ext :
+Gui, Add, DropDownList, x92 y359 w50 h21 vconfig_ext1 r12 ggui_update, .3gp|.avi|.f4v|.flv|.m4v|.mp4||.mkv|.wmv|.mov|.vob
+Gui, Add, Text, x12 y379 w70 h20 right, Output Ext :
+Gui, Add, DropDownList, x92 y379 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
+Gui, Add, button, x12 y429 w150 h20 vb_start2 grun_vid_to_pic, Start
 
-Gui, Add, CheckBox, x12 y209 w80 h20 venable_th_mode ggui_update, Thumbnail :
-Gui, Add, Edit, x92 y209 w180 h20 vt_fps ggui_update, 1
-Gui, Add, DropDownList, x272 y209 w60 h21 vt_fps_mode r8 ggui_update, 1 sec|1 min||10 min|1 hours
+Gui, Add, GroupBox, x352 y119 w330 h110 , Deinterlace
+Gui, Add, CheckBox, x372 y139 w160 h20 venable_deinterlace ggui_update, Deinterlace
+Gui, Add, Text, x372 y169 w60 h20 , Mode :
+Gui, Add, Text, x372 y199 w60 h20 , Field :
+Gui, Add, DropDownList, x432 y169 w100 h10 r4 vdeinter_mode ggui_update, Frame||Field
+Gui, Add, DropDownList, x432 y199 w100 h20 r2 vdeinter_field ggui_update, Top||Bottom
 
-Gui, Add, CheckBox, x12 y239 w80 h20 venable_resize ggui_update, Resize :
-Gui, Add, Edit, x92 y239 w60 h20 vresize_w ggui_update,
-Gui, Add, Text, x162 y239 w80 h20 , x
-Gui, Add, Edit, x172 y239 w60 h20 vresize_h ggui_update, 
-Gui, Add, DropDownList, x92 y269 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
+Gui, Add, CheckBox, x372 y239 w300 h20 venable_decimate ggui_update, Remove Duplicate Frame [Anime Preset 29.970 > 23.976]
+
+Gui, Add, Radio, x372 y269 w60 h20 vcqp_s1 Group Checked ggui_update, CQP :
+Gui, Add, Radio, x372 y289 w60 h20 vcrf_s1 ggui_update, CRF :
+
+Gui, Add, Edit, x442 y269 w40 h20 vcqp_value1 ggui_update, 18
+Gui, Add, Edit, x442 y289 w40 h20 vcrf_value1 ggui_update, 18
+
+Gui, Add, Text, x372 y319 w60 h20, Preset :
+
+Gui, Add, DropDownList, x422 y319 w120 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
+
+Gui, Add, CheckBox, x372 y349 w140 h20 venable_a_copy ggui_update, Copy Audio [MKV]
 
 
-Gui, Add, Button, x272 y129 w30 h20 gvid_to_pic_out_audio, ...
-Gui, Add, Text, x12 y309 w70 h20 right, Input Ext :
-Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext1 r12 ggui_update, .3gp|.avi|.f4v|.flv|.m4v|.mp4||.mkv|.wmv|.mov|.vob
-Gui, Add, Text, x12 y329 w70 h20 right, Output Ext :
-Gui, Add, DropDownList, x92 y329 w50 h21 vconfig_ext2 r8 ggui_update, .jpg||.png|.bmp
-Gui, Add, button, x12 y379 w150 h20 vb_start2 grun_vid_to_pic, Start
-
-Gui, Tab, Image>Video
+Gui, Tab, Image Input
 Gui, Add, Text, x12 y29 w70 h20 , Input Folder :
 Gui, Add, Edit, x92 y29 w180 h20 vpv_in_path ggui_update, %pv_in_path%
 Gui, Add, CheckBox, x12 y79 w90 h20 vadd_audio Checked ggui_update, Audio
@@ -244,8 +268,8 @@ Gui, Add, Edit, x92 y99 w180 h20 vpv_in_audio ggui_update, %pv_in_audio%
 Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
 Gui, Add, Edit, x92 y49 w180 h20 vpv_out_path ggui_update, %pv_out_path%
 
-Gui, Add, Radio, x12 y129 w70 h20 Group Checked, CQP :
-Gui, Add, Radio, x12 y149 w70 h20 , CRF :
+Gui, Add, Radio, x12 y129 w70 h20 vcqp_s Group Checked ggui_update, CQP :
+Gui, Add, Radio, x12 y149 w70 h20 vcrf_s ggui_update, CRF :
 
 Gui, Add, Edit, x92 y129 w180 h20 vcqp_value ggui_update, 18
 Gui, Add, Edit, x92 y149 w180 h20 vcrf_value ggui_update, %crf%
@@ -487,6 +511,24 @@ while(i<=3)
 	{
 		GuiControl,,mode%i%, 0
 	}
+	
+	if(deinter_mode=Frame)
+	{
+		deinter_m := 0
+	}
+	else
+	{
+		deinter_m := 1
+	}
+	
+	if(deinter_field=Top)
+	{
+		deinter_f := 0
+	}
+	else
+	{
+		deinter_f := 1
+	}
 }
 
 ;==== GUI Window ====
@@ -499,6 +541,23 @@ console_log:
 	LV_GetText(var1, LastEventInfo, 1)
 	
 	clipboard := var1
+}
+
+add_filter(var1)
+{
+	global filter_count
+	if(filter_count=0)
+	{
+		var2 := " -filter_complex """ var1
+		filter_count++
+		return var2
+	}
+	else
+	{
+		var2 := "[vid" filter_count "];[vid" filter_count "]" var1
+		filter_count++
+		return var2
+	}
 }
 
 gui_update:
@@ -642,16 +701,36 @@ gui_update:
 	
 	if(enable_resize = 1)
 	{
-		GuiControl,Enable,t_scale1
+		GuiControl,Show,t_scale1
+		GuiControl,Show,resize_w
+		GuiControl,Show,resize_h
+		GuiControl,Show,resize_x
 	}
 	else
 	{
-		GuiControl,Disable,t_scale1
+		GuiControl,Hide,t_scale1
+		GuiControl,Hide,resize_w
+		GuiControl,Hide,resize_h
+		GuiControl,Hide,resize_x
 	}
-	
-	
 }
 return
+
+alt_guiupdate:
+{
+	Gui, Submit, NoHide
+	if(output_vid=1)
+	{
+		GuiControl,,config_ext2,|.avi|.mp4||.mkv
+	}
+	else
+	{
+		GuiControl,,config_ext2,|.jpg||.png|.bmp
+	}
+	Gui, Submit, NoHide
+}
+Return
+
 
 ;------------------------------------------------------------------
 check_file:
@@ -1684,10 +1763,10 @@ run_pic_to_vid:
 		;video
 			video_c1 := " -framerate " fps 
 			video_c2 := " -i """ pv_in_path "\" out_filename "%06d." A_LoopFileExt """"
-			if(cqp=1)
+			if(cqp_s=1)
 			{
 				quality_control = "-cqp " cqp_value
-			}else if(crf=1)
+			}else if(crf_s=1)
 			{
 				quality_control = "-crf " crf_value
 			}
@@ -1717,7 +1796,20 @@ Return
 
 run_vid_to_pic:
 {
-	attribute3 := ""
+	filter_count := 0
+	run_command := ""
+	run_command1 := ""
+	run_command2 := ""
+	run_command3 := ""
+	run_command4 := ""
+	run_command5 := ""
+	run_command6 := ""
+	
+	if (SubStr(vp_out_path,-1)="\")
+	{
+		StringTrimRight, vp_out_path, vp_out_path, 1
+	}
+	
 	loopc := vp_in_path "\*" config_ext1
 	Loop, Files, %loopc%, F
 	{
@@ -1727,54 +1819,110 @@ run_vid_to_pic:
 			FileCreateDir, %vp_out_path%\%filename%
 		}
 		
-		IfNotExist, %audio_out_path%
+		if(output_pic=1)
 		{
-			FileCreateDir, %audio_out_path%
+			IfNotExist, %audio_out_path%
+			{
+				FileCreateDir, %audio_out_path%
+			}
+		}
+		else
+		{
+			IfNotExist, %vp_out_path%
+			{
+				FileCreateDir, %vp_out_path%
+			}
+		}
+		run_command .= """" A_WorkingDir "\bin\ffmpeg.exe"""
+		run_command2 .= " -i """ A_LoopFilePath """"
+		
+		if(enable_deinterlace = 1)
+		{
+			attribute := "yadif=" deinter_m ":" deinter_f
+			run_command4 .= add_filter(attribute)
 		}
 		
-
+		if(enable_decimate = 1)
+		{
+			attribute := "decimate=cycle=5,setpts=N/23.976/TB"
+			run_command4 .= add_filter(attribute)
+		}
+		
+		
 		
 		if(convert_enable = 1)
 		{
-			attribute3 := " -vsync 1 -vf fps=" convert_fps
+			run_command3 .= " -vsync 1"
+			attribute := "fps=" convert_fps
+			run_command4 .= add_filter(attribute)
 		}
 		
 		if(enable_th_mode = 1)
 		{
-			attribute3 := " -vf ""fps=" t_fps "/" t_fpsx """"
+			attribute := "fps=" t_fps "/" t_fpsx """"
+			run_command4 .= add_filter(attribute)
 		}
 		
 		if(enable_resize = 1)
 		{
-			attribute3 := " -vf ""scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
-		}
-
-		
-		if(enable_th_mode = 1) && (enable_resize = 1)
-		{
-			attribute3 := " -vf ""fps=" t_fps "/" t_fpsx "[vid1];[vid1]scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
+			attribute := "scale=" resize_w ":" resize_h
+			run_command4 .= add_filter(attribute)
+			run_command5 .= " -sws_flags " t_scale1
 		}
 		
-		if(convert_enable = 1) && (enable_resize = 1)
-		{
-			attribute3 := " -vsync 1 -vf ""fps=" convert_fps "[vid1];[vid1]scale=" resize_w ":" resize_h """ -sws_flags " t_scale1
-		}
 		
-		if(audio_extract = 1)
+		
+		if(filter_count>0)
 		{
-			attribute6 := " """ audio_out_path "\" filename ".wav"""
-		}
-		else
-		{
-			attribute6 := ""
+			run_command4 .= """"
 		}
 		
 		if(config_ext2 = ".jpg")
 		{
-			attribute4 := " -q:v " vp_quality
+			run_command5 .= " -q:v " vp_quality
 		}
 		
-		run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """" attribute3 attribute4 " """ vp_out_path "\" filename "\image%06d" config_ext2 """" attribute6
+		if(output_vid=1)
+		{
+			if(cqp_s1=)
+			{
+				run_command5 .= " -qp " cqp_value1
+			}
+			else
+			{
+				run_command5 .= " -crf " crf_value1
+			}
+			
+			run_command5 .= " -preset " enc_preset
+			
+			if(enable_a_copy=1)
+			{
+				if(config_ext2=".mkv")
+				{
+					run_command5 .= " -acodec copy "
+				}
+			}
+		}
+		
+		
+		
+		
+		run_command6 .= " """ vp_out_path "\"
+		
+		if(output_pic=1)
+		{
+			run_command6 .= filename "\image%06d" config_ext2 """"
+		}else
+		{
+			run_command6 .= filename config_ext2 """"
+		}
+		
+		if(audio_extract = 1)
+		{
+			run_command6 .= " """ audio_out_path "\" filename ".wav"""
+		}
+		
+		run_command .= run_command1 run_command2 run_command3 run_command4 run_command5 run_command6
 		gosub,log_console
 		RunWait,  %run_command%, ,
 	}
