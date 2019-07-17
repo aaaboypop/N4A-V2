@@ -211,7 +211,7 @@ Gui, Add, GroupBox, x312 y29 w380 h60 , Output Type
 Gui, Add, Radio, x322 y49 w100 h30 Checked voutput_pic galt_guiupdate, Picture
 Gui, Add, Radio, x432 y49 w100 h30 voutput_vid galt_guiupdate, Video
 
-Gui, Add, GroupBox, x2 y99 w690 h360 , Setting
+Gui, Add, GroupBox, x2 y99 w890 h360 , Setting
 Gui, Add, Button, x272 y29 w30 h20 gvid_to_pic_in_folder, ...
 Gui, Add, Button, x272 y49 w30 h20 gvid_to_pic_out_folder, ...
 Gui, Add, CheckBox, x12 y129 w190 h20 vconvert_enable Checked ggui_update, Convert to Constant Frame Rate
@@ -248,15 +248,19 @@ Gui, Add, CheckBox, x372 y239 w300 h20 venable_decimate ggui_update, Remove Dupl
 
 Gui, Add, Radio, x372 y269 w60 h20 vcqp_s1 Group Checked ggui_update, CQP :
 Gui, Add, Radio, x372 y289 w60 h20 vcrf_s1 ggui_update, CRF :
-
 Gui, Add, Edit, x442 y269 w40 h20 vcqp_value1 ggui_update, 18
 Gui, Add, Edit, x442 y289 w40 h20 vcrf_value1 ggui_update, 18
+Gui, Add, Text, x372 y339 w60 h20 , Preset :
+Gui, Add, DropDownList, x422 y339 w120 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
+Gui, Add, CheckBox, x372 y379 w240 h20 venable_a_aac ggui_update, Audio Encode : High Quality AAC-LC
+Gui, Add, GroupBox, x692 y119 w190 h100 , Color
+Gui, Add, Radio, x712 y139 w70 h20 vc_420 Checked ggui_update, YUV420
+Gui, Add, Radio, x712 y159 w70 h20 vc_422 ggui_update, YUV422
+Gui, Add, Radio, x712 y179 w70 h20 vc_444 ggui_update, YUV444
 
-Gui, Add, Text, x372 y319 w60 h20, Preset :
-
-Gui, Add, DropDownList, x422 y319 w120 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
-
-Gui, Add, CheckBox, x372 y349 w240 h20 venable_a_aac ggui_update, Audio Encode : High Quality AAC-LC
+Gui, Add, Radio, x802 y139 w70 h20 vc_8b Group Checked ggui_update, 8 Bit
+Gui, Add, Radio, x802 y159 w70 h20 vc_10b ggui_update, 10 Bit
+Gui, Add, CheckBox, x572 y269 w100 h40 venable_lossless ggui_update, Lossless
 
 
 Gui, Tab, Image Input
@@ -581,35 +585,23 @@ gui_update:
 
 	if(by_scale = 1)
 	{
-		GuiControl,Enabled,scale
-		GuiControl,Disable,width
-		GuiControl,Disable,height
-		GuiControl,Disable,width1
-		GuiControl,Disable,height1
+		gui_d("width,height,width1,height1")
+		gui_e("scale")
 	}
 	else if(by_width = 1)
 	{
-		GuiControl,Disable,scale
-		GuiControl,Enabled,width
-		GuiControl,Disable,height
-		GuiControl,Disable,width1
-		GuiControl,Disable,height1
+		gui_d("scale,height,width1,height1")
+		gui_e("width")
 	}
 	else if(by_height = 1)
 	{
-		GuiControl,Disable,scale
-		GuiControl,Disable,width
-		GuiControl,Enabled,height
-		GuiControl,Disable,width1
-		GuiControl,Disable,height1
+		gui_d("scale,width,height,height1")
+		gui_e("height")
 	}
 	else if(by_w_h = 1)
 	{
-		GuiControl,Disable,scale
-		GuiControl,Disable,width
-		GuiControl,Disable,height
-		GuiControl,Enabled,width1
-		GuiControl,Enabled,height1
+		gui_d("scale,width,height")
+		gui_e("width1,height1")
 	}
 	
 	if(mode1 = 1)
@@ -652,13 +644,12 @@ gui_update:
 	
 	if(check_res_mode = "First File")
 	{
-		GuiControl,Disable,check_custom_w
-		GuiControl,Disable,check_custom_h
+		gui_d("check_custom_w,check_custom_h")
+		
 	}
 	else
 	{
-		GuiControl,Enable,check_custom_w
-		GuiControl,Enable,check_custom_h
+		gui_e("check_custom_w,check_custom_h")
 	}
 	
 	if(enable_check_res = "0")
@@ -673,27 +664,22 @@ gui_update:
 	
 	if(convert_enable = 1)
 	{
-		GuiControl,Disable,enable_th_mode
+		gui_d("enable_th_mode")
 		enable_th_mode := 0
 	}
 	else
 	{
 		GuiControl,Enable,enable_th_mode
+		gui_e("enable_th_mode")
 	}
 	
 	if(enable_resize = 1)
 	{
-		GuiControl,Show,t_scale1
-		GuiControl,Show,resize_w
-		GuiControl,Show,resize_h
-		GuiControl,Show,resize_x
+		gui_s("t_scale1,resize_w,resize_h,resize_x")
 	}
 	else
 	{
-		GuiControl,Hide,t_scale1
-		GuiControl,Hide,resize_w
-		GuiControl,Hide,resize_h
-		GuiControl,Hide,resize_x
+		gui_h("t_scale1,resize_w,resize_h,resize_x")
 	}
 	
 	if(deinter_mode="Frame")
@@ -713,8 +699,54 @@ gui_update:
 	{
 		deinter_f := 1
 	}
+	
+	if(enable_lossless=1)
+	{
+		gui_d("cqp_value1,crf_value1,c_420,c_422,c_444,c_8b,c_10b,enc_preset")
+	}
+	else
+	{
+		gui_e("cqp_value1,crf_value1,c_420,c_422,c_444,c_8b,c_10b,enc_preset")
+	}
 }
 return
+
+gui_d(var1)
+{
+	var2 := StrSplit(var1, ",")
+	Loop % var2.MaxIndex()
+	{
+		GuiControl,Disable,% var2[A_Index]
+	}
+}
+
+
+gui_e(var1)
+{
+	var2 := StrSplit(var1, ",")
+	Loop % var2.MaxIndex()
+	{
+		GuiControl,Enable,% var2[A_Index]
+	}
+}
+
+gui_h(var1)
+{
+	var2 := StrSplit(var1, ",")
+	Loop % var2.MaxIndex()
+	{
+		GuiControl,Hide,% var2[A_Index]
+	}
+}
+
+gui_s(var1)
+{
+	var2 := StrSplit(var1, ",")
+	Loop % var2.MaxIndex()
+	{
+		GuiControl,Show,% var2[A_Index]
+	}
+}
 
 alt_guiupdate:
 {
@@ -1885,16 +1917,43 @@ run_vid_to_pic:
 		
 		if(output_vid=1)
 		{
-			if(cqp_s1=)
+			if(enable_lossless=0)
 			{
-				run_command5 .= " -qp " cqp_value1
+				if(c_420=1)
+				{
+					run_command5 .= " -pix_fmt yuv420p"
+				}
+				else if(c_422=1)
+				{
+					run_command5 .= " -pix_fmt yuv422p"
+				}
+				else
+				{
+					run_command5 .= " -pix_fmt yuv444p"
+				}
+				
+				if(c_10b=1)
+				{
+					run_command5 .= "10le"
+				}
+				
+				if(cqp_s1=1)
+				{
+					run_command5 .= " -qp " cqp_value1
+				}
+				else if(crf_s1=1)
+				{
+					run_command5 .= " -crf " crf_value1
+				}
+				
+				run_command5 .= " -preset " enc_preset
 			}
 			else
 			{
-				run_command5 .= " -crf " crf_value1
+				run_command5 .= " -c:v huffyuv"
 			}
 			
-			run_command5 .= " -preset " enc_preset
+			
 			
 			if(enable_a_aac=1)
 			{
