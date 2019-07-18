@@ -260,8 +260,7 @@ Gui, Add, Radio, x712 y179 w70 h20 vc_444 ggui_update, YUV444
 
 Gui, Add, Radio, x802 y139 w70 h20 vc_8b Group Checked ggui_update, 8 Bit
 Gui, Add, Radio, x802 y159 w70 h20 vc_10b ggui_update, 10 Bit
-Gui, Add, CheckBox, x572 y269 w100 h40 venable_lossless ggui_update, Lossless
-
+;Gui, Add, CheckBox, x572 y269 w100 h40 venable_lossless ggui_update, Lossless
 
 Gui, Tab, Image Input
 Gui, Add, Text, x12 y29 w70 h20 , Input Folder :
@@ -812,18 +811,16 @@ check_file:
 			{
 				break
 			}
-			
-
-				imagefile := A_LoopFilePath
-				GDIPToken := Gdip_Startup()                                     
-				pBM := Gdip_CreateBitmapFromFile( imagefile )
-				img_w:= Gdip_GetImageWidth( pBM ) 
-				img_h:= Gdip_GetImageHeight( pBM ) 
-				Gdip_DisposeImage( pBM )
-				Gdip_Shutdown( GDIPToken ) 
-			
 				loop_out_filepath := out_path "\" A_LoopFileName
 			
+				if FileExist(loop_out_filepath)
+				{
+				}
+				else
+				{
+					LV_Add("","Output Not Found : " loop_out_filepath)
+				}
+				
 				imagefile := loop_out_filepath
 				GDIPToken := Gdip_Startup()                                     
 				pBM := Gdip_CreateBitmapFromFile( imagefile )
@@ -832,34 +829,13 @@ check_file:
 				Gdip_DisposeImage( pBM )
 				Gdip_Shutdown( GDIPToken ) 
 			
-			if(img_w>0) && (img_w1>0)
+			if(img_w1>0)
 			{
 				if(enable_check_res = 1)
 				{
 					if(c_size_count>0)
 					{
-						if(img_w <> c_main_w) || (img_w <> c_main_w)
-						{
-							while(LV_GetCount() >= log_limit)
-							{
-								LV_Delete(1)
-							}
-							LV_Add("","Not Match Input Size : " A_LoopFilePath)
-							
-							if(check_action = "Delete")
-							{
-								FileDelete, %A_LoopFilePath%
-								LV_Add("","Deleted : " A_LoopFileName)
-							}
-							else if(check_action = "Move")
-							{
-								FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
-								LV_Add("","Moved : " A_LoopFileName)
-							}
-							
-							damage_count++
-						}
-						else if(img_w1 <> c_main_w1) || (img_w1 <> c_main_w1)
+						if(img_w1 <> c_main_w1) || (img_w1 <> c_main_w1)
 						{
 							while(LV_GetCount() >= log_limit)
 							{
@@ -877,75 +853,66 @@ check_file:
 								FileMove, %loop_out_filepath%, %check_action_move_path%\%A_LoopFileName%
 								LV_Add("","Moved : " A_LoopFileName)
 							}
-							
 							damage_count++
 						}
 						if(enable_check_ssim = 1)
 						{
-							if FileExist(loop_out_filepath)
+							loop
 							{
-								loop
+								ssim_cycle++
+								if(ssim_cycle=ssim_limit_thread)
 								{
-									ssim_cycle++
-									if(ssim_cycle=ssim_limit_thread)
-									{
-										sleep,50
-									}
-									process_name := "ffmpeg_p" ssim_cycle ".exe"
-									Process, Exist, %process_name%
-									If (!ErrorLevel= 1)
-									{
-										ssim_file_count++
-										if (ssim_cycle>ssim_limit_thread)
-										{
-											ssim_cycle := 1
-										}
-										;SSIM Read Log
-										if(ssim_file_count>ssim_limit_thread)
-										{
-											re_read:
-											ssim_filename := ssim_filename_%ssim_cycle%
-											ssim_filepath := ssim_filepath_%ssim_cycle%
-											FileRead, ssim_log, ssim_%ssim_cycle%.log
-											if(ssim_log="")
-											{
-												sleep,33
-												goto,re_read
-											}
-											StringTrimLeft, ssim_log, ssim_log, 41
-											StringTrimRight, ssim_log, ssim_log, 13
-											ssim_log := ssim_log*100
-											while(LV_GetCount() >= log_limit)
-											{
-												LV_Delete(1)
-											}
-											if(ssim_log<check_bad_ssim)
-											{
-												LV_Add("", "Bad SSIM : " ssim_log " : " ssim_filename)
-												if(check_action = "Delete")
-												{
-													FileDelete, %out_path%\ssim_filename
-													LV_Add("","Deleted : " ssim_filename)
-												}
-												else if(check_action = "Move")
-												{
-													FileMove, ssim_filepath, %check_action_move_path%\%ssim_filename%
-													LV_Add("","Moved : " ssim_filename)
-												}
-											}
-										}
-										run_command := """" A_WorkingDir "\bin\ffmpeg_p" ssim_cycle ".exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim_" ssim_cycle ".log"" -f null -"
-										Run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,hide
-										ssim_filename_%ssim_cycle% := A_LoopFileName
-										ssim_filepath_%ssim_cycle% := A_LoopFilePath
-										break
-									}
-									
+									sleep,50
 								}
-							}
-							else
-							{
-								LV_Add("","Output Not Found : " loop_out_filepath)
+								process_name := "ffmpeg_p" ssim_cycle ".exe"
+								Process, Exist, %process_name%
+								If (!ErrorLevel= 1)
+								{
+									ssim_file_count++
+									if (ssim_cycle>ssim_limit_thread)
+									{
+										ssim_cycle := 1
+									}
+									;SSIM Read Log
+									if(ssim_file_count>ssim_limit_thread)
+									{
+										re_read:
+										ssim_filename := ssim_filename_%ssim_cycle%
+										ssim_filepath := ssim_filepath_%ssim_cycle%
+										FileRead, ssim_log, ssim_%ssim_cycle%.log
+										if(ssim_log="")
+										{
+											sleep,33
+											goto,re_read
+										}
+										StringTrimLeft, ssim_log, ssim_log, 41
+										StringTrimRight, ssim_log, ssim_log, 13
+										ssim_log := ssim_log*100
+										while(LV_GetCount() >= log_limit)
+										{
+											LV_Delete(1)
+										}
+										if(ssim_log<check_bad_ssim)
+										{
+											LV_Add("", "Bad SSIM : " ssim_log " : " ssim_filename)
+											if(check_action = "Delete")
+											{
+												FileDelete, %out_path%\ssim_filename
+												LV_Add("","Deleted : " ssim_filename)
+											}
+											else if(check_action = "Move")
+											{
+												FileMove, ssim_filepath, %check_action_move_path%\%ssim_filename%
+												LV_Add("","Moved : " ssim_filename)
+											}
+										}
+									}
+									run_command := """" A_WorkingDir "\bin\ffmpeg_p" ssim_cycle ".exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim_" ssim_cycle ".log"" -f null -"
+									Run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,hide
+									ssim_filename_%ssim_cycle% := A_LoopFileName
+									ssim_filepath_%ssim_cycle% := A_LoopFilePath
+									break
+								}
 							}
 						}
 					}
@@ -953,22 +920,15 @@ check_file:
 					{
 						if(check_res_mode = "First File")
 						{
-							c_main_w := img_w
-							c_main_h := img_h
 							c_main_w1 := img_w1
 							c_main_h1 := img_h1
 						}
 						else
 						{
-							c_main_w := check_custom_w
-							c_main_h := check_custom_h
+							c_main_w1 := check_custom_w
+							c_main_h1 := check_custom_h
 						}
 						while(LV_GetCount() >= log_limit)
-						{
-							LV_Delete(1)
-						}
-						LV_Add("","Input Size : " img_w "x" img_h )
-						if(LV_GetCount() >= log_limit)
 						{
 							LV_Delete(1)
 						}
@@ -977,49 +937,25 @@ check_file:
 					c_size_count++
 				}
 			}
-			else if(enable_check_bad = 1)
+			else
 			{
-				if(img_w1>0)
+				while(LV_GetCount() >= log_limit)
 				{
-					while(LV_GetCount() >= log_limit)
-					{
-						LV_Delete(1)
-					}
-					LV_Add("","Bad File : " loop_out_filepath)
-					if(check_action = "Delete")
-					{
-					FileDelete, %loop_out_filepath%
-					LV_Add("","Deleted : " A_LoopFileName)
-					}
-					else if(check_action = "Move")
-					{
-						FileMove, %loop_out_filepath%, %check_action_move_path%\%A_LoopFileName%
-						LV_Add("","Moved : " A_LoopFileName)
-					}
-					damage_count++
+					LV_Delete(1)
 				}
-				else
+				LV_Add("","Bad File : " loop_out_filepath)
+				if(check_action = "Delete")
 				{
-					while(LV_GetCount() >= log_limit)
-					{
-						LV_Delete(1)
-					}
-					LV_Add("","Bad File : " A_LoopFilePath)
-					if(check_action = "Delete")
-					{
-					FileDelete, %A_LoopFilePath%
-					LV_Add("","Deleted : " A_LoopFileName)
-					}
-					else if(check_action = "Move")
-					{
-						FileMove, %A_LoopFilePath%, %check_action_move_path%\%A_LoopFileName%
-						LV_Add("","Moved : " A_LoopFileName)
-					}
-					damage_count++
+				FileDelete, %loop_out_filepath%
+				LV_Add("","Deleted : " A_LoopFileName)
 				}
+				else if(check_action = "Move")
+				{
+					FileMove, %loop_out_filepath%, %check_action_move_path%\%A_LoopFileName%
+					LV_Add("","Moved : " A_LoopFileName)
+				}
+				damage_count++
 			}
-			
-			
 			if(f_count<2000)
 			{
 				per := (l_count/f_count)*100
@@ -1837,6 +1773,10 @@ run_vid_to_pic:
 	run_command5 := ""
 	run_command6 := ""
 	
+	if (SubStr(vp_in_path,-1)="\")
+	{
+		StringTrimRight, vp_in_path, vp_in_path, 1
+	}
 	if (SubStr(vp_out_path,-1)="\")
 	{
 		StringTrimRight, vp_out_path, vp_out_path, 1
@@ -1917,7 +1857,11 @@ run_vid_to_pic:
 		
 		if(output_vid=1)
 		{
-			if(enable_lossless=0)
+			if(enable_lossless=1)
+			{
+				run_command5 .= " -c:v huffyuv"
+			}
+			else
 			{
 				if(c_420=1)
 				{
@@ -1948,10 +1892,7 @@ run_vid_to_pic:
 				
 				run_command5 .= " -preset " enc_preset
 			}
-			else
-			{
-				run_command5 .= " -c:v huffyuv"
-			}
+
 			
 			
 			
