@@ -1879,7 +1879,7 @@ run_vid_to_pic:
 	
 	if(enable_th_mode = 1)
 	{
-		attribute := "fps=" t_fps "/" t_fpsx """"
+		attribute := "fps=" t_fps "/" t_fpsx
 		run_command4 .= add_filter(attribute)
 	}
 	
