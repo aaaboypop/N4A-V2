@@ -15,7 +15,6 @@ vp_out_path := ""
 pv_in_path := ""
 pv_in_audio := ""
 pv_out_path := ""
-config_ext1 := ".mp4"
 config_ext2 := ".jpg"
 config_ext3 := ".mp4"
 config_ext4 := ".jpg"
@@ -231,8 +230,6 @@ Gui, Add, Text, x162 y289 w80 h20 vresize_x, x
 Gui, Add, Edit, x172 y289 w60 h20 vresize_h ggui_update, 
 Gui, Add, DropDownList, x92 y319 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
 Gui, Add, Button, x272 y179 w30 h20 gvid_to_pic_out_audio, ...
-Gui, Add, Text, x12 y359 w70 h20 right, Input Ext :
-Gui, Add, DropDownList, x92 y359 w50 h21 vconfig_ext1 r12 ggui_update, .3gp|.avi|.f4v|.flv|.m2ts|.m4v|.mp4||.mkv|.wmv|.mov|.vob
 Gui, Add, Text, x12 y379 w70 h20 right, Output Ext :
 Gui, Add, DropDownList, x92 y379 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
 Gui, Add, button, x12 y429 w150 h20 vb_start2 grun_vid_to_pic, Start
@@ -527,6 +524,62 @@ console_log:
 	
 	clipboard := var1
 }
+
+
+GuiDropFiles:
+{
+	StringSplit, drop_filepath, A_GuiEvent, `n
+	SplitPath, drop_filepath1,, dir, ext
+	 
+	if(ext="")
+	{
+		drop_folderpath := drop_filepath1
+	}
+	else
+	{
+		drop_folderpath := dir
+	}
+	drop_focus = %A_GuiControl%
+	
+	if(drop_focus = "in_path")
+		dd_path("d")
+	else if(drop_focus = "out_path")
+		dd_path("d")
+	else if(drop_focus = "in_pathv")
+		dd_path("d")
+	else if(drop_focus = "out_pathv")
+		dd_path("d")
+	else if(drop_focus = "pv_in_path")
+		dd_path("d")
+	else if(drop_focus = "pv_out_path")
+		dd_path("d")
+	else if(drop_focus = "vp_out_path")
+		dd_path("d")
+	else if(drop_focus = "audio_out_path")
+		dd_path("d")
+	
+	else if(drop_focus = "vp_in_path")
+		dd_path("f")
+	else if(drop_focus = "pv_in_audio")
+		dd_path("f")
+}
+Return
+
+dd_path(var1)
+{
+	global drop_focus
+	global drop_filepath1
+	global drop_folderpath
+	if(var1 = "f")
+	{
+		GuiControl,,%drop_focus%,%drop_filepath1%
+	}
+	else
+	{
+		GuiControl,,%drop_focus%,%drop_folderpath%
+	}
+}
+
 
 add_filter(var1)
 {
@@ -1680,7 +1733,7 @@ Return
 vid_to_pic_in_folder:
 {
 	Thread, NoTimers
-	FileSelectFolder, vp_in_path,, 3
+	FileSelectFile, vp_in_path
 	Thread, NoTimers, false
 	GuiControl,,vp_in_path,%vp_in_path%
 }
@@ -1773,161 +1826,159 @@ run_vid_to_pic:
 	run_command5 := ""
 	run_command6 := ""
 	
-	if (SubStr(vp_in_path,-1)="\")
-	{
-		StringTrimRight, vp_in_path, vp_in_path, 1
-	}
+	SplitPath, vp_in_path, in_name_ext, in_dir, in_ext, in_name
+	
 	if (SubStr(vp_out_path,-1)="\")
 	{
 		StringTrimRight, vp_out_path, vp_out_path, 1
 	}
-	
-	loopc := vp_in_path "\*" config_ext1
-	Loop, Files, %loopc%, F
+
+
+	if(output_pic=1)
 	{
-		in_len := StrLen(A_LoopFileExt)+1
-		StringTrimRight, filename, A_LoopFileName, in_len
-		IfNotExist, %vp_out_path%\%filename%
+		IfNotExist, %audio_out_path%
 		{
-			FileCreateDir, %vp_out_path%\%filename%
+			FileCreateDir, %audio_out_path%
 		}
 		
-		if(output_pic=1)
+		IfNotExist, %vp_out_path%\%in_name%
 		{
-			IfNotExist, %audio_out_path%
-			{
-				FileCreateDir, %audio_out_path%
-			}
+			FileCreateDir, %vp_out_path%\%in_name%
+		}
+	}
+	else
+	{
+		IfNotExist, %vp_out_path%
+		{
+			FileCreateDir, %vp_out_path%
+		}
+	}
+	run_command .= """" A_WorkingDir "\bin\ffmpeg.exe"""
+	run_command2 .= " -i """ vp_in_path """"
+	
+	if(enable_deinterlace = 1)
+	{
+		attribute := "yadif=" deinter_m ":" deinter_f
+		run_command4 .= add_filter(attribute)
+	}
+	
+	if(enable_decimate = 1)
+	{
+		attribute := "decimate=cycle=5,setpts=N/23.976/TB"
+		run_command4 .= add_filter(attribute)
+	}
+	
+	
+	
+	if(convert_enable = 1)
+	{
+		run_command3 .= " -vsync 1"
+		attribute := "fps=" convert_fps
+		run_command4 .= add_filter(attribute)
+	}
+	
+	if(enable_th_mode = 1)
+	{
+		attribute := "fps=" t_fps "/" t_fpsx """"
+		run_command4 .= add_filter(attribute)
+	}
+	
+	if(enable_resize = 1)
+	{
+		attribute := "scale=" resize_w ":" resize_h
+		run_command4 .= add_filter(attribute)
+		run_command5 .= " -sws_flags " t_scale1
+	}
+	
+	
+	
+	if(filter_count>0)
+	{
+		run_command4 .= """"
+	}
+	
+	if(config_ext2 = ".jpg")
+	{
+		run_command5 .= " -q:v " vp_quality
+	}
+	
+	if(output_vid=1)
+	{
+		if(enable_lossless=1)
+		{
+			run_command5 .= " -c:v huffyuv"
 		}
 		else
 		{
-			IfNotExist, %vp_out_path%
+			if(c_420=1)
 			{
-				FileCreateDir, %vp_out_path%
+				run_command5 .= " -pix_fmt yuv420p"
 			}
-		}
-		run_command .= """" A_WorkingDir "\bin\ffmpeg.exe"""
-		run_command2 .= " -i """ A_LoopFilePath """"
-		
-		if(enable_deinterlace = 1)
-		{
-			attribute := "yadif=" deinter_m ":" deinter_f
-			run_command4 .= add_filter(attribute)
-		}
-		
-		if(enable_decimate = 1)
-		{
-			attribute := "decimate=cycle=5,setpts=N/23.976/TB"
-			run_command4 .= add_filter(attribute)
-		}
-		
-		
-		
-		if(convert_enable = 1)
-		{
-			run_command3 .= " -vsync 1"
-			attribute := "fps=" convert_fps
-			run_command4 .= add_filter(attribute)
-		}
-		
-		if(enable_th_mode = 1)
-		{
-			attribute := "fps=" t_fps "/" t_fpsx """"
-			run_command4 .= add_filter(attribute)
-		}
-		
-		if(enable_resize = 1)
-		{
-			attribute := "scale=" resize_w ":" resize_h
-			run_command4 .= add_filter(attribute)
-			run_command5 .= " -sws_flags " t_scale1
-		}
-		
-		
-		
-		if(filter_count>0)
-		{
-			run_command4 .= """"
-		}
-		
-		if(config_ext2 = ".jpg")
-		{
-			run_command5 .= " -q:v " vp_quality
-		}
-		
-		if(output_vid=1)
-		{
-			if(enable_lossless=1)
+			else if(c_422=1)
 			{
-				run_command5 .= " -c:v huffyuv"
+				run_command5 .= " -pix_fmt yuv422p"
 			}
 			else
 			{
-				if(c_420=1)
-				{
-					run_command5 .= " -pix_fmt yuv420p"
-				}
-				else if(c_422=1)
-				{
-					run_command5 .= " -pix_fmt yuv422p"
-				}
-				else
-				{
-					run_command5 .= " -pix_fmt yuv444p"
-				}
-				
-				if(c_10b=1)
-				{
-					run_command5 .= "10le"
-				}
-				
-				if(cqp_s1=1)
-				{
-					run_command5 .= " -qp " cqp_value1
-				}
-				else if(crf_s1=1)
-				{
-					run_command5 .= " -crf " crf_value1
-				}
-				
-				run_command5 .= " -preset " enc_preset
+				run_command5 .= " -pix_fmt yuv444p"
 			}
-
 			
-			
-			
-			if(enable_a_aac=1)
+			if(c_10b=1)
 			{
-				run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
+				run_command5 .= "10le"
 			}
-			else
+			
+			if(cqp_s1=1)
 			{
-				run_command5 .= " -an"
+				run_command5 .= " -qp " cqp_value1
 			}
+			else if(crf_s1=1)
+			{
+				run_command5 .= " -crf " crf_value1
+			}
+			
+			run_command5 .= " -preset " enc_preset
 		}
+			
 		
 		
-		
-		
-		run_command6 .= " """ vp_out_path "\"
-		
-		if(output_pic=1)
+		if(enable_a_aac=1)
 		{
-			run_command6 .= filename "\image%06d" config_ext2 """"
-		}else
-		{
-			run_command6 .= filename config_ext2 """"
+			run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
 		}
-		
-		if(audio_extract = 1)
+		else
 		{
-			run_command6 .= " """ audio_out_path "\" filename ".wav"""
+			run_command5 .= " -an"
 		}
-		
-		run_command .= run_command1 run_command2 run_command3 run_command4 run_command5 run_command6
-		gosub,log_console
-		RunWait,  %run_command%, ,
 	}
+	
+	
+	
+	
+	run_command6 .= " """ vp_out_path "\"
+	
+	if(output_pic=1)
+	{
+		run_command6 .= in_name "\image%06d" config_ext2 """"
+	}
+	else
+	{
+		out_name := in_name
+		ifExist, %vp_out_path%\%in_name%%config_ext2%
+		{
+			out_name .= "_1" 
+		}
+		run_command6 .= out_name config_ext2 """"
+	}
+	
+	if(audio_extract = 1)
+	{
+		run_command6 .= " """ audio_out_path "\" in_name ".wav"""
+	}
+	
+	run_command .= run_command1 run_command2 run_command3 run_command4 run_command5 run_command6
+	gosub,log_console
+	RunWait,  %run_command%, ,
 	MsgBox, Finished!
 }
 Return
