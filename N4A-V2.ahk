@@ -201,7 +201,7 @@ Gui, Add, Text, x22 y509 w70 h20 vs_sv, Ready ..
 
 
 Gui, Tab, Video Input
-Gui, Add, Text, x12 y29 w70 h20 , Input Folder :
+Gui, Add, Text, x12 y29 w70 h20 , Input File :
 Gui, Add, Edit, x92 y29 w180 h20 vvp_in_path ggui_update, %vp_in_path%
 Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
 Gui, Add, Edit, x92 y49 w180 h20 vvp_out_path ggui_update, %vp_out_path%
