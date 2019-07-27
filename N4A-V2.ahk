@@ -206,11 +206,11 @@ Gui, Add, Edit, x92 y29 w180 h20 vvp_in_path ggui_update, %vp_in_path%
 Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
 Gui, Add, Edit, x92 y49 w180 h20 vvp_out_path ggui_update, %vp_out_path%
 
-Gui, Add, GroupBox, x312 y29 w380 h60 , Output Type
-Gui, Add, Radio, x322 y49 w100 h30 Checked voutput_pic galt_guiupdate, Picture
-Gui, Add, Radio, x432 y49 w100 h30 voutput_vid galt_guiupdate, Video
+Gui, Add, GroupBox, x312 y29 w200 h60 , Output Type
+Gui, Add, Radio, x322 y49 w60 h30 Checked voutput_pic galt_guiupdate, Picture
+Gui, Add, Radio, x432 y49 w60 h30 voutput_vid galt_guiupdate, Video
 
-Gui, Add, GroupBox, x2 y99 w890 h360 , Setting
+Gui, Add, GroupBox, x7 y99 w890 h360 , Setting
 Gui, Add, Button, x272 y29 w30 h20 gvid_to_pic_in_folder, ...
 Gui, Add, Button, x272 y49 w30 h20 gvid_to_pic_out_folder, ...
 Gui, Add, CheckBox, x12 y129 w190 h20 vconvert_enable Checked ggui_update, Convert to Constant Frame Rate
@@ -230,8 +230,8 @@ Gui, Add, Text, x162 y289 w80 h20 vresize_x, x
 Gui, Add, Edit, x172 y289 w60 h20 vresize_h ggui_update, 
 Gui, Add, DropDownList, x92 y319 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
 Gui, Add, Button, x272 y179 w30 h20 gvid_to_pic_out_audio, ...
-Gui, Add, Text, x12 y379 w70 h20 right, Output Ext :
-Gui, Add, DropDownList, x92 y379 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
+Gui, Add, Text, x652 y57 w70 h20 right, Output Ext :
+Gui, Add, DropDownList, x742 y55 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
 Gui, Add, button, x12 y429 w150 h20 vb_start2 grun_vid_to_pic, Start
 
 Gui, Add, GroupBox, x352 y119 w330 h110 , Deinterlace
@@ -249,7 +249,12 @@ Gui, Add, Edit, x442 y269 w40 h20 vcqp_value1 ggui_update, 18
 Gui, Add, Edit, x442 y289 w40 h20 vcrf_value1 ggui_update, 18
 Gui, Add, Text, x372 y339 w60 h20 , Preset :
 Gui, Add, DropDownList, x422 y339 w120 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
-Gui, Add, CheckBox, x372 y379 w240 h20 venable_a_aac ggui_update, Audio Encode : High Quality AAC-LC
+Gui, Add, CheckBox, x372 y379 w60 h20 venable_audio ggui_update, Audio
+Gui, Add, Radio, x432 y379 w60 h20 venable_a_aac ggui_update, AAC
+Gui, Add, Radio, x492 y379 w60 h20 venable_a_ogg ggui_update, OGG
+Gui, Add, Radio, x562 y379 w60 h20 venable_a_pcm Checked ggui_update, PCM
+Gui, Add, Radio, x622 y379 w60 h20 venable_a_copy ggui_update, Copy
+
 Gui, Add, GroupBox, x692 y119 w190 h100 , Color
 Gui, Add, Radio, x712 y139 w70 h20 vc_420 Checked ggui_update, YUV420
 Gui, Add, Radio, x712 y159 w70 h20 vc_422 ggui_update, YUV422
@@ -257,7 +262,6 @@ Gui, Add, Radio, x712 y179 w70 h20 vc_444 ggui_update, YUV444
 
 Gui, Add, Radio, x802 y139 w70 h20 vc_8b Group Checked ggui_update, 8 Bit
 Gui, Add, Radio, x802 y159 w70 h20 vc_10b ggui_update, 10 Bit
-;Gui, Add, CheckBox, x572 y269 w100 h40 venable_lossless ggui_update, Lossless
 
 Gui, Tab, Image Input
 Gui, Add, Text, x12 y29 w70 h20 , Input Folder :
@@ -286,7 +290,6 @@ Gui, Add, Button, x272 y29 w30 h20 gpic_to_vid_in_folder, ...
 Gui, Add, Button, x272 y99 w30 h20 gpic_to_vid_in_audio, ...
 Gui, Add, Button, x272 y49 w30 h20 gpic_to_vid_out_folder, ...
 Gui, Add, button, x12 y379 w150 h20 vb_start3 grun_pic_to_vid, Start
-
 
 
 Gui, Tab, Waifu2X CUDA
@@ -1786,10 +1789,10 @@ run_pic_to_vid:
 			video_c2 := " -i """ pv_in_path "\" out_filename "%06d." A_LoopFileExt """"
 			if(cqp_s=1)
 			{
-				quality_control = "-cqp " cqp_value
+				quality_control := "-qp " cqp_value
 			}else if(crf_s=1)
 			{
-				quality_control = "-crf " crf_value
+				quality_control := "-crf " crf_value
 			}
 			video_c3 := " -c:v libx264 -vf fps=" fps " -pix_fmt yuv420p " quality_control " " ex_command
 			video_c4 := " """ pv_out_path "\" out_filename config_ext4 """"
@@ -1942,9 +1945,16 @@ run_vid_to_pic:
 			
 		
 		
-		if(enable_a_aac=1)
+		if(enable_audio=1)
 		{
-			run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
+			if(enable_a_aac=1)
+				run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
+			else if(enable_a_ogg=1)
+				run_command5 .= " -codec:a libvorbis -aq 10"
+			else if(enable_a_pcm=1)
+				run_command5 .= " -codec:a pcm_s16le"
+			else if(enable_a_copy=1)
+				run_command5 .= " -codec:a copy"
 		}
 		else
 		{
@@ -1988,6 +1998,7 @@ Return
 run_startv:
 {
 	i:=1
+	batch_count0 := 0
 	process_limitv := 8
 	while(i<=8)
 	{
@@ -2100,6 +2111,15 @@ run_startv:
 					}
 					Continue
 				}
+				else IfExist, %out_pathv%\%out_filename%.jpg.png
+				{
+					last_files_svkiping += 1
+					if(last_files_svkiping = 1)
+					{
+						GuiControl,,f_ppv,Skipping..
+					}
+					Continue
+				}
 				else
 				{
 					last_files_svkiping := 0
@@ -2124,20 +2144,13 @@ run_startv:
 					continue
 				}
 				
-				IfNotExist %in_pathv%\temp\%fill_buuffer%_buffer
-				{
+				if(batch_count%fill_buuffer% = 0)
 					FileCreateDir, %in_pathv%\temp\%fill_buuffer%_buffer
-				}
-				
-				batch_count%fill_buuffer% := 0
-				Loop, Files, %in_pathv%\temp\%fill_buuffer%_buffer\*.*, F
-				{
-					batch_count%fill_buuffer%++
-				}
 				
 				if(batch_count%fill_buuffer% < batch_size)
 				{
 					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
+					batch_count%fill_buuffer%++
 					test_count++
 					if(p_count<f_count)
 					{
@@ -2148,8 +2161,8 @@ run_startv:
 				else
 				{
 					next_loop := 0
+					continue
 				}
-
 			}
 			
 			if(A_index = f_count)
@@ -2191,6 +2204,7 @@ run_startv:
 					{
 						FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
 						FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
+						batch_count%p_cycle% := 0
 						run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
 						run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
 						
