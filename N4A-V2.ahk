@@ -705,7 +705,8 @@ media_load:
 		}
 		else
 		{
-			msgbox,% "Filter is Not support Variable Frame rate mode"
+			msgbox,% "Frame Rate Mode : Variable`n" fpsc1 / fpsc2 " FPS"
+			;msgbox,% "Filter is Not support Variable Frame rate mode"
 			cfr := 0
 			vfr := 1
 		}
