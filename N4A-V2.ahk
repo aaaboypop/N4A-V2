@@ -85,7 +85,7 @@ Loop, Files, %A_WorkingDir%\models\*info.json, FR
 
 StringReplace, model_list, model_list, |ukbench , , All
 
-Gui, Add, Tab3, x2 y0 w900 h570 vcurrent_tab ggui_update, Video Input|Image Input|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
+Gui, Add, Tab3, x2 y0 w900 h570 vcurrent_tab ggui_update, Media|Waifu2X CUDA|Test Mode|Waifu2X Vulkan|Console Log
 Gui, Color, FFFFFF
 
 Gui, Tab, Waifu2X Vulkan
@@ -200,96 +200,83 @@ Gui, Add, Text, x22 y509 w70 h20 vs_sv, Ready ..
 
 
 
-Gui, Tab, Video Input
+Gui, Tab, Media
 Gui, Add, Text, x12 y29 w70 h20 , Input File :
-Gui, Add, Edit, x92 y29 w180 h20 vvp_in_path ggui_update, %vp_in_path%
+Gui, Add, Edit, x92 y29 w180 h20 Readonly vvp_in_path ggui_update, 
 Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
-Gui, Add, Edit, x92 y49 w180 h20 vvp_out_path ggui_update, %vp_out_path%
-
-Gui, Add, GroupBox, x312 y29 w200 h60 , Output Type
-Gui, Add, Radio, x322 y49 w60 h30 Checked voutput_pic galt_guiupdate, Picture
-Gui, Add, Radio, x432 y49 w60 h30 voutput_vid galt_guiupdate, Video
-
-Gui, Add, GroupBox, x7 y99 w890 h360 , Setting
+Gui, Add, Edit, x92 y49 w180 h20 Readonly vvp_out_path ggui_update, 
+Gui, Add, GroupBox, x552 y29 w340 h50 , Output Type
+Gui, Add, Radio, x562 y49 w60 h20 Checked voutput_pic galt_guiupdate, Picture
+Gui, Add, Radio, x622 y49 w60 h20 voutput_vid galt_guiupdate, Video
+Gui, Add, Radio, x682 y49 w60 h20 voutput_audio galt_guiupdate, Audio
+Gui, Add, GroupBox, x2 y79 w890 h470 , Setting
 Gui, Add, Button, x272 y29 w30 h20 gvid_to_pic_in_folder, ...
 Gui, Add, Button, x272 y49 w30 h20 gvid_to_pic_out_folder, ...
-Gui, Add, CheckBox, x12 y129 w190 h20 vconvert_enable Checked ggui_update, Convert to Constant Frame Rate
-Gui, Add, DropDownList, x212 y129 w60 h21 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120
-Gui, Add, CheckBox, x12 y159 w160 h20 vaudio_extract Checked ggui_update, Extract Audio
-Gui, Add, Text, x12 y179 w70 h20 , Output Audio :
-Gui, Add, Edit, x92 y179 w180 h20 vaudio_out_path ggui_update, %vp_out_path%
-Gui, Add, Text, x12 y219 w70 h20 , JPG Quality :
-Gui, Add, Slider, x92 y219 w180 h30 vvp_quality Range1-31 ggui_update, 1
-Gui, Add, Text, x272 y229 w20 h20 vvp_quality_show, 1
-Gui, Add, CheckBox, x12 y259 w80 h20 venable_th_mode ggui_update, Thumbnail :
-Gui, Add, Edit, x92 y259 w180 h20 vt_fps ggui_update, 1
-Gui, Add, DropDownList, x272 y259 w60 h20 vt_fps_mode r8 ggui_update, 1 sec|1 min||10 min|1 hours
-Gui, Add, CheckBox, x12 y289 w80 h20 venable_resize ggui_update, Resize :
-Gui, Add, Edit, x92 y289 w60 h20 vresize_w ggui_update, 
-Gui, Add, Text, x162 y289 w80 h20 vresize_x, x
-Gui, Add, Edit, x172 y289 w60 h20 vresize_h ggui_update, 
-Gui, Add, DropDownList, x92 y319 w220 h21 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
-Gui, Add, Button, x272 y179 w30 h20 gvid_to_pic_out_audio, ...
-Gui, Add, Text, x652 y57 w70 h20 right, Output Ext :
-Gui, Add, DropDownList, x742 y55 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
-Gui, Add, button, x12 y429 w150 h20 vb_start2 grun_vid_to_pic, Start
+Gui, Add, CheckBox, x12 y99 w190 h20 vconvert_enable ggui_update, Convert to Constant Frame Rate
+Gui, Add, DropDownList, x212 y99 w60 h20 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120
+Gui, Add, Text, x272 y159 w20 h20 vvp_quality_show, 1
+Gui, Add, CheckBox, x12 y189 w80 h20 venable_th_mode ggui_update, Thumbnail :
+Gui, Add, Edit, x92 y189 w150 h20 vt_fps ggui_update, 1
+Gui, Add, DropDownList, x242 y189 w60 h20 vt_fps_mode r8 ggui_update, 1 sec|1 min||10 min|1 hours
+Gui, Add, CheckBox, x12 y219 w80 h20 venable_resize ggui_update, Resize :
+Gui, Add, Edit, x92 y219 w50 h20 vresize_w ggui_update, 
+Gui, Add, Text, x142 y219 w10 h20 vresize_x, x
+Gui, Add, Edit, x152 y219 w50 h20 vresize_h ggui_update, 
+Gui, Add, DropDownList, x202 y219 w100 h20 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
+Gui, Add, Text, x752 y49 w60 h20 right, Output Ext :
+Gui, Add, DropDownList, x812 y49 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
+Gui, Add, button, x12 y519 w150 h20 vb_start2 grun_vid_to_pic, Start
+Gui, Add, button, x172 y519 w150 h20 ggui2 Disabled, Show Script
+Gui, Add, GroupBox, x312 y99 w140 h90 , Deinterlace
+Gui, Add, CheckBox, x322 y219 w60 h20 venable_ss ggui_update, Start :
+Gui, Add, CheckBox, x322 y249 w60 h20 venable_to ggui_update, End :
+Gui, Add, Edit, x382 y219 w110 h20 vtime_ss ggui_update, 00:00:00
+Gui, Add, Edit, x382 y249 w110 h20 vtime_to ggui_update, 00:00:00
+Gui, Add, Text, x322 y139 w60 h20 , Mode :
+Gui, Add, Text, x322 y159 w60 h20 , Field :
+Gui, Add, DropDownList, x382 y139 w60 h10 r4 vdeinter_mode ggui_update, Frame||Field
+Gui, Add, DropDownList, x382 y159 w60 h10 r2 vdeinter_field ggui_update, Top||Bottom
+Gui, Add, CheckBox, x12 y249 w290 h20 venable_decimate ggui_update, Remove Duplicate Frame [Anime Preset 29.970 > 23.976]
+Gui, Add, Radio, x542 y119 w60 h20 vcqp_s1 Group Checked ggui_update, CQP :
+Gui, Add, Radio, x542 y139 w60 h20 vcrf_s1 ggui_update, CRF :
+Gui, Add, Edit, x602 y119 w40 h20 vcqp_value1 ggui_update, 18
+Gui, Add, Edit, x602 y139 w40 h20 vcrf_value1 ggui_update, 18
+Gui, Add, Text, x472 y159 w40 h20 , Preset :
+Gui, Add, DropDownList, x532 y159 w110 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
+Gui, Add, CheckBox, x522 y219 w60 h20 venable_audio Checked ggui_update, Audio
+Gui, Add, Radio, x592 y219 w50 h20 venable_a_aac ggui_update, AAC
+Gui, Add, Radio, x642 y219 w50 h20 venable_a_ogg ggui_update, OGG
+Gui, Add, Radio, x702 y219 w50 h20 venable_a_mp3 ggui_update, MP3
+Gui, Add, Radio, x752 y219 w50 h20 venable_a_pcm Checked ggui_update, PCM
+Gui, Add, Radio, x802 y219 w50 h20 venable_a_copy ggui_update, Copy
+Gui, Add, CheckBox, x522 y249 w60 h20 venable_add_audio ggui_update, Add
+Gui, Add, Edit, x592 y249 w250 h20 vadd_audio_path ggui_update, 
+Gui, Add, Button, x842 y249 w30 h20 gadd_audio_file, ...
 
-Gui, Add, GroupBox, x352 y119 w330 h110 , Deinterlace
-Gui, Add, CheckBox, x372 y139 w160 h20 venable_deinterlace ggui_update, Deinterlace
-Gui, Add, Text, x372 y169 w60 h20 , Mode :
-Gui, Add, Text, x372 y199 w60 h20 , Field :
-Gui, Add, DropDownList, x432 y169 w100 h10 r4 vdeinter_mode ggui_update, Frame||Field
-Gui, Add, DropDownList, x432 y199 w100 h20 r2 vdeinter_field ggui_update, Top||Bottom
+Gui, Add, GroupBox, x692 y99 w190 h90 , Color
+Gui, Add, Radio, x702 y119 w70 h20 vc_420 Checked ggui_update, YUV420
+Gui, Add, Radio, x702 y139 w70 h20 vc_422 ggui_update, YUV422
+Gui, Add, Radio, x702 y159 w70 h20 vc_444 ggui_update, YUV444
+Gui, Add, Radio, x802 y119 w70 h20 vc_8b Group Checked ggui_update, 8 Bit
+Gui, Add, Radio, x802 y139 w70 h20 vc_10b ggui_update, 10 Bit
+Gui, Add, Text, x12 y159 w70 h20 , JPG Quality :
+Gui, Add, Slider, x92 y159 w180 h20 vvp_quality Range1-31 ggui_update, 1
+Gui, Add, GroupBox, x312 y199 w190 h80 , Trim
+Gui, Add, GroupBox, x512 y199 w370 h80 , Audio
+Gui, Add, GroupBox, x462 y99 w220 h90 , Video Encoder
+Gui, Add, Radio, x472 y119 w50 h20 venc_264 Checked ggui_update, x264
+Gui, Add, Radio, x472 y139 w50 h20 venc_265 ggui_update, x265
+Gui, Add, CheckBox, x12 y279 w110 h20 Disabled, Enable Filter
+Gui, Add, GroupBox, x12 y299 w870 h210 , Filter
+Gui, Add, DropDownList, x22 y319 w150 h20 Disabled r12, Sharpen|DeHalo|AntiAliasing|Resizer|Line Darker
+Gui, Add, Button, x172 y319 w50 h20 , Add
+Gui, Add, Button, x222 y319 w50 h20 , Modify
+Gui, Add, Button, x272 y319 w50 h20 , Delete
+Gui, Add, ListView, x322 y309 w550 h190 vedit_script, Filter|Data
+Gui, Add, Button, x282 y459 w40 h20 , up
+Gui, Add, Button, x282 y479 w40 h20 , down
 
-Gui, Add, CheckBox, x372 y239 w300 h20 venable_decimate ggui_update, Remove Duplicate Frame [Anime Preset 29.970 > 23.976]
 
-Gui, Add, Radio, x372 y269 w60 h20 vcqp_s1 Group Checked ggui_update, CQP :
-Gui, Add, Radio, x372 y289 w60 h20 vcrf_s1 ggui_update, CRF :
-Gui, Add, Edit, x442 y269 w40 h20 vcqp_value1 ggui_update, 18
-Gui, Add, Edit, x442 y289 w40 h20 vcrf_value1 ggui_update, 18
-Gui, Add, Text, x372 y339 w60 h20 , Preset :
-Gui, Add, DropDownList, x422 y339 w120 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
-Gui, Add, CheckBox, x372 y379 w60 h20 venable_audio ggui_update, Audio
-Gui, Add, Radio, x432 y379 w60 h20 venable_a_aac ggui_update, AAC
-Gui, Add, Radio, x492 y379 w60 h20 venable_a_ogg ggui_update, OGG
-Gui, Add, Radio, x562 y379 w60 h20 venable_a_pcm Checked ggui_update, PCM
-Gui, Add, Radio, x622 y379 w60 h20 venable_a_copy ggui_update, Copy
-
-Gui, Add, GroupBox, x692 y119 w190 h100 , Color
-Gui, Add, Radio, x712 y139 w70 h20 vc_420 Checked ggui_update, YUV420
-Gui, Add, Radio, x712 y159 w70 h20 vc_422 ggui_update, YUV422
-Gui, Add, Radio, x712 y179 w70 h20 vc_444 ggui_update, YUV444
-
-Gui, Add, Radio, x802 y139 w70 h20 vc_8b Group Checked ggui_update, 8 Bit
-Gui, Add, Radio, x802 y159 w70 h20 vc_10b ggui_update, 10 Bit
-
-Gui, Tab, Image Input
-Gui, Add, Text, x12 y29 w70 h20 , Input Folder :
-Gui, Add, Edit, x92 y29 w180 h20 vpv_in_path ggui_update, %pv_in_path%
-Gui, Add, CheckBox, x12 y79 w90 h20 vadd_audio Checked ggui_update, Audio
-Gui, Add, Text, x12 y99 w70 h20 , Input Audio :
-Gui, Add, Edit, x92 y99 w180 h20 vpv_in_audio ggui_update, %pv_in_audio%
-Gui, Add, Text, x12 y49 w70 h20 , Output Folder :
-Gui, Add, Edit, x92 y49 w180 h20 vpv_out_path ggui_update, %pv_out_path%
-
-Gui, Add, Radio, x12 y129 w70 h20 vcqp_s Group Checked ggui_update, CQP :
-Gui, Add, Radio, x12 y149 w70 h20 vcrf_s ggui_update, CRF :
-
-Gui, Add, Edit, x92 y129 w180 h20 vcqp_value ggui_update, 18
-Gui, Add, Edit, x92 y149 w180 h20 vcrf_value ggui_update, %crf%
-
-Gui, Add, Text, x12 y169 w70 h20 , Frame Rate :
-Gui, Add, Edit, x92 y169 w180 h20 vfps ggui_update, %fps%
-Gui, Add, Text, x332 y29 w70 h20 , Extra :
-Gui, Add, Edit, x382 y29 w180 h20 vex_command ggui_update, %ex_command%
-Gui, Add, Text, x12 y309 w70 h20 right, Input Ext :
-Gui, Add, DropDownList, x92 y309 w50 h21 vconfig_ext3 r8 ggui_update, .jpg||.png|.bmp
-Gui, Add, Text, x12 y329 w70 h20 right, Output Ext :
-Gui, Add, DropDownList, x92 y329 w50 h21 vconfig_ext4 r8 ggui_update, .mp4||.mkv|.wma|.flv|.mov
-Gui, Add, Button, x272 y29 w30 h20 gpic_to_vid_in_folder, ...
-Gui, Add, Button, x272 y99 w30 h20 gpic_to_vid_in_audio, ...
-Gui, Add, Button, x272 y49 w30 h20 gpic_to_vid_out_folder, ...
-Gui, Add, button, x12 y379 w150 h20 vb_start3 grun_pic_to_vid, Start
 
 
 Gui, Tab, Waifu2X CUDA
@@ -520,6 +507,7 @@ while(i<=3)
 Gui, Show, x413 y187 h560 w900, N4A-V2
 goto, gui_update
 Return
+
 console_log:
 {
 	LastEventInfo := LV_GetNext(0, "F")
@@ -527,7 +515,210 @@ console_log:
 	
 	clipboard := var1
 }
+Return
 
+gui2:
+{
+	Gui, 2:destroy
+	Gui, 2:Add,Button, x2 y2 h20 w60 ggui2_r,Refresh
+	Gui, 2:Add,Edit, x2 y22 h696 w596 Readonly vshow_script,
+	Gui, 2:Show, h720 w600, Filter Script
+}
+Return
+
+gui2_r:
+{
+	s_script := load_script0()
+	GuiControl,,show_script,% s_script
+}
+Return
+
+2GuiClose:
+{
+	Gui, 2:destroy
+}
+Return
+
+load_script1()
+{
+	hybrid_path := "C:/Program Files/Hybrid/64bit"
+	source_path := StrReplace(vp_in_path, "\", "/")
+			
+	s_script := ""
+	s_script .= "import os" "`n"
+	s_script .= "import sys" "`n"
+	s_script .= "import vapoursynth as vs" "`n"
+	s_script .= "core = vs.get_core()" "`n"
+	s_script .= "scriptPath = '" hybrid_path "/vsscripts'" "`n"
+	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI3.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI2.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/fmtconv.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll"")" "`n"
+	s_script .= "import havsfunc" "`n"
+	s_script .= "import mvsfunc" "`n"
+	s_script .= "import edi_rpow2" "`n"
+	s_script .= "import hysteria" "`n"
+	s_script .= "import G41Fun" "`n"
+	
+	Return s_script
+}
+
+load_script2()
+{
+	hybrid_path := "C:/Program Files/Hybrid/64bit"
+	source_path := StrReplace(vp_in_path, "\", "/")
+			
+	s_script := ""
+	s_script .= "import os" "`n"
+	s_script .= "import sys" "`n"
+	s_script .= "import vapoursynth as vs" "`n"
+	s_script .= "core = vs.get_core()" "`n"
+	s_script .= "scriptPath = '" hybrid_path "/vsscripts'" "`n"
+	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI3.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI2.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/fmtconv.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/SourceFilter/Imagemagick/libimwri.dll"")" "`n"
+	s_script .= "import havsfunc" "`n"
+	s_script .= "import mvsfunc" "`n"
+	s_script .= "import edi_rpow2" "`n"
+	s_script .= "import hysteria" "`n"
+	s_script .= "import G41Fun" "`n"
+	
+	Return s_script
+}
+
+
+load_script0()
+{
+	global media_load
+	global s_path
+	global load_fullpath
+	global fpsc1
+	global fpsc2
+	global cfr
+	global vfr
+	global image_input
+	global load_image_count
+	global load_ext
+	global convert_fps_num
+	global convert_fps_den
+	global convert_enable
+	
+	if(media_load=1)
+	{
+		if(image_input=1)
+		{
+			s_script := load_script2()
+			s_path_dir := StrReplace(load_fullpath, "\","/")
+			s_script .= "clip = core.imwri.Read(""" s_path_dir "/image%06d." load_ext """, firstnum=1)" "`n"
+			s_script .= "clip = core.std.Trim(clip=clip, length=" load_image_count ")" "`n"
+			s_script .= "clip = core.std.AssumeFPS(clip, fpsnum=" convert_fps_num ", fpsden=" convert_fps_den ")" "`n"
+		}
+		else
+		{
+			s_script := load_script1()
+			
+			if(cfr=1)
+				s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0)" "`n"
+			if(vfr=1)
+			{
+				if(convert_enable=1)
+				{
+					s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0, fpsnum=" convert_fps_num ", fpsden=" convert_fps_den ")" "`n"
+				}
+				else
+				{
+					s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0, fpsnum=" fpsc1 ", fpsden=" fpsc2 ")" "`n"
+				}
+			}
+			s_script .= s1_script
+			s_script .= "clip = core.resize.Point(clip, matrix_in_s=""unspec"",range_s=""limited"")" "`n"
+			
+			if(convert_enable=1 and vfr=1)
+			{
+				s_script .= "clip = core.std.AssumeFPS(clip, fpsnum=" convert_fps_num ", fpsden=" convert_fps_den ")" "`n"
+			}
+			else
+			{
+				s_script .= "clip = core.std.AssumeFPS(clip, fpsnum=" fpsc1 ", fpsden=" fpsc2 ")" "`n"
+			}
+			
+			s_script .= "clip = core.std.SetFrameProp(clip=clip, prop=""_ColorRange"", intval=1)" "`n"
+		}
+		
+		s_script .= "clip.set_output()"
+		Return s_script
+	}
+	
+}
+
+media_load:
+{
+	media_load := 1
+	image_input := 0
+	load_image_count := 0
+	
+	SplitPath, vp_in_path, load_name, load_fullpath, load_ext
+	if(load_ext="png"||load_ext="jpg")
+	{
+		ifExist, %load_fullpath%\image000001.*
+		{
+			Loop, Files, %load_fullpath%\image*.* , F
+			{
+				load_image_count++
+			}
+			image_input := 1
+			msgbox,% "Loaded " load_image_count " Image."
+		}
+		else
+		{
+			msgbox,% "Not Found Image Format ""image%06d"""
+		}
+	}
+	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv")
+	{
+		var1=ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate -of default=noprint_wrappers=1:nokey=1 "%vp_in_path%"
+		c2 :=""
+		c2 := StdOutToVar(comspec . " /c " . var1)
+		
+		StringSplit,probe_re, c2, "`n"
+		StringTrimRight,probe_re1,probe_re1,1
+		StringTrimRight,probe_re2,probe_re2,1
+		
+		StringSplit,fpsc, probe_re1, "/"
+		StringSplit,fpsv, probe_re2, "/"
+		
+		s_path := StrReplace(vp_in_path,"\","/")
+		
+		if(probe_re1=probe_re2)
+		{
+			msgbox,% "Frame Rate Mode : Constance`n" fpsc1 / fpsc2 " FPS"
+			cfr := 1
+			vfr := 0
+		}
+		else
+		{
+			msgbox,% "Filter is Not support Variable Frame rate mode"
+			cfr := 0
+			vfr := 1
+		}
+
+	}
+	else
+	{
+		media_load := 0
+		msgbox, Not Support FileFormat.
+		GuiControl,,vp_in_path,
+	}
+}
+Return
 
 GuiDropFiles:
 {
@@ -552,19 +743,19 @@ GuiDropFiles:
 		dd_path("d")
 	else if(drop_focus = "out_pathv")
 		dd_path("d")
-	else if(drop_focus = "pv_in_path")
-		dd_path("d")
-	else if(drop_focus = "pv_out_path")
-		dd_path("d")
 	else if(drop_focus = "vp_out_path")
 		dd_path("d")
 	else if(drop_focus = "audio_out_path")
 		dd_path("d")
-	
+		
+	else if(drop_focus = "add_audio_path")
+		dd_path("f")
 	else if(drop_focus = "vp_in_path")
+	{
 		dd_path("f")
-	else if(drop_focus = "pv_in_audio")
-		dd_path("f")
+		sleep, 100
+		goto, media_load
+	}
 }
 Return
 
@@ -612,6 +803,64 @@ gui_update:
 	noise_level := 2
 	else if (nlv3 == 1) 
 	noise_level := 3
+	
+	if(convert_fps=15)
+	{
+		convert_fps_num := 15000
+		convert_fps_den := 1000
+	}
+	else
+	if(convert_fps=23.976)
+	{
+		convert_fps_num := 24000
+		convert_fps_den := 1001
+	}
+	else if(convert_fps=24)
+	{
+		convert_fps_num := 24000
+		convert_fps_den := 1000
+	}
+	else if(convert_fps=25)
+	{
+		convert_fps_num := 25000
+		convert_fps_den := 1000
+	}
+	else if(convert_fps=29.97)
+	{
+		convert_fps_num := 30000
+		convert_fps_den := 1001
+	}
+	else if(convert_fps=30)
+	{
+		convert_fps_num := 30000
+		convert_fps_den := 1000
+	}
+	else if(convert_fps=50)
+	{
+		convert_fps_num := 50000
+		convert_fps_den := 1000
+	}
+	else if(convert_fps=59.94)
+	{
+		convert_fps_num := 60000
+		convert_fps_den := 1001
+	}
+	else if(convert_fps=60)
+	{
+		convert_fps_num := 60000
+		convert_fps_den := 1000
+	}
+	else if(convert_fps=100)
+	{
+		convert_fps_num := 100000
+		convert_fps_den := 1000
+	}
+	else if(convert_fps=120)
+	{
+		convert_fps_num := 120000
+		convert_fps_den := 1000
+	}
+	
 	
 	i:=1
 	while(i<=8)
@@ -810,9 +1059,13 @@ alt_guiupdate:
 	{
 		GuiControl,,config_ext2,|.avi|.mp4||.mkv
 	}
-	else
+	else if(output_pic=1)
 	{
 		GuiControl,,config_ext2,|.jpg||.png|.bmp
+	}
+	else
+	{
+		GuiControl,,config_ext2,|.aac||.ogg|.mp3|.wav
 	}
 	Gui, Submit, NoHide
 }
@@ -1115,7 +1368,8 @@ in_folder:
 	Thread, NoTimers
 	FileSelectFolder, in_path,, 3
 	Thread, NoTimers, false
-	GuiControl,,in_path,%in_path%
+	if(in_path<>"")
+		GuiControl,,in_path,%in_path%
 }
 Return
 
@@ -1124,7 +1378,8 @@ out_folder:
 	Thread, NoTimers
 	FileSelectFolder, out_path,, 3
 	Thread, NoTimers, false
-	GuiControl,,out_path,%out_path%
+	if(out_path<>"")
+		GuiControl,,out_path,%out_path%
 }
 Return
 
@@ -1133,7 +1388,8 @@ in_folderv:
 	Thread, NoTimers
 	FileSelectFolder, in_pathv,, 3
 	Thread, NoTimers, false
-	GuiControl,,in_pathv,%in_pathv%
+	if(in_pathv<>"")
+		GuiControl,,in_pathv,%in_pathv%
 }
 Return
 
@@ -1142,7 +1398,8 @@ out_folderv:
 	Thread, NoTimers
 	FileSelectFolder, out_pathv,, 3
 	Thread, NoTimers, false
-	GuiControl,,out_pathv,%out_pathv%
+	if(out_pathv<>"")
+		GuiControl,,out_pathv,%out_pathv%
 }
 Return
 
@@ -1704,41 +1961,16 @@ run_stop:
 return
 
 
-;picture to video
-pic_to_vid_in_folder:
-{
-	Thread, NoTimers
-	FileSelectFolder, pv_in_path,, 3
-	Thread, NoTimers, false
-	GuiControl,,pv_in_path,%pv_in_path%
-}
-Return
-
-pic_to_vid_in_audio:
-{
-	Thread, NoTimers
-	FileSelectFile, pv_in_audio,,,,(*.wav)
-	Thread, NoTimers, false
-	GuiControl,,pv_in_audio,%pv_in_audio%
-}
-Return
-
-pic_to_vid_out_folder:
-{
-	Thread, NoTimers
-	FileSelectFolder, pv_out_path,,, 3
-	Thread, NoTimers, false
-	GuiControl,,pv_out_path,%pv_out_path%
-}
-Return
-
-;video to picture
 vid_to_pic_in_folder:
 {
 	Thread, NoTimers
 	FileSelectFile, vp_in_path
 	Thread, NoTimers, false
-	GuiControl,,vp_in_path,%vp_in_path%
+	if(vp_in_path<>"")
+	{
+		GuiControl,,vp_in_path,%vp_in_path%
+		goto,media_load
+	}
 }
 Return
 
@@ -1747,76 +1979,21 @@ vid_to_pic_out_folder:
 	Thread, NoTimers
 	FileSelectFolder, vp_out_path,, 3
 	Thread, NoTimers, false
-	GuiControl,,vp_out_path,%vp_out_path%
+	if(vp_out_path<>"")
+		GuiControl,,vp_out_path,%vp_out_path%
 }
 Return
 
-vid_to_pic_out_audio:
+add_audio_file:
 {
 	Thread, NoTimers
-	FileSelectFolder, audio_out_path,, 3
+	FileSelectFile, add_audio_path
 	Thread, NoTimers, false
-	GuiControl,,audio_out_path,%audio_out_path%
+	if(add_audio_path<>"")
+		GuiControl,,add_audio_path,%add_audio_path%
 }
 Return
 
-
-
-run_pic_to_vid:
-{
-	loopc := pv_in_path "\*" config_ext3
-	
-	Loop, Files, %loopc%, F
-	{
-		StringTrimRight, out_filename, A_LoopFileName, 10
-		
-		IfExist, %pv_out_path%\%out_filename%%config_ext4%
-		{
-			MsgBox, 4,, File Exist Do you want to Delete?
-			IfMsgBox Yes
-				FileDelete, %pv_out_path%\%out_filename%%config_ext4%
-			else
-				break
-		}
-		
-		IfNotExist, %pv_out_path%
-		{
-			FileCreateDir, %pv_out_path%
-		}
-
-		;video
-			video_c1 := " -framerate " fps 
-			video_c2 := " -i """ pv_in_path "\" out_filename "%06d." A_LoopFileExt """"
-			if(cqp_s=1)
-			{
-				quality_control := "-qp " cqp_value
-			}else if(crf_s=1)
-			{
-				quality_control := "-crf " crf_value
-			}
-			video_c3 := " -c:v libx264 -vf fps=" fps " -pix_fmt yuv420p " quality_control " " ex_command
-			video_c4 := " """ pv_out_path "\" out_filename config_ext4 """"
-
-		;audio
-		if(add_audio = 1)
-		{
-			audio_c1 := " -i """ pv_in_audio """"
-			audio_c2 := " -codec:a libmp3lame -b:a 320k" 
-		}
-		else
-		{
-			audio_c1 := ""
-			audio_c2 := "" 
-		}
-		
-		gosub,log_console
-		run_command := """" A_WorkingDir "\bin\ffmpeg.exe""" video_c1 video_c2 audio_c1 audio_c2 video_c3 video_c4
-		RunWait,  %run_command%, ,
-		break
-	}
-	msgbox, Finished
-}
-Return
 
 run_vid_to_pic:
 {
@@ -1829,12 +2006,30 @@ run_vid_to_pic:
 	run_command5 := ""
 	run_command6 := ""
 	
+	if(vp_in_path="")
+	{
+		MsgBox, Error No Input
+		Return
+	}
+	
 	SplitPath, vp_in_path, in_name_ext, in_dir, in_ext, in_name
 	
 	if (SubStr(vp_out_path,-1)="\")
 	{
 		StringTrimRight, vp_out_path, vp_out_path, 1
 	}
+	
+	if(vp_out_path="")
+	{
+		vp_out_path := in_dir
+	}
+	
+	if(audio_out_path="")
+	{
+		audio_out_path := vp_out_path
+	}
+	
+	
 
 
 	if(output_pic=1)
@@ -1856,8 +2051,22 @@ run_vid_to_pic:
 			FileCreateDir, %vp_out_path%
 		}
 	}
+	
 	run_command .= """" A_WorkingDir "\bin\ffmpeg.exe"""
-	run_command2 .= " -i """ vp_in_path """"
+	if(image_input=1)
+	{
+		run_command2 .= " -i """ in_dir "\image%06d." in_ext """"
+	}
+	else
+	{
+		run_command2 .= " -i """ vp_in_path """"
+	}
+	
+	if(enable_add_audio=1 and output_pic<>1)
+	{
+		if(add_audio_path<>"")
+			run_command2 .= " -i """ add_audio_path """"
+	}
 	
 	if(enable_deinterlace = 1)
 	{
@@ -1872,20 +2081,27 @@ run_vid_to_pic:
 	}
 	
 	
-	
-	if(convert_enable = 1)
+	if(image_input=1)
 	{
-		run_command3 .= " -vsync 1"
-		attribute := "fps=" convert_fps
+		run_command1 .= " -framerate " convert_fps_num "/" convert_fps_den
+		attribute := "fps=" convert_fps_num "/" convert_fps_den
 		run_command4 .= add_filter(attribute)
 	}
-	
-	if(enable_th_mode = 1)
+	else
 	{
-		attribute := "fps=" t_fps "/" t_fpsx
-		run_command4 .= add_filter(attribute)
+		if(convert_enable = 1)
+		{
+			run_command3 .= " -vsync 1"
+			attribute := "fps=" convert_fps_num "/" convert_fps_den
+			run_command4 .= add_filter(attribute)
+		}
+		
+		if(enable_th_mode = 1)
+		{
+			attribute := "fps=" t_fps "/" t_fpsx
+			run_command4 .= add_filter(attribute)
+		}
 	}
-	
 	if(enable_resize = 1)
 	{
 		attribute := "scale=" resize_w ":" resize_h
@@ -1907,63 +2123,73 @@ run_vid_to_pic:
 	
 	if(output_vid=1)
 	{
-		if(enable_lossless=1)
+		if(enc_264=1)
+			run_command5 .= " -c:v libx264"
+		if(enc_265=1)
+			run_command5 .= " -c:v libx265"			
+		
+		if(c_420=1)
 		{
-			run_command5 .= " -c:v huffyuv"
+			run_command5 .= " -pix_fmt yuv420p"
+		}
+		else if(c_422=1)
+		{
+			run_command5 .= " -pix_fmt yuv422p"
 		}
 		else
 		{
-			if(c_420=1)
-			{
-				run_command5 .= " -pix_fmt yuv420p"
-			}
-			else if(c_422=1)
-			{
-				run_command5 .= " -pix_fmt yuv422p"
-			}
-			else
-			{
-				run_command5 .= " -pix_fmt yuv444p"
-			}
-			
-			if(c_10b=1)
-			{
-				run_command5 .= "10le"
-			}
-			
-			if(cqp_s1=1)
-			{
-				run_command5 .= " -qp " cqp_value1
-			}
-			else if(crf_s1=1)
-			{
-				run_command5 .= " -crf " crf_value1
-			}
-			
-			run_command5 .= " -preset " enc_preset
+			run_command5 .= " -pix_fmt yuv444p"
 		}
-			
 		
+		if(c_10b=1)
+		{
+			run_command5 .= "10le"
+		}
 		
-		if(enable_audio=1)
+		if(cqp_s1=1)
 		{
-			if(enable_a_aac=1)
-				run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
-			else if(enable_a_ogg=1)
-				run_command5 .= " -codec:a libvorbis -aq 10"
-			else if(enable_a_pcm=1)
-				run_command5 .= " -codec:a pcm_s16le"
-			else if(enable_a_copy=1)
-				run_command5 .= " -codec:a copy"
+			run_command5 .= " -qp " cqp_value1
 		}
-		else
+		else if(crf_s1=1)
 		{
-			run_command5 .= " -an"
+			run_command5 .= " -crf " crf_value1
 		}
+		
+		run_command5 .= " -preset " enc_preset
+	}
+	
+	if(enable_audio=1 and output_pic<>1)
+	{
+		if(enable_add_audio=1 and image_input<>1)
+		{
+			run_command5 .= " -map 0:v:0 -map 1:a:0"
+		}
+		
+		if(enable_a_aac=1)
+			run_command5 .= " -codec:a aac -q:a 5 -cutoff 22000"
+		else if(enable_a_ogg=1)
+			run_command5 .= " -codec:a libvorbis -aq 10"
+		else if(enable_a_mp3=1)
+			run_command5 .= " -codec:a libmp3lame -b:a 320k"
+		else if(enable_a_pcm=1)
+			run_command5 .= " -codec:a pcm_s16le"
+		else if(enable_a_copy=1)
+			run_command5 .= " -codec:a copy"
+	}
+	else
+	{
+		run_command5 .= " -an"
 	}
 	
 	
-	
+	if(enable_ss=1)
+	{
+		run_command5 .= " -ss " time_ss
+	}
+	if(enable_to=1)
+	{
+		run_command5 .= " -to " time_to
+	}
 	
 	run_command6 .= " """ vp_out_path "\"
 	
@@ -1971,7 +2197,7 @@ run_vid_to_pic:
 	{
 		run_command6 .= in_name "\image%06d" config_ext2 """"
 	}
-	else
+	else if(output_vid=1)
 	{
 		out_name := in_name
 		ifExist, %vp_out_path%\%in_name%%config_ext2%
@@ -1980,10 +2206,21 @@ run_vid_to_pic:
 		}
 		run_command6 .= out_name config_ext2 """"
 	}
-	
-	if(audio_extract = 1)
+	else
 	{
-		run_command6 .= " """ audio_out_path "\" in_name ".wav"""
+		run_command6 .= in_name
+		if(enable_a_aac=1)
+			run_command6 .= ".aac"
+		else if(enable_a_ogg=1)
+			run_command6 .= ".ogg"
+		else if(enable_a_mp3=1)
+			run_command6 .= ".mp3"
+		else if(enable_a_pcm=1)
+			run_command6 .= ".wav"
+		else if(enable_a_copy=1)
+			run_command6 .= config_ext2
+		
+		run_command6 .= """"
 	}
 	
 	run_command .= run_command1 run_command2 run_command3 run_command4 run_command5 run_command6
@@ -5083,3 +5320,72 @@ StrGetB(Address, Length=-1, Encoding=0)
 	
 	return String
 }
+
+;- https://autohotkey.com/boards/viewtopic.php?f=6&t=791&hilit=stdouttovar
+; ----------------------------------------------------------------------------------------------------------------------
+; Function .....: StdoutToVar_CreateProcess
+; Description ..: Runs a command line program and returns its output.
+; Parameters ...: sCmd      - Commandline to execute.
+; ..............: sEncoding - Encoding used by the target process. Look at StrGet() for possible values.
+; ..............: sDir      - Working directory.
+; ..............: nExitCode - Process exit code, receive it as a byref parameter.
+; Return .......: Command output as a string on success, empty string on error.
+; AHK Version ..: AHK_L x32/64 Unicode/ANSI
+; Author .......: Sean (http://goo.gl/o3VCO8), modified by nfl and by Cyruz
+; License ......: WTFPL - http://www.wtfpl.net/txt/copying/
+; Changelog ....: Feb. 20, 2007 - Sean version.
+; ..............: Sep. 21, 2011 - nfl version.
+; ..............: Nov. 27, 2013 - Cyruz version (code refactored and exit code).
+; ..............: Mar. 09, 2014 - Removed input, doesn't seem reliable. Some code improvements.
+; ..............: Mar. 16, 2014 - Added encoding parameter as pointed out by lexikos.
+; ..............: Jun. 02, 2014 - Corrected exit code error.
+; ..............: Nov. 02, 2016 - Fixed blocking behavior due to ReadFile thanks to PeekNamedPipe.
+; ----------------------------------------------------------------------------------------------------------------------
+StdoutToVar(sCmd, sEncoding:="CP0", sDir:="", ByRef nExitCode:=0) {
+    hstdoutrd:=""
+	hstdoutwr:=""
+	nTot:=""
+	nSize:=""
+	sOutput:=""
+    DllCall( "CreatePipe",           PtrP,hStdOutRd, PtrP,hStdOutWr, Ptr,0, UInt,0 )
+    DllCall( "SetHandleInformation", Ptr,hStdOutWr, UInt,1, UInt,1                 )
+	
+
+            VarSetCapacity( pi, (A_PtrSize == 4) ? 16 : 24,  0 )
+    siSz := VarSetCapacity( si, (A_PtrSize == 4) ? 68 : 104, 0 )
+    NumPut( siSz,      si,  0,                          "UInt" )
+    NumPut( 0x100,     si,  (A_PtrSize == 4) ? 44 : 60, "UInt" )
+    NumPut( hStdOutWr, si,  (A_PtrSize == 4) ? 60 : 88, "Ptr"  )
+    NumPut( hStdOutWr, si,  (A_PtrSize == 4) ? 64 : 96, "Ptr"  )
+
+    If ( !DllCall( "CreateProcess", Ptr,0, Ptr,&sCmd, Ptr,0, Ptr,0, Int,True, UInt,0x08000000
+                                  , Ptr,0, Ptr,sDir?&sDir:0, Ptr,&si, Ptr,&pi ) )
+        Return ""
+      , DllCall( "CloseHandle", Ptr,hStdOutWr )
+      , DllCall( "CloseHandle", Ptr,hStdOutRd )
+
+    DllCall( "CloseHandle", Ptr,hStdOutWr ) ; The write pipe must be closed before reading the stdout.
+    While ( 1 )
+    { ; Before reading, we check if the pipe has been written to, so we avoid freezings.
+        If ( !DllCall( "PeekNamedPipe", Ptr,hStdOutRd, Ptr,0, UInt,0, Ptr,0, UIntP,nTot, Ptr,0 ) )
+            Break
+        If ( !nTot )
+        { ; If the pipe buffer is empty, sleep and continue checking.
+            Sleep, 100
+            Continue
+        } ; Pipe buffer is not empty, so we can read it.
+        VarSetCapacity(sTemp, nTot+1)
+        DllCall( "ReadFile", Ptr,hStdOutRd, Ptr,&sTemp, UInt,nTot, PtrP,nSize, Ptr,0 )
+        sOutput .= StrGet(&sTemp, nSize, sEncoding)
+    }
+    
+    ; * SKAN has managed the exit code through SetLastError.
+    DllCall( "GetExitCodeProcess", Ptr,NumGet(pi,0), UIntP,nExitCode )
+    DllCall( "CloseHandle",        Ptr,NumGet(pi,0)                  )
+    DllCall( "CloseHandle",        Ptr,NumGet(pi,A_PtrSize)          )
+    DllCall( "CloseHandle",        Ptr,hStdOutRd                     )
+    Return sOutput
+}
+;============================================================
+
+
