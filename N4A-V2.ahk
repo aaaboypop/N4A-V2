@@ -22,6 +22,68 @@ fps := "23.976"
 crf := 18
 ex_command := "-metadata description=""https://www.facebook.com/Net4Anime"""
 
+
+if !FileExist(A_WorkingDir "\waifu2x-caffe-cui.exe")
+{
+	MsgBox, Error! waifu2x-caffe-cui.exe Not Found
+	exitapp
+}
+if !FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan.exe")
+{
+	MsgBox, Error! waifu2x-ncnn-vulkan.exe Not Found
+	exitapp
+}
+if !FileExist(A_WorkingDir "\bin\ffmpeg.exe")
+{
+	MsgBox, Error! ffmpeg.exe Not Found
+	exitapp
+}
+
+if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan-p*.exe"))
+{
+	Gui, 3:Add, Progress, x2 y2 w300 h20 +cGreen Border vp_load -Theme BackgroundWhite, 0
+	Gui, 3:Show, w304 h24, Loading..
+
+	FileDelete, %A_WorkingDir%\waifu2x-caffe-cui-p*.exe
+	GuiControl,3:, p_load, 5
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p1.exe
+	GuiControl,3:, p_load, 11
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p2.exe
+	GuiControl,3:, p_load, 16
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p3.exe
+	GuiControl,3:, p_load, 22
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p4.exe
+	GuiControl,3:, p_load, 27
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p5.exe
+	GuiControl,3:, p_load, 33
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p6.exe
+	GuiControl,3:, p_load, 38
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p7.exe
+	GuiControl,3:, p_load, 44
+	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p8.exe
+	GuiControl,3:, p_load, 50
+	FileDelete, %A_WorkingDir%\waifu2x-ncnn-vulkan-p*.exe
+	GuiControl,3:, p_load, 55
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p1.exe
+	GuiControl,3:, p_load, 61
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p2.exe
+	GuiControl,3:, p_load, 66
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p3.exe
+	GuiControl,3:, p_load, 72
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p4.exe
+	GuiControl,3:, p_load, 77
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p5.exe
+	GuiControl,3:, p_load, 83
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p6.exe
+	GuiControl,3:, p_load, 88
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p7.exe
+	GuiControl,3:, p_load, 94
+	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p8.exe
+	GuiControl,3:, p_load, 100
+	FileDelete, %A_WorkingDir%\update.ini
+	Gui, 3:destroy
+}
+
 IniRead, in_path, %A_WorkingDir%\setting.ini, main, in_path, %A_Space%
 IniRead, out_path, %A_WorkingDir%\setting.ini, main, out_path,  %A_Space%
 IniRead, noise_level, %A_WorkingDir%\setting.ini, main, noise_level, 2
@@ -1065,7 +1127,7 @@ alt_guiupdate:
 	}
 	else
 	{
-		GuiControl,,config_ext2,|.aac||.ogg|.mp3|.wav
+		GuiControl,,config_ext2,|.aac||.ac3|.ogg|.mp3|.wav
 	}
 	Gui, Submit, NoHide
 }
@@ -1480,46 +1542,21 @@ scale_select:
 	}
 	else if(by_scale = 1)
 	{
-		if scale is alpha
-		{
-			msgbox, Scale must not alphabetic characters
-			stop := 1
-		}
 		attribute1 := "-s " scale
 		ff := "-vf scale=iw*" scale ":ih*" scale
 	}
 	else if(by_width = 1)
 	{
-		if width is alpha
-		{
-			msgbox, Width must not alphabetic characters
-			stop := 1
-		}
 		attribute1 := "-w " width
 		ff := "-vf scale=" width ":-1"
 	}
 	else if(by_height = 1)
 	{
-		if height is alpha
-		{
-			msgbox, Height must not alphabetic characters
-			stop := 1
-		}
 		attribute1 := "-h " height
 		ff := "-vf scale=-1:"height
 	}
 	else if(by_w_h = 1)
 	{
-		if width1 is alpha
-		{
-			msgbox, Width1 must not alphabetic characters
-			stop := 1
-		}
-		if height1 is alpha
-		{
-			msgbox, Height1 must not alphabetic characters
-			stop := 1
-		}
 		attribute1 := "-w " width1 " -h " height1
 		ff := "-vf scale=" width1 ":" height1
 	}
