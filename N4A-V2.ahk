@@ -290,6 +290,7 @@ Gui, Add, DropDownList, x812 y49 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.pn
 Gui, Add, button, x12 y519 w150 h20 vb_start2 grun_vid_to_pic, Start
 Gui, Add, button, x172 y519 w150 h20 ggui2 Disabled, Show Script
 Gui, Add, GroupBox, x312 y99 w140 h90 , Deinterlace
+Gui, Add, CheckBox, x322 y114 w120 h20 venable_deinterlace ggui_update, Enable Deinterlace
 Gui, Add, CheckBox, x322 y219 w60 h20 venable_ss ggui_update, Start :
 Gui, Add, CheckBox, x322 y249 w60 h20 venable_to ggui_update, End :
 Gui, Add, Edit, x382 y219 w110 h20 vtime_ss ggui_update, 00:00:00
