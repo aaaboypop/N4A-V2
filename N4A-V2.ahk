@@ -1182,14 +1182,13 @@ check_file:
 			{
 				break
 			}
-				loop_out_filepath := out_path "\" A_LoopFileName
+				SplitPath, A_LoopFilePath,,,, name_no_ext
+				loop_out_filepath := out_path "\" name_no_ext config_ext
 			
-				if FileExist(loop_out_filepath)
-				{
-				}
-				else
+				if !FileExist(loop_out_filepath)
 				{
 					LV_Add("","Output Not Found : " loop_out_filepath)
+					continue
 				}
 				
 				imagefile := loop_out_filepath
