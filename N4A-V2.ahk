@@ -25,17 +25,17 @@ ex_command := "-metadata description=""https://www.facebook.com/Net4Anime"""
 
 if !FileExist(A_WorkingDir "\waifu2x-caffe-cui.exe")
 {
-	MsgBox, Error! waifu2x-caffe-cui.exe Not Found
+	MsgBox,16, Error! waifu2x-caffe-cui.exe Not Found
 	exitapp
 }
 if !FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan.exe")
 {
-	MsgBox, Error! waifu2x-ncnn-vulkan.exe Not Found
+	MsgBox,16, Error! waifu2x-ncnn-vulkan.exe Not Found
 	exitapp
 }
 if !FileExist(A_WorkingDir "\bin\ffmpeg.exe")
 {
-	MsgBox, Error! ffmpeg.exe Not Found
+	MsgBox,16, Error! ffmpeg.exe Not Found
 	exitapp
 }
 
@@ -755,11 +755,11 @@ media_load:
 				load_image_count++
 			}
 			image_input := 1
-			msgbox,4096, Media Info,% "Loaded " load_image_count " Image."
+			msgbox,0x2000, Media Info,% "Loaded " load_image_count " Image."
 		}
 		else
 		{
-			msgbox,% "Not Found Image Format ""image%06d"""
+			msgbox,0x2000, Media Info,% "Not Found Image Format ""image%06d"""
 		}
 	}
 	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv"||load_ext="ts")
@@ -781,13 +781,13 @@ media_load:
 		
 		if(probe_re1=probe_re2)
 		{
-			msgbox,4096, Media Info,% "Frame Rate Mode : Constance`nFrameRate : " fpsc1 / fpsc2 " FPS `rFrame : " n_frame 
+			msgbox,0x2000, Media Info,% "Frame Rate Mode : Constance`nFrameRate : " fpsc1 / fpsc2 " FPS `rFrame : " n_frame 
 			cfr := 1
 			vfr := 0
 		}
 		else
 		{
-			msgbox,4096, Media Info,% "Frame Rate Mode : Variable`nMax FrameRate : " fpsc1 / fpsc2 " FPS`nAvg FrameRate : " fpsv1 / fpsv2 " FPS `rFrame : " n_frame
+			msgbox,0x2000, Media Info,% "Frame Rate Mode : Variable`nMax FrameRate : " fpsc1 / fpsc2 " FPS`nAvg FrameRate : " fpsv1 / fpsv2 " FPS `rFrame : " n_frame
 			;msgbox,% "Filter is Not support Variable Frame rate mode"
 			cfr := 0
 			vfr := 1
@@ -796,7 +796,7 @@ media_load:
 	else
 	{
 		media_load := 0
-		msgbox, Not Support FileFormat.
+		msgbox,0x2000, Media Info, Not Support FileFormat.
 		GuiControl,,vp_in_path,
 	}
 }
@@ -834,6 +834,7 @@ decode_test:
 	Run, %comspec% /c "%run_command%",,Hide
 	
 	Gui, 3:destroy
+	Gui, 1:show,hide
 	Gui, 3:Add, Text, y22 w640 r6 vcom_display,
 	Gui, 3:Add, Progress, w640 r1 border +cGreen vtest_progress, 0
 	Gui, 3:Show,,Decode Testing..
@@ -917,7 +918,7 @@ decode_test:
 			;progress_fps := current_frame[2]
 			
 			progress_fps := StrSplit(current_frame[2],"q=","q=")
-			GuiControl,, com_display,% "Current Frame : " current_frame[1] " Speed : " progress_fps[1]
+			GuiControl,, com_display,% "Current Frame : " current_frame[1] "`rSpeed : " progress_fps[1]
 			asd := (current_frame[1] / n_frame) * 100
 			GuiControl,,test_progress,% asd
 			sleep,250
@@ -927,14 +928,15 @@ decode_test:
 	
 	if(err_count>0)
 	{
-		MsgBox, 0x30, Decoding Test, Error Detected!
+		msgbox,0x2030, Media Info, Decoding Test, Error Detected!
 	}
 	else
 	{
-		MsgBox, 0x40, Decoding Test, Decode Successful!
+		msgbox,0x2040, Media Info, Decoding Test, Decode Successful!
 	}
 	Gui, 1:Default
 	Gui, 3:destroy
+	Gui, 1:show
 }
 Return
 
@@ -971,7 +973,7 @@ GuiDropFiles:
 	else if(drop_focus = "vp_in_path")
 	{
 		dd_path("f")
-		sleep, 100
+		sleep, 30
 		goto, media_load
 	}
 }
@@ -2192,7 +2194,7 @@ run_vid_to_pic:
 	
 	if(vp_in_path="")
 	{
-		MsgBox, Error No Input
+		msgbox,0x2000, Error, Error No Input
 		Return
 	}
 	
@@ -2205,7 +2207,7 @@ run_vid_to_pic:
 	
 	if(vp_out_path="")
 	{
-		MsgBox, 3,, Output Path is Empty, Do you want to Set Output Path to Input Path `nPress No, If you Don't want output file
+		msgbox,0x2000, Warning, 3,, Output Path is Empty, Do you want to Set Output Path to Input Path `nPress No, If you Don't want output file
 		
 		IfMsgBox Yes
 		{
@@ -2438,7 +2440,7 @@ run_vid_to_pic:
 	gosub,log_console
 
 	RunWait, %comspec% /c "%run_command%",,
-	MsgBox, Finished!
+	msgbox,0x2000, Media Convert, Finished!
 }
 Return
 
@@ -2762,7 +2764,7 @@ run_startv:
 	GuiControl,,tspeedv,%speed%
 	GuiControl,,s_percenv,100 `%
 
-	MsgBox, 4,, Finished do you want to Rename?
+	MsgBox, 4, Media Convert, Finished do you want to Rename?
 	IfMsgBox Yes
 	{
 		Loop, Files, %out_pathv%\*.png.png , F
@@ -2780,7 +2782,7 @@ run_startv:
 			StringTrimRight, loop_fpath, A_LoopFilePath, 8
 			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
 		}
-		MsgBox,Finished!
+		msgbox,0x2000, Media Convert,Finished!
 		
 	}
 	FileRemoveDir, %in_pathv%\temp, 1
