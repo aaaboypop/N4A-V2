@@ -2207,7 +2207,7 @@ run_vid_to_pic:
 	
 	if(vp_out_path="")
 	{
-		msgbox,0x2000, Warning, 3,, Output Path is Empty, Do you want to Set Output Path to Input Path `nPress No, If you Don't want output file
+		msgbox,0x2003, Warning, Output Path is Empty`rDo you want to Set Output Path to Input Path `nPress No, If you Don't want output file
 		
 		IfMsgBox Yes
 		{
@@ -2764,7 +2764,7 @@ run_startv:
 	GuiControl,,tspeedv,%speed%
 	GuiControl,,s_percenv,100 `%
 
-	MsgBox, 4, Media Convert, Finished do you want to Rename?
+	MsgBox, 0x2004, Media Convert, Finished do you want to Rename?
 	IfMsgBox Yes
 	{
 		Loop, Files, %out_pathv%\*.png.png , F
