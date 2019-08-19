@@ -273,6 +273,7 @@ Gui, Add, Radio, x622 y49 w60 h20 voutput_vid galt_guiupdate, Video
 Gui, Add, Radio, x682 y49 w60 h20 voutput_audio galt_guiupdate, Audio
 Gui, Add, GroupBox, x2 y79 w890 h470 , Setting
 Gui, Add, Button, x272 y29 w30 h20 gvid_to_pic_in_folder, ...
+Gui, Add, Button, x312 y29 w80 h20 gdecode_test, Decode Test
 Gui, Add, Button, x272 y49 w30 h20 gvid_to_pic_out_folder, ...
 Gui, Add, CheckBox, x12 y99 w190 h20 vconvert_enable ggui_update, Convert to Constant Frame Rate
 Gui, Add, DropDownList, x212 y99 w60 h20 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120
@@ -300,12 +301,16 @@ Gui, Add, Text, x322 y159 w60 h20 , Field :
 Gui, Add, DropDownList, x382 y139 w60 h10 r4 vdeinter_mode ggui_update, Frame||Field
 Gui, Add, DropDownList, x382 y159 w60 h10 r2 vdeinter_field ggui_update, Top||Bottom
 Gui, Add, CheckBox, x12 y249 w290 h20 venable_decimate ggui_update, Remove Duplicate Frame [Anime Preset 29.970 > 23.976]
+
+Gui, Add, GroupBox, x462 y99 w220 h90 , Video Encoder
+Gui, Add, DropDownList, x472 y119 w50 h20 vencoder r12 ggui_update, x264||x265|Raw
+Gui, Add, DropDownList, x472 y149 w50 h20 venc_profile r12 ggui_update, Auto||baseline|main|high|high10|high422|high444
 Gui, Add, Radio, x542 y119 w60 h20 vcqp_s1 Group Checked ggui_update, CQP :
 Gui, Add, Radio, x542 y139 w60 h20 vcrf_s1 ggui_update, CRF :
 Gui, Add, Edit, x602 y119 w40 h20 vcqp_value1 ggui_update, 18
 Gui, Add, Edit, x602 y139 w40 h20 vcrf_value1 ggui_update, 18
-Gui, Add, Text, x472 y159 w40 h20 , Preset :
-Gui, Add, DropDownList, x532 y159 w110 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
+Gui, Add, Text, x542 y162 w40 h20 , Preset:
+Gui, Add, DropDownList, x602 y159 w70 h20 venc_preset r12 ggui_update, ultrafast|superfast|veryfast|faster|fast|medium||slow|slower|veryslow|placebo|
 Gui, Add, CheckBox, x522 y219 w60 h20 venable_audio Checked ggui_update, Audio
 Gui, Add, Radio, x592 y219 w50 h20 venable_a_aac ggui_update, AAC
 Gui, Add, Radio, x642 y219 w50 h20 venable_a_ogg ggui_update, OGG
@@ -317,18 +322,16 @@ Gui, Add, Edit, x592 y249 w250 h20 vadd_audio_path ggui_update,
 Gui, Add, Button, x842 y249 w30 h20 gadd_audio_file, ...
 
 Gui, Add, GroupBox, x692 y99 w190 h90 , Color
-Gui, Add, Radio, x702 y119 w70 h20 vc_420 Checked ggui_update, YUV420
-Gui, Add, Radio, x702 y139 w70 h20 vc_422 ggui_update, YUV422
-Gui, Add, Radio, x702 y159 w70 h20 vc_444 ggui_update, YUV444
-Gui, Add, Radio, x802 y119 w70 h20 vc_8b Group Checked ggui_update, 8 Bit
-Gui, Add, Radio, x802 y139 w70 h20 vc_10b ggui_update, 10 Bit
+Gui, Add, Text, x702 y129 w70 h20 , Color Space :
+Gui, Add, DropDownList, x802 y129 w70 h20 vc_space r10 Checked ggui_update, Auto||YUV420|YUV422|YUV444
+Gui, Add, Text, x702 y149 w70 h20 , Bit depth :
+Gui, Add, DropDownList, x802 y149 w70 h20 vc_bit r10 Checked ggui_update, 8 Bit||10 Bit
+
 Gui, Add, Text, x12 y159 w70 h20 , JPG Quality :
 Gui, Add, Slider, x92 y159 w180 h20 vvp_quality Range1-31 ggui_update, 1
 Gui, Add, GroupBox, x312 y199 w190 h80 , Trim
 Gui, Add, GroupBox, x512 y199 w370 h80 , Audio
-Gui, Add, GroupBox, x462 y99 w220 h90 , Video Encoder
-Gui, Add, Radio, x472 y119 w50 h20 venc_264 Checked ggui_update, x264
-Gui, Add, Radio, x472 y139 w50 h20 venc_265 ggui_update, x265
+
 Gui, Add, CheckBox, x12 y279 w110 h20 Disabled, Enable Filter
 Gui, Add, GroupBox, x12 y299 w870 h210 , Filter
 Gui, Add, DropDownList, x22 y319 w150 h20 Disabled r12, Sharpen|DeHalo|AntiAliasing|Resizer|Line Darker
@@ -602,6 +605,20 @@ Return
 }
 Return
 
+3GuiClose:
+{
+	Process, Close, ffmpeg.exe
+	while Process, Exist , ffmpeg.exe
+	{
+		Process, Close, ffmpeg.exe
+		Sleep, 100
+	}
+	stop := 1
+	Gui, 3:destroy
+}
+Return
+
+
 load_script1()
 {
 	hybrid_path := "C:/Program Files/Hybrid/64bit"
@@ -738,37 +755,39 @@ media_load:
 				load_image_count++
 			}
 			image_input := 1
-			msgbox,% "Loaded " load_image_count " Image."
+			msgbox,4096, Media Info,% "Loaded " load_image_count " Image."
 		}
 		else
 		{
 			msgbox,% "Not Found Image Format ""image%06d"""
 		}
 	}
-	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv")
+	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv"||load_ext="ts")
 	{
-		var1=ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate -of default=noprint_wrappers=1:nokey=1 "%vp_in_path%"
-		c2 :=""
-		c2 := StdOutToVar(comspec . " /c " . var1)
+		var1 = ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate,nb_read_packets -of default=noprint_wrappers=1:nokey=1 -count_packets "%vp_in_path%"
+		c2 := ""
+		c2 := StdOutToVar(comspec . " /c " . A_WorkingDir . "\bin\" . var1)
 		
-		StringSplit,probe_re, c2, "`n"
-		StringTrimRight,probe_re1,probe_re1,1
-		StringTrimRight,probe_re2,probe_re2,1
+		StringSplit,probe_re, c2, "`r"
+		
+		StringTrimLeft,probe_re2,probe_re2,1
+		StringTrimLeft,n_frame,probe_re3,1
 		
 		StringSplit,fpsc, probe_re1, "/"
 		StringSplit,fpsv, probe_re2, "/"
+		
 		
 		s_path := StrReplace(vp_in_path,"\","/")
 		
 		if(probe_re1=probe_re2)
 		{
-			msgbox,% "Frame Rate Mode : Constance`n" fpsc1 / fpsc2 " FPS"
+			msgbox,4096, Media Info,% "Frame Rate Mode : Constance`nFrameRate : " fpsc1 / fpsc2 " FPS `rFrame : " n_frame 
 			cfr := 1
 			vfr := 0
 		}
 		else
 		{
-			msgbox,% "Frame Rate Mode : Variable`nMax :" fpsc1 / fpsc2 " FPS`nAvg : " fpsv1 / fpsv2 " FPS"
+			msgbox,4096, Media Info,% "Frame Rate Mode : Variable`nMax FrameRate : " fpsc1 / fpsc2 " FPS`nAvg FrameRate : " fpsv1 / fpsv2 " FPS `rFrame : " n_frame
 			;msgbox,% "Filter is Not support Variable Frame rate mode"
 			cfr := 0
 			vfr := 1
@@ -780,6 +799,142 @@ media_load:
 		msgbox, Not Support FileFormat.
 		GuiControl,,vp_in_path,
 	}
+}
+Return
+
+decode_test:
+{
+	run_command := ""
+	run_command1 := ""
+	run_command2 := ""
+	run_command3 := ""
+	run_command4 := ""
+	run_command5 := ""
+	run_command6 := ""
+	SplitPath, vp_in_path, in_name_ext, in_dir, in_ext, in_name
+	
+	run_command .= """" A_WorkingDir "\bin\ffmpeg.exe""" " -hide_banner -loglevel info"
+	
+	if(image_input=1)
+	{
+		run_command2 .= " -i """ in_dir "\image%06d." in_ext """"
+	}
+	else
+	{
+		run_command2 .= " -i """ vp_in_path """"
+	}
+	
+	FileDelete, %A_WorkingDir%\output.txt
+	
+	run_command6 .= " -f null - 1> " A_WorkingDir "\output.txt 2>&1"
+
+	run_command .= run_command1 run_command2 run_command3 run_command4 run_command5 run_command6
+	gosub,log_console
+
+	Run, %comspec% /c "%run_command%",,Hide
+	
+	Gui, 3:destroy
+	Gui, 3:Add, Text, y22 w640 r6 vcom_display,
+	Gui, 3:Add, Progress, w640 r1 border +cGreen vtest_progress, 0
+	Gui, 3:Show,,Decode Testing..
+	Gui, 3:Default
+	sleep,100
+	
+	StartTime := A_TickCount
+	stop:=0
+	i:=1
+	last := 0
+	err_count := 0
+	loop
+	{
+		if(stop=1)
+		{
+			Break
+		}
+		
+		FileReadLine, line, %A_WorkingDir%\output.txt, %i%
+		if(line != last_line)
+		{
+			ElapsedTime := A_TickCount - StartTime
+			last_line := line
+			i++
+			If InStr(line, "error") || InStr(line, "Invalid") || InStr(line, "not allocated")
+			{
+				if(last=0)
+				{
+					StartTime := A_TickCount
+					GuiControl,, com_display,% i " : " line
+				}
+				else if(ElapsedTime>500)
+				{
+					last=-1
+					StartTime := A_TickCount
+				}
+				last++
+				err_count++
+				if(err_count>0)
+				{
+					kill_ffmpeg:
+					{
+						Process, Close, ffmpeg.exe
+						if Process, Exist , ffmpeg.exe
+						{
+							Sleep, 100
+							Goto, kill_ffmpeg
+						}
+					}
+					a := i-5
+					l := 0
+					error_re := ""
+					while(l<5)
+					{
+						FileReadLine, line2, %A_WorkingDir%\output.txt,% a + l
+						error_re .= a + l " : " line2 "`r"
+						l++
+					}
+					GuiControl,, com_display,% error_re
+					break
+				}
+				Continue
+			}
+
+
+			;GuiControl,, com_display,% i " : " line
+			
+			
+			If InStr(line, "overhead:")
+			{
+				Break
+			}
+		}
+		If InStr(line, "frame=")
+		{
+			StringTrimLeft,progress_info,line,6
+			progress_info := StrReplace(progress_info, A_Space)
+			
+			
+			current_frame := StrSplit(progress_info,"fps=","fps=")
+			;progress_fps := current_frame[2]
+			
+			progress_fps := StrSplit(current_frame[2],"q=","q=")
+			GuiControl,, com_display,% "Current Frame : " current_frame[1] " Speed : " progress_fps[1]
+			asd := (current_frame[1] / n_frame) * 100
+			GuiControl,,test_progress,% asd
+			sleep,250
+		}
+		
+	}
+	
+	if(err_count>0)
+	{
+		MsgBox, 0x30, Decoding Test, Error Detected!
+	}
+	else
+	{
+		MsgBox, 0x40, Decoding Test, Decode Successful!
+	}
+	Gui, 1:Default
+	Gui, 3:destroy
 }
 Return
 
@@ -1067,14 +1222,6 @@ gui_update:
 		deinter_f := 1
 	}
 	
-	if(enable_lossless=1)
-	{
-		gui_d("cqp_value1,crf_value1,c_420,c_422,c_444,c_8b,c_10b,enc_preset")
-	}
-	else
-	{
-		gui_e("cqp_value1,crf_value1,c_420,c_422,c_444,c_8b,c_10b,enc_preset")
-	}
 }
 return
 
@@ -1120,7 +1267,7 @@ alt_guiupdate:
 	Gui, Submit, NoHide
 	if(output_vid=1)
 	{
-		GuiControl,,config_ext2,|.avi|.mp4||.mkv
+		GuiControl,,config_ext2,|.avi|.mp4||.mkv|.avi
 	}
 	else if(output_pic=1)
 	{
@@ -2058,7 +2205,20 @@ run_vid_to_pic:
 	
 	if(vp_out_path="")
 	{
-		vp_out_path := in_dir
+		MsgBox, 3,, Output Path is Empty, Do you want to Set Output Path to Input Path `nPress No, If you Don't want output file
+		
+		IfMsgBox Yes
+		{
+			vp_out_path := in_dir
+			GuiControl,,vp_out_path,%in_dir%
+			no_output := 0
+		}
+		else IfMsgBox No
+			no_output := 1
+		else
+			Return
+		
+		
 	}
 	
 	if(audio_out_path="")
@@ -2160,25 +2320,32 @@ run_vid_to_pic:
 	
 	if(output_vid=1)
 	{
-		if(enc_264=1)
+		if(encoder="x264")
 			run_command5 .= " -c:v libx264"
-		if(enc_265=1)
-			run_command5 .= " -c:v libx265"			
-		
-		if(c_420=1)
+		if(encoder="x265")
+			run_command5 .= " -c:v libx265"	
+		If(encoder="Raw")
+			run_command5 .= " -c:v rawvideo"	
+
+		if(c_space="YUV420")
 		{
 			run_command5 .= " -pix_fmt yuv420p"
 		}
-		else if(c_422=1)
+		else if(c_space="YUV422")
 		{
 			run_command5 .= " -pix_fmt yuv422p"
 		}
-		else
+		else if(c_space="YUV444")
 		{
 			run_command5 .= " -pix_fmt yuv444p"
 		}
 		
-		if(c_10b=1)
+		if(enc_profile<>"Auto")
+		{
+			run_command5 .= " -profile:v " enc_profile
+		}
+		
+		if(c_bit="10 Bit") && (c_space<>"Auto")
 		{
 			run_command5 .= "10le"
 		}
@@ -2228,41 +2395,49 @@ run_vid_to_pic:
 		run_command5 .= " -to " time_to
 	}
 	
-	run_command6 .= " """ vp_out_path "\"
-	
-	if(output_pic=1)
+
+	if(no_output<>1)
 	{
-		run_command6 .= in_name "\image%06d" config_ext2 """"
-	}
-	else if(output_vid=1)
-	{
-		out_name := in_name
-		ifExist, %vp_out_path%\%in_name%%config_ext2%
+		run_command6 .= " """ vp_out_path "\"
+		
+		if(output_pic=1)
 		{
-			out_name .= "_1" 
+			run_command6 .= in_name "\image%06d" config_ext2 """"
 		}
-		run_command6 .= out_name config_ext2 """"
+		else if(output_vid=1)
+		{
+			out_name := in_name
+			ifExist, %vp_out_path%\%in_name%%config_ext2%
+			{
+				out_name .= "_1" 
+			}
+			run_command6 .= out_name config_ext2 """"
+		}
+		else
+		{
+			run_command6 .= in_name
+			if(enable_a_aac=1)
+				run_command6 .= ".aac"
+			else if(enable_a_ogg=1)
+				run_command6 .= ".ogg"
+			else if(enable_a_mp3=1)
+				run_command6 .= ".mp3"
+			else if(enable_a_pcm=1)
+				run_command6 .= ".wav"
+			else if(enable_a_copy=1)
+				run_command6 .= config_ext2
+			
+			run_command6 .= """"
+		}
 	}
 	else
 	{
-		run_command6 .= in_name
-		if(enable_a_aac=1)
-			run_command6 .= ".aac"
-		else if(enable_a_ogg=1)
-			run_command6 .= ".ogg"
-		else if(enable_a_mp3=1)
-			run_command6 .= ".mp3"
-		else if(enable_a_pcm=1)
-			run_command6 .= ".wav"
-		else if(enable_a_copy=1)
-			run_command6 .= config_ext2
-		
-		run_command6 .= """"
+		run_command6 .= " -f null - & pause"
 	}
-	
 	run_command .= run_command1 run_command2 run_command3 run_command4 run_command5 run_command6
 	gosub,log_console
-	RunWait,  %run_command%, ,
+
+	RunWait, %comspec% /c "%run_command%",,
 	MsgBox, Finished!
 }
 Return
