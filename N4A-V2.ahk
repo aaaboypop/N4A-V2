@@ -39,6 +39,15 @@ if !FileExist(A_WorkingDir "\bin\ffmpeg.exe")
 	exitapp
 }
 
+if !FileExist(A_WorkingDir "\bin\ffmpeg_p1.exe")
+{
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p1.exe
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p2.exe
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p3.exe
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p4.exe
+}
+
+
 if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan-p*.exe"))
 {
 	Gui, 3:Add, Progress, x2 y2 w300 h20 +cGreen Border vp_load -Theme BackgroundWhite, 0
@@ -607,10 +616,10 @@ Return
 
 3GuiClose:
 {
-	Process, Close, ffmpeg.exe
-	while Process, Exist , ffmpeg.exe
+	Process, Close, ffmpeg_p1.exe
+	while Process, Exist , ffmpeg_p1.exe
 	{
-		Process, Close, ffmpeg.exe
+		Process, Close, ffmpeg_p1.exe
 		Sleep, 100
 	}
 	stop := 1
@@ -813,7 +822,7 @@ decode_test:
 	run_command6 := ""
 	SplitPath, vp_in_path, in_name_ext, in_dir, in_ext, in_name
 	
-	run_command .= """" A_WorkingDir "\bin\ffmpeg.exe""" " -hide_banner -loglevel info"
+	run_command .= """" A_WorkingDir "\bin\ffmpeg_p1.exe""" " -hide_banner -loglevel info"
 	
 	if(image_input=1)
 	{
@@ -840,7 +849,7 @@ decode_test:
 	Gui, 3:Add, Progress, y9 x7 w640 r6 +c777777, 100
 	Gui, 3:Add, Text, y12 x10 w640 r6 vcom_display +BackgroundTrans +ceeeeee,
 	Gui, 3:Add, Progress, y92 x7 w640 r1 border +c%pro_color% vtest_progress, 0
-	Gui, 3:Add, Text, y92 x10 w640 +BackgroundTrans center r1 vtest_per,% 0.00 " %"
+	Gui, 3:Add, Text, y92 x7 w640 +BackgroundTrans center r1 vtest_per,% 0.00 " %"
 	Gui, 3:Show, w654,Decode Testing..
 	Gui, 3:Default
 	Gui, 3:Color, bbbbbb
@@ -882,8 +891,8 @@ decode_test:
 				{
 					kill_ffmpeg:
 					{
-						Process, Close, ffmpeg.exe
-						if Process, Exist , ffmpeg.exe
+						Process, Close, ffmpeg_p1.exe
+						if Process, Exist , ffmpeg_p1.exe
 						{
 							Sleep, 100
 							Goto, kill_ffmpeg
@@ -1314,13 +1323,7 @@ check_file:
 		}
 	}
 	
-	IfNotExist, %A_WorkingDir%\bin\ffmpeg_p1.exe
-	{
-		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p1.exe
-		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p2.exe
-		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p3.exe
-		FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p4.exe
-	}
+
 	
 	StartTime := A_TickCount
 	
