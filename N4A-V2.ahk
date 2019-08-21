@@ -617,10 +617,10 @@ Return
 3GuiClose:
 {
 	Process, Close, ffmpeg_p1.exe
+	Sleep, 50
 	while Process, Exist , ffmpeg_p1.exe
 	{
 		Process, Close, ffmpeg_p1.exe
-		Sleep, 100
 	}
 	stop := 1
 	Gui, 3:destroy
@@ -750,6 +750,10 @@ load_script0()
 
 media_load:
 {
+	Gui, 1:+Disabled
+	Gui, 3:Add,Text,w200 r3 cRed center, `nLoading..
+	Gui, 3:Show,, Media Info
+	Gui, 3:+Disabled
 	media_load := 1
 	image_input := 0
 	load_image_count := 0
@@ -765,6 +769,7 @@ media_load:
 			}
 			image_input := 1
 			msgbox,0x2000, Media Info,% "Loaded " load_image_count " Image."
+			n_frame := load_image_count
 		}
 		else
 		{
@@ -808,6 +813,8 @@ media_load:
 		msgbox,0x2000, Media Info, Not Support FileFormat.
 		GuiControl,,vp_in_path,
 	}
+	Gui, 3:Destroy
+	Gui, 1:-Disabled
 }
 Return
 
@@ -892,9 +899,9 @@ decode_test:
 					kill_ffmpeg:
 					{
 						Process, Close, ffmpeg_p1.exe
+						Sleep, 50
 						if Process, Exist , ffmpeg_p1.exe
 						{
-							Sleep, 100
 							Goto, kill_ffmpeg
 						}
 					}
