@@ -360,7 +360,7 @@ Gui, Add, Edit, x112 y29 w180 h20 vin_path ggui_update, %in_path%
 Gui, Add, Text, x22 y49 w80 h20 , Output Folder :
 Gui, Add, Edit, x112 y49 w180 h20 vout_path ggui_update, %out_path%
 Gui, Add, GroupBox, x22 y79 w310 h70 , Conversion Mode
-Gui, Add, Radio, x32 y99 w140 h20 vmode1 Group ggui_update, Denoise+Magnify
+Gui, Add, Radio, x32 y99 w140 h20 vmode1 Group Checked ggui_update , Denoise+Magnify
 Gui, Add, Radio, x182 y99 w140 h20 vmode2 ggui_update, Magnify
 Gui, Add, Radio, x32 y119 w140 h20 vmode3 ggui_update, Denoise
 Gui, Add, Radio, x182 y119 w140 h20 vmode4 ggui_update, Magnify+AutoDenoise
