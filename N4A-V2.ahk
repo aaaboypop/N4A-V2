@@ -289,7 +289,7 @@ Gui, Add, DropDownList, x202 y219 w100 h20 r10 vt_scale1 ggui_update, bilinear|b
 Gui, Add, Text, x752 y49 w60 h20 right, Output Ext :
 Gui, Add, DropDownList, x812 y49 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
 Gui, Add, button, x12 y519 w150 h20 vb_start2 grun_vid_to_pic, Start
-Gui, Add, button, x172 y519 w150 h20 ggui2 Disabled, Show Script
+
 Gui, Add, GroupBox, x312 y99 w140 h90 , Deinterlace
 Gui, Add, CheckBox, x322 y114 w120 h20 venable_deinterlace ggui_update, Enable Deinterlace
 Gui, Add, CheckBox, x322 y219 w60 h20 venable_ss ggui_update, Start :
@@ -332,16 +332,16 @@ Gui, Add, Slider, x92 y159 w180 h20 vvp_quality Range1-31 ggui_update, 1
 Gui, Add, GroupBox, x312 y199 w190 h80 , Trim
 Gui, Add, GroupBox, x512 y199 w370 h80 , Audio
 
-Gui, Add, CheckBox, x12 y279 w110 h20 Disabled, Enable Filter
-Gui, Add, GroupBox, x12 y299 w870 h210 , Filter
-Gui, Add, DropDownList, x22 y319 w150 h20 Disabled r12, Sharpen|DeHalo|AntiAliasing|Resizer|Line Darker
-Gui, Add, Button, x172 y319 w50 h20 , Add
-Gui, Add, Button, x222 y319 w50 h20 , Modify
-Gui, Add, Button, x272 y319 w50 h20 , Delete
-Gui, Add, ListView, x322 y309 w550 h190 vedit_script, Filter|Data
-Gui, Add, Button, x282 y459 w40 h20 , up
-Gui, Add, Button, x282 y479 w40 h20 , down
-
+;Gui, Add, CheckBox, x12 y279 w110 h20 Disabled, Enable Filter
+;Gui, Add, GroupBox, x12 y299 w870 h210 , Filter
+;Gui, Add, DropDownList, x22 y319 w150 h20 Disabled r12, Sharpen|DeHalo|AntiAliasing|Resizer|Line Darker
+;Gui, Add, Button, x172 y319 w50 h20 , Add
+;Gui, Add, Button, x222 y319 w50 h20 , Modify
+;Gui, Add, Button, x272 y319 w50 h20 , Delete
+;Gui, Add, ListView, x322 y309 w550 h190 vedit_script, Filter|Data
+;Gui, Add, Button, x282 y459 w40 h20 , up
+;Gui, Add, Button, x282 y479 w40 h20 , down
+;Gui, Add, button, x172 y519 w150 h20 ggui2 Disabled, Show Script
 
 
 
@@ -781,7 +781,7 @@ media_load:
 		
 		if(probe_re1=probe_re2)
 		{
-			msgbox,0x2000, Media Info,% "Frame Rate Mode : Constance`nFrameRate : " fpsc1 / fpsc2 " FPS `rFrame : " n_frame 
+			msgbox,0x2000, Media Info,% "Frame Rate Mode : Constant`nFrameRate : " fpsc1 / fpsc2 " FPS `rFrame : " n_frame 
 			cfr := 1
 			vfr := 0
 		}
@@ -833,12 +833,17 @@ decode_test:
 
 	Run, %comspec% /c "%run_command%",,Hide
 	
+	pro_color := "00dd00"
+	
 	Gui, 3:destroy
 	Gui, 1:show,hide
-	Gui, 3:Add, Text, y22 w640 r6 vcom_display,
-	Gui, 3:Add, Progress, w640 r1 border +cGreen vtest_progress, 0
-	Gui, 3:Show,,Decode Testing..
+	Gui, 3:Add, Progress, y9 x7 w640 r6 +c777777, 100
+	Gui, 3:Add, Text, y12 x10 w640 r6 vcom_display +BackgroundTrans +ceeeeee,
+	Gui, 3:Add, Progress, y92 x7 w640 r1 border +c%pro_color% vtest_progress, 0
+	Gui, 3:Add, Text, y92 x10 w640 +BackgroundTrans center r1 vtest_per,% 0.00 " %"
+	Gui, 3:Show, w654,Decode Testing..
 	Gui, 3:Default
+	Gui, 3:Color, bbbbbb
 	sleep,100
 	
 	StartTime := A_TickCount
@@ -894,6 +899,9 @@ decode_test:
 						l++
 					}
 					GuiControl,, com_display,% error_re
+					pro_color := "dd0000"
+					GuiControl, Hide, test_progress
+					Gui, 3:Add, Progress, y92 x7 w640 r1 border +c%pro_color%,% progress_percent
 					break
 				}
 				Continue
@@ -918,9 +926,11 @@ decode_test:
 			;progress_fps := current_frame[2]
 			
 			progress_fps := StrSplit(current_frame[2],"q=","q=")
-			GuiControl,, com_display,% "Current Frame : " current_frame[1] "`rSpeed : " progress_fps[1]
-			asd := (current_frame[1] / n_frame) * 100
-			GuiControl,,test_progress,% asd
+			GuiControl,, com_display,% "Current Frame : " current_frame[1] "`rSpeed : " progress_fps[1] " fps"
+			progress_percent := (current_frame[1] / n_frame) * 100
+			GuiControl,,test_progress,% progress_percent
+			progress_percent2 := Round(progress_percent,2)
+			GuiControl,,test_per,% progress_percent2 " %"
 			sleep,250
 		}
 		
@@ -1269,7 +1279,7 @@ alt_guiupdate:
 	Gui, Submit, NoHide
 	if(output_vid=1)
 	{
-		GuiControl,,config_ext2,|.avi|.mp4||.mkv|.avi
+		GuiControl,,config_ext2,|.avi|.mp4||.mkv
 	}
 	else if(output_pic=1)
 	{
