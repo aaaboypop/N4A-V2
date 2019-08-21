@@ -39,59 +39,68 @@ if !FileExist(A_WorkingDir "\bin\ffmpeg.exe")
 	exitapp
 }
 
-if !FileExist(A_WorkingDir "\bin\ffmpeg_p1.exe")
-{
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p1.exe
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p2.exe
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p3.exe
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p4.exe
-}
 
 
-if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan-p*.exe"))
+
+if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan-p*.exe") || !FileExist(A_WorkingDir "\bin\ffmpeg_p1.exe"))
 {
+	all_task := 24
 	Gui, 3:Add, Progress, x2 y2 w300 h20 +cGreen Border vp_load -Theme BackgroundWhite, 0
 	Gui, 3:Show, w304 h24, Loading..
-
+	
 	FileDelete, %A_WorkingDir%\waifu2x-caffe-cui-p*.exe
-	GuiControl,3:, p_load, 5
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p1.exe
-	GuiControl,3:, p_load, 11
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p2.exe
-	GuiControl,3:, p_load, 16
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p3.exe
-	GuiControl,3:, p_load, 22
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p4.exe
-	GuiControl,3:, p_load, 27
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p5.exe
-	GuiControl,3:, p_load, 33
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p6.exe
-	GuiControl,3:, p_load, 38
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p7.exe
-	GuiControl,3:, p_load, 44
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p8.exe
-	GuiControl,3:, p_load, 50
+	load_gui()
 	FileDelete, %A_WorkingDir%\waifu2x-ncnn-vulkan-p*.exe
-	GuiControl,3:, p_load, 55
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p1.exe
-	GuiControl,3:, p_load, 61
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p2.exe
-	GuiControl,3:, p_load, 66
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p3.exe
-	GuiControl,3:, p_load, 72
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p4.exe
-	GuiControl,3:, p_load, 77
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p5.exe
-	GuiControl,3:, p_load, 83
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p6.exe
-	GuiControl,3:, p_load, 88
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p7.exe
-	GuiControl,3:, p_load, 94
+	load_gui()
 	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p8.exe
-	GuiControl,3:, p_load, 100
+	load_gui()
+	FileDelete, %A_WorkingDir%\bin\ffmpeg_p*.exe
+	load_gui()
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p1.exe
+	load_gui()
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p2.exe
+	load_gui()
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p3.exe
+	load_gui()
+	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p4.exe
+	load_gui()
 	FileDelete, %A_WorkingDir%\update.ini
+	load_gui()
+	sleep, 333
 	Gui, 3:destroy
 }
+
+
 
 IniRead, in_path, %A_WorkingDir%\setting.ini, main, in_path, %A_Space%
 IniRead, out_path, %A_WorkingDir%\setting.ini, main, out_path,  %A_Space%
@@ -295,7 +304,7 @@ Gui, Add, Edit, x92 y219 w50 h20 vresize_w ggui_update,
 Gui, Add, Text, x142 y219 w10 h20 vresize_x, x
 Gui, Add, Edit, x152 y219 w50 h20 vresize_h ggui_update, 
 Gui, Add, DropDownList, x202 y219 w100 h20 r10 vt_scale1 ggui_update, bilinear|bicubic|experimental|neighbor|area|bicublin|gauss|sinc|lanczos|spline||
-Gui, Add, Text, x752 y49 w60 h20 right, Output Ext :
+Gui, Add, Text, x749 y52 w60 h20 right, Output Ext :
 Gui, Add, DropDownList, x812 y49 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.png|.bmp
 Gui, Add, button, x12 y519 w150 h20 vb_start2 grun_vid_to_pic, Start
 
@@ -582,6 +591,19 @@ while(i<=3)
 Gui, Show, x413 y187 h560 w900, N4A-V2
 goto, gui_update
 Return
+
+load_gui(){
+	global all_task
+	global i_task
+	if (i_task="")
+	{
+		i_task:=0
+	}
+	i_task++
+	GuiControl,3:, p_load,% (i_task/all_task)*100
+	Return
+}
+
 
 console_log:
 {
