@@ -800,34 +800,62 @@ media_load:
 	}
 	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv"||load_ext="ts")
 	{
-		var1 = ffprobe -v error -select_streams v:0 -show_entries stream=r_frame_rate,avg_frame_rate,nb_read_packets -of default=noprint_wrappers=1:nokey=1 -count_packets "%vp_in_path%"
+		var1 = ffprobe -v error -show_entries stream=codec_name,r_frame_rate,avg_frame_rate,nb_read_packets -of default=noprint_wrappers=1:nokey=1 -count_packets "%vp_in_path%"
 		c2 := ""
+		run_command := A_WorkingDir . "\bin\" . var1
+		gosub,log_console
 		c2 := StdOutToVar(comspec . " /c " . A_WorkingDir . "\bin\" . var1)
 		
-		StringSplit,probe_re, c2, "`r"
 		
-		StringTrimLeft,probe_re2,probe_re2,1
-		StringTrimLeft,n_frame,probe_re3,1
+		probe_re := StrSplit(c2, "`n", "`n`r")
 		
-		StringSplit,fpsc, probe_re1, "/"
-		StringSplit,fpsv, probe_re2, "/"
+		video_codec := probe_re[1]
+		video_fps_max := probe_re[2]
+		video_fps_avg := probe_re[3]
+		video_n_frame := probe_re[4]
+		audio_codec := probe_re[5]
 		
+		fpsc := StrSplit(probe_re[2], "/", "/")
+		fpsv := StrSplit(probe_re[3], "/", "/")
 		
 		s_path := StrReplace(vp_in_path,"\","/")
 		
 		if(probe_re1=probe_re2)
 		{
-			msgbox,0x2000, Media Info,% "Frame Rate Mode : Constant`nFrameRate : " fpsc1 / fpsc2 " FPS `rFrame : " n_frame 
+			Gui, 4:Add, ListView,, General|Info
+			fpscc := fpsc[1] / fpsc[2]
+			Gui, 4:Default			
+			LV_Add("", "Video Codec", video_codec)
+			LV_Add("", "Frame Rate Mode", fpscc)
+			LV_Add("", "FrameRate", video_n_frame)
+			LV_Add("", "Audio Codec", audio_codec)
+
+			LV_ModifyCol() 
+			
+			Gui, 4:Show,
 			cfr := 1
 			vfr := 0
 		}
 		else
 		{
-			msgbox,0x2000, Media Info,% "Frame Rate Mode : Variable`nMax FrameRate : " fpsc1 / fpsc2 " FPS`nAvg FrameRate : " fpsv1 / fpsv2 " FPS `rFrame : " n_frame
+			Gui, 4:Add, ListView,, General|Info
+			fpscc := fpsc[1] / fpsc[2]
+			fpsvv := fpsv[1] / fpsv[2]
+			Gui, 4:Default			
+			LV_Add("", "Video Codec", video_codec)
+			LV_Add("", "Frame Rate Max", fpscc)
+			LV_Add("", "Frame Rate Avg", fpsvv)
+			LV_Add("", "FrameRate", video_n_frame)
+			LV_Add("", "Audio Codec", audio_codec)
+
+			LV_ModifyCol() 
+			
+			Gui, 4:Show,
 			;msgbox,% "Filter is Not support Variable Frame rate mode"
 			cfr := 0
 			vfr := 1
 		}
+		Gui, 4:+AlwaysOnTop
 	}
 	else
 	{
@@ -836,6 +864,13 @@ media_load:
 		GuiControl,,vp_in_path,
 	}
 	Gui, 3:Destroy
+}
+Return
+
+4GuiClose:
+{
+	Gui, 1:Default
+	Gui, 4:destroy
 	Gui, 1:-Disabled
 }
 Return
