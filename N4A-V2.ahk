@@ -2,6 +2,10 @@
 process_limit := 8
 thumbnail_max_size := 120
 
+version := "0.8.0"
+build := "20190825"
+;FormatTime,today,,yyyyMMdd
+
 model_name1 := "anime_style_art"
 model_name2 := "anime_style_art_rgb"
 model_name3 := "cunet"
@@ -23,76 +27,76 @@ crf := 18
 ex_command := "-metadata description=""https://www.facebook.com/Net4Anime"""
 
 
-if !FileExist(A_WorkingDir "\waifu2x-caffe-cui.exe")
+if !FileExist(A_WorkingDir "\w2x_cuda\waifu2x-caffe-cui.exe")
 {
-	MsgBox,16, Error! waifu2x-caffe-cui.exe Not Found
+	MsgBox,16, Error!, waifu2x-caffe-cui.exe Not Found
 	exitapp
 }
-if !FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan.exe")
+if !FileExist(A_WorkingDir "\w2x_vulkan\waifu2x-ncnn-vulkan.exe")
 {
-	MsgBox,16, Error! waifu2x-ncnn-vulkan.exe Not Found
+	MsgBox,16, Error!, waifu2x-ncnn-vulkan.exe Not Found
 	exitapp
 }
-if !FileExist(A_WorkingDir "\bin\ffmpeg.exe")
+if !FileExist(A_WorkingDir "\ffmpeg\ffmpeg.exe")
 {
-	MsgBox,16, Error! ffmpeg.exe Not Found
+	MsgBox,16, Error!, ffmpeg.exe Not Found
 	exitapp
 }
 
 
 
 
-if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\waifu2x-ncnn-vulkan-p*.exe") || !FileExist(A_WorkingDir "\bin\ffmpeg_p1.exe"))
+if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\w2x_cuda\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\w2x_vulkan\waifu2x-ncnn-vulkan-p*.exe") || !FileExist(A_WorkingDir "\ffmpeg\ffmpeg_p1.exe"))
 {
 	all_task := 24
 	Gui, 3:Add, Progress, x2 y2 w300 h20 +cGreen Border vp_load -Theme BackgroundWhite, 0
 	Gui, 3:Show, w304 h24, Loading..
 	
-	FileDelete, %A_WorkingDir%\waifu2x-caffe-cui-p*.exe
+	FileDelete, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p*.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p1.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p1.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p2.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p2.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p3.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p3.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p4.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p4.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p5.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p5.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p6.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p6.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p7.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p7.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-caffe-cui.exe, %A_WorkingDir%\waifu2x-caffe-cui-p8.exe
+	FileCopy, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui.exe, %A_WorkingDir%\w2x_cuda\waifu2x-caffe-cui-p8.exe
 	load_gui()
-	FileDelete, %A_WorkingDir%\waifu2x-ncnn-vulkan-p*.exe
+	FileDelete, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p*.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p1.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p1.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p2.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p2.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p3.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p3.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p4.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p4.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p5.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p5.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p6.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p6.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p7.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p7.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\waifu2x-ncnn-vulkan-p8.exe
+	FileCopy, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan.exe, %A_WorkingDir%\w2x_vulkan\waifu2x-ncnn-vulkan-p8.exe
 	load_gui()
-	FileDelete, %A_WorkingDir%\bin\ffmpeg_p*.exe
+	FileDelete, %A_WorkingDir%\ffmpeg\ffmpeg_p*.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p1.exe
+	FileCopy, %A_WorkingDir%\ffmpeg\ffmpeg.exe, %A_WorkingDir%\ffmpeg\ffmpeg_p1.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p2.exe
+	FileCopy, %A_WorkingDir%\ffmpeg\ffmpeg.exe, %A_WorkingDir%\ffmpeg\ffmpeg_p2.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p3.exe
+	FileCopy, %A_WorkingDir%\ffmpeg\ffmpeg.exe, %A_WorkingDir%\ffmpeg\ffmpeg_p3.exe
 	load_gui()
-	FileCopy, %A_WorkingDir%\bin\ffmpeg.exe, %A_WorkingDir%\bin\ffmpeg_p4.exe
+	FileCopy, %A_WorkingDir%\ffmpeg\ffmpeg.exe, %A_WorkingDir%\ffmpeg\ffmpeg_p4.exe
 	load_gui()
 	FileDelete, %A_WorkingDir%\update.ini
 	load_gui()
@@ -150,9 +154,9 @@ while(i<=8)
 	i++
 }
 
-Loop, Files, %A_WorkingDir%\models\*info.json, FR
+Loop, Files, %A_WorkingDir%\w2x_cuda\models\*info.json, FR
 {
-	model_trim_l := StrLen(A_WorkingDir) + 8
+	model_trim_l := StrLen(A_WorkingDir) + 17
 	StringTrimLeft, add_list, A_LoopFilePath, %model_trim_l%
 	StringTrimRight, add_list, add_list, 10
 	if(!model_list)
@@ -588,7 +592,8 @@ while(i<=3)
 }
 
 ;==== GUI Window ====
-Gui, Show, x413 y187 h560 w900, N4A-V2
+Gui, Show, x413 y187 h560 w900, N4A-V2 - %version% %build%
+Menu, Tray, Tip, Version : %version% `nBuild : %build%
 goto, gui_update
 Return
 
@@ -770,12 +775,23 @@ load_script0()
 	
 }
 
+InvertStringCaps( string = "" )
+{
+	Loop, parse, string
+	{
+		ac := Asc(A_LoopField)
+		newstring .= Chr(ac+(ac>64&&ac<91 ? 32 : (ac>96&&ac<123 ? -32 : 0)))
+	}
+	return newstring
+}
+
 media_load:
 {
 	Gui, 1:+Disabled
-	Gui, 3:Add,Text,w200 r3 cRed center, `nLoading..
+	Gui, 3:Add,Text,w200 r3 cRed center vload_text, `nLoading..
 	Gui, 3:Show,, Media Info
 	Gui, 3:+Disabled
+	Gui, 3:Default			
 	media_load := 1
 	image_input := 0
 	load_image_count := 0
@@ -790,59 +806,74 @@ media_load:
 				load_image_count++
 			}
 			image_input := 1
-			msgbox,0x2000, Media Info,% "Loaded " load_image_count " Image."
-			n_frame := load_image_count
+			video_n_frame := load_image_count
+			
+			Gui, 4:Add, ListView,, General|Info
+			Gui, 4:Default			
+			LV_Add("", "Input Type", load_ext)
+			LV_Add("", "Frame", load_image_count)
+
+			LV_ModifyCol() 
+			
+			Gui, 4:Show,
+			
+			
 		}
 		else
 		{
 			msgbox,0x2000, Media Info,% "Not Found Image Format ""image%06d"""
+			Gui, 4:destroy
+			Gui, 1:-Disabled
 		}
 	}
 	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv"||load_ext="ts")
 	{
+		GuiControl,,load_text, Loading..`nMedia Infomation
 		var1 = ffprobe -v error -show_entries stream=codec_name,r_frame_rate,avg_frame_rate,nb_read_packets -of default=noprint_wrappers=1:nokey=1 -count_packets "%vp_in_path%"
 		c2 := ""
-		run_command := A_WorkingDir . "\bin\" . var1
+		run_command := A_WorkingDir . "\ffmpeg\" . var1
 		gosub,log_console
-		c2 := StdOutToVar(comspec . " /c " . A_WorkingDir . "\bin\" . var1)
+		c2 := StdOutToVar(comspec . " /c " . A_WorkingDir . "\ffmpeg\" . var1)
+		
+		GuiControl,,load_text, Loading..`nFrame Rate Mode
+		var1 = ffmpeg -i "%vp_in_path%" -to 00:00:30 -vf vfrdet -f null -
+		c3 := ""
+		run_command := A_WorkingDir . "\ffmpeg\" . var1
+		gosub,log_console
+		c3 := StdOutToVar(comspec . " /c " . A_WorkingDir . "\ffmpeg\" . var1)
+		
+		Loop, parse, c3, `n,
+		{
+			If RegExMatch(A_LoopField,"VFR:.*.\d\d\d\d\d\d",vfr_v)
+			{
+				vfr_value := RegExReplace(vfr_v, "VFR:","" )
+			}
+		}
 		
 		
 		probe_re := StrSplit(c2, "`n", "`n`r")
 		
-		video_codec := probe_re[1]
+		video_codec := InvertStringCaps(probe_re[1])
 		video_fps_max := probe_re[2]
 		video_fps_avg := probe_re[3]
 		video_n_frame := probe_re[4]
-		audio_codec := probe_re[5]
+		audio_codec := InvertStringCaps(probe_re[5])
+		
+
 		
 		fpsc := StrSplit(probe_re[2], "/", "/")
 		fpsv := StrSplit(probe_re[3], "/", "/")
 		
 		s_path := StrReplace(vp_in_path,"\","/")
 		
-		if(probe_re1=probe_re2)
+		if(vfr_value>0)
 		{
 			Gui, 4:Add, ListView,, General|Info
-			fpscc := fpsc[1] / fpsc[2]
-			Gui, 4:Default			
-			LV_Add("", "Video Codec", video_codec)
-			LV_Add("", "Frame Rate Mode", fpscc)
-			LV_Add("", "FrameRate", video_n_frame)
-			LV_Add("", "Audio Codec", audio_codec)
-
-			LV_ModifyCol() 
-			
-			Gui, 4:Show,
-			cfr := 1
-			vfr := 0
-		}
-		else
-		{
-			Gui, 4:Add, ListView,, General|Info
+			Gui, 4:Default	
 			fpscc := fpsc[1] / fpsc[2]
 			fpsvv := fpsv[1] / fpsv[2]
-			Gui, 4:Default			
 			LV_Add("", "Video Codec", video_codec)
+			LV_Add("", "Frame Rate Mode", "Variable")
 			LV_Add("", "Frame Rate Max", fpscc)
 			LV_Add("", "Frame Rate Avg", fpsvv)
 			LV_Add("", "FrameRate", video_n_frame)
@@ -855,6 +886,23 @@ media_load:
 			cfr := 0
 			vfr := 1
 		}
+		else
+		{
+			Gui, 4:Add, ListView,, General|Info
+			Gui, 4:Default	
+			fpscc := fpsc[1] / fpsc[2]
+			LV_Add("", "Video Codec", video_codec)
+			LV_Add("", "Frame Rate Mode", "Constant")
+			LV_Add("", "Frame Rate", fpscc)
+			LV_Add("", "Frame", video_n_frame)
+			LV_Add("", "Audio Codec", audio_codec)
+
+			LV_ModifyCol() 
+			
+			Gui, 4:Show,
+			cfr := 1
+			vfr := 0
+		}
 		Gui, 4:+AlwaysOnTop
 	}
 	else
@@ -862,6 +910,8 @@ media_load:
 		media_load := 0
 		msgbox,0x2000, Media Info, Not Support FileFormat.
 		GuiControl,,vp_in_path,
+		Gui, 4:destroy
+		Gui, 1:-Disabled
 	}
 	Gui, 3:Destroy
 }
@@ -886,7 +936,7 @@ decode_test:
 	run_command6 := ""
 	SplitPath, vp_in_path, in_name_ext, in_dir, in_ext, in_name
 	
-	run_command .= """" A_WorkingDir "\bin\ffmpeg_p1.exe""" " -hide_banner -loglevel info"
+	run_command .= """" A_WorkingDir "\ffmpeg\ffmpeg_p1.exe""" " -hide_banner -loglevel info"
 	
 	if(image_input=1)
 	{
@@ -1000,7 +1050,7 @@ decode_test:
 			
 			progress_fps := StrSplit(current_frame[2],"q=","q=")
 			GuiControl,, com_display,% "Current Frame : " current_frame[1] "`rSpeed : " progress_fps[1] " fps"
-			progress_percent := (current_frame[1] / n_frame) * 100
+			progress_percent := (current_frame[1] / video_n_frame) * 100
 			GuiControl,,test_progress,% progress_percent
 			progress_percent2 := Round(progress_percent,2)
 			GuiControl,,test_per,% progress_percent2 " %"
@@ -1504,7 +1554,7 @@ check_file:
 											}
 										}
 									}
-									run_command := """" A_WorkingDir "\bin\ffmpeg_p" ssim_cycle ".exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim_" ssim_cycle ".log"" -f null -"
+									run_command := """" A_WorkingDir "\ffmpeg\ffmpeg_p" ssim_cycle ".exe"" -i """ A_LoopFilePath """ -i """ out_path "\" A_LoopFileName """ -lavfi ""[1:v]scale=" img_w ":" img_h "[vid1];[vid1][0:v]ssim=ssim_" ssim_cycle ".log"" -f null -"
 									Run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,hide
 									ssim_filename_%ssim_cycle% := A_LoopFileName
 									ssim_filepath_%ssim_cycle% := A_LoopFilePath
@@ -1886,7 +1936,7 @@ run_test:
 			{
 				FileCreateDir, %out_path%%sub_dir%\%out_filename%
 			}
-			run_command := """" A_WorkingDir "\bin\ffmpeg.exe"" -i """ A_LoopFilePath """ " ff " -sws_flags " t_scale " """ out_path sub_dir "\" out_filename "\" out_filename "_" t_scale ".png"""
+			run_command := """" A_WorkingDir "\ffmpeg\ffmpeg.exe"" -i """ A_LoopFilePath """ " ff " -sws_flags " t_scale " """ out_path sub_dir "\" out_filename "\" out_filename "_" t_scale ".png"""
 			Run, %run_command%, ,%win_mode%
 			GuiControl,,l_com,%run_command%
 			
@@ -1934,9 +1984,9 @@ run_test:
 						{
 							gpu_select := config_gpu%p_cycle%
 							out_filename1 := out_filename "(" model_name%m1_cycle% ")_noise_level_" m2_cycle
-							attribute2 := " --model_dir """ A_WorkingDir "\models\" model_name%m1_cycle% """"
+							attribute2 := " --model_dir """ A_WorkingDir "\w2x_cuda\models\" model_name%m1_cycle% """"
 							noise_level1 := m2_cycle
-							run_command := """" A_WorkingDir "\waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " gpu_select " -p cudnn " attribute1 attribute2 " -n " noise_level1 " -m " mode_select " -i """ A_LoopFilePath """ -o """ out_path sub_dir "\" out_filename "\" out_filename1 config_ext """"
+							run_command := """" A_WorkingDir "\w2x_cuda\waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " gpu_select " -p cudnn " attribute1 attribute2 " -n " noise_level1 " -m " mode_select " -i """ A_LoopFilePath """ -o """ out_path sub_dir "\" out_filename "\" out_filename1 config_ext """"
 							Run, %run_command%, ,%win_mode%
 							if(log_enable = 1)
 							{
@@ -2059,7 +2109,7 @@ run_start:
 	}
 	else
 	{
-		attribute2 := " --model_dir """ A_WorkingDir "\models\" model """"
+		attribute2 := " --model_dir """ A_WorkingDir "\w2x_cuda\models\" model """"
 	}
 	
 	GuiControl,,f_total,%f_count%
@@ -2149,7 +2199,7 @@ run_start:
 					}
 					gpu_select := config_gpu%p_cycle%
 
-					run_command := """" A_WorkingDir "\waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " gpu_select " -p cudnn " attribute1 attribute2 " -n " noise_level " -m " mode_select " -i """ A_LoopFilePath """ " out_file_config
+					run_command := """" A_WorkingDir "\w2x_cuda\waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " gpu_select " -p cudnn " attribute1 attribute2 " -n " noise_level " -m " mode_select " -i """ A_LoopFilePath """ " out_file_config
 					Run, %run_command%, ,%win_mode%
 					if(log_enable = 1)
 					{
@@ -2328,7 +2378,7 @@ run_vid_to_pic:
 		}
 	}
 	
-	run_command .= """" A_WorkingDir "\bin\ffmpeg.exe"""
+	run_command .= """" A_WorkingDir "\ffmpeg\ffmpeg.exe"""
 	if(image_input=1)
 	{
 		run_command2 .= " -i """ in_dir "\image%06d." in_ext """"
@@ -2733,8 +2783,8 @@ run_startv:
 						FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
 						FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
 						batch_count%p_cycle% := 0
-						run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
-						run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
+						run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpuv%p_cycle%
+						run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_modev%
 						
 						if(log_enable = 1)
 						{
@@ -2795,8 +2845,8 @@ run_startv:
 		{
 			FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
 			FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
-			run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\" modelv """ -g " config_gpuv%p_cycle%
-			run, %comspec% /c cd "%A_WorkingDir%" & %run_command%,,%win_modev%
+			run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpuv%p_cycle%
+			run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_modev%
 			
 			if(log_enable = 1)
 			{
@@ -2825,7 +2875,6 @@ run_startv:
 			{
 				continue
 			}
-			
 		}
 		
 		If p_cycle > %process_limitv%
@@ -2841,11 +2890,47 @@ run_startv:
 	GuiControl,,tspeedv,%speed%
 	GuiControl,,s_percenv,100 `%
 
-	MsgBox, 0x2004, Media Convert, Finished do you want to Rename?
-	IfMsgBox Yes
+	MsgBox, 0x1004, Media Convert, Finished do you want to Rename?,30
+	IfMsgBox, Yes
 	{
+		fix_name := 1
+	}
+	else IfMsgBox, Timeout
+	{
+		fix_name := 1
+	}
+	else
+	{
+		fix_name := 0
+	}
+	
+	If(fix_name=1)
+	{
+		Gui, 1:Show,hide
+		Gui, 5:Add, Progress, y9 x7 w640 r6 +c777777, 100
+		Gui, 5:Add, Text, y12 x10 w640 r6 vcurrent_fn +BackgroundTrans +ceeeeee, File Name : ...
+		Gui, 5:Add, Progress, y92 x7 w640 r1 border +c00dd00 vtest_progress, 0
+		Gui, 5:Add, Text, y92 x7 w640 +BackgroundTrans center r1 vtest_per,% 0.00 " %"
+		Gui, 5:Color, bbbbbb
+		Gui, 5:Default
+		Gui, 5:Show, w654,Renaming..
+		
+		StartTime := A_TickCount
+
+		
 		Loop, Files, %out_pathv%\*.png.png , F
 		{
+			e_time := (A_TickCount-StartTime)
+			If(e_time>500)
+			{
+				c_fn := A_LoopFileName
+				StartTime := A_TickCount
+				GuiControl,, current_fn,% "File Name : " A_LoopFileName
+				progress_percent := (A_Index/f_count)*100
+				progress_percent2 := Round(progress_percent,2)
+				GuiControl,, test_progress, %progress_percent%
+				GuiControl,, test_per, %progress_percent2% `%
+			}
 			loop_ext := SubStr(A_LoopFileName, -7)
 			StringTrimLeft, loop_ext, loop_ext, 4
 			StringTrimRight, loop_fpath, A_LoopFilePath, 8
@@ -2854,14 +2939,32 @@ run_startv:
 		
 		Loop, Files, %out_pathv%\*.jpg.png , F
 		{
+			e_time := (A_TickCount-StartTime)
+			If(e_time>500)
+			{
+				c_fn := A_LoopFileName
+				StartTime := A_TickCount
+				GuiControl,, current_fn,% "File Name : " A_LoopFileName
+				progress_percent := (A_Index/f_count)*100
+				progress_percent2 := Round(progress_percent,2)
+				GuiControl,, test_progress, %progress_percent%
+				GuiControl,, test_per, %progress_percent2% `%
+			}
 			loop_ext := SubStr(A_LoopFileName, -7)
 			StringTrimLeft, loop_ext, loop_ext, 4
 			StringTrimRight, loop_fpath, A_LoopFilePath, 8
 			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
 		}
-		msgbox,0x2000, Media Convert,Finished!
+		GuiControl,, test_progress, 100
+		GuiControl,, test_per, 100.00 `%
 		
+		msgbox,0x1000, Media Convert,Finished!,5
+		
+		Gui, 1:Default
+		Gui, 5:Destroy
+		Gui, 1:Show
 	}
+	
 	FileRemoveDir, %in_pathv%\temp, 1
 	GuiControl,,f_ppv,%p_count%
 	GuiControl,Enabled,b_start
