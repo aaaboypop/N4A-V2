@@ -2,8 +2,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.8.0"
-build := "20190825"
+version := "0.8.1"
+build := "20190829"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -868,7 +868,7 @@ media_load:
 		
 		if(vfr_value>0)
 		{
-			Gui, 4:Add, ListView,, General|Info
+			Gui, 4:Add, ListView, r7 w180, General|Info
 			Gui, 4:Default	
 			fpscc := fpsc[1] / fpsc[2]
 			fpsvv := fpsv[1] / fpsv[2]
@@ -881,14 +881,14 @@ media_load:
 
 			LV_ModifyCol() 
 			
-			Gui, 4:Show,
+			Gui, 4:Show,,Media Info
 			;msgbox,% "Filter is Not support Variable Frame rate mode"
 			cfr := 0
 			vfr := 1
 		}
 		else
 		{
-			Gui, 4:Add, ListView,, General|Info
+			Gui, 4:Add, ListView, r6 w180, General|Info
 			Gui, 4:Default	
 			fpscc := fpsc[1] / fpsc[2]
 			LV_Add("", "Video Codec", video_codec)
@@ -899,11 +899,11 @@ media_load:
 
 			LV_ModifyCol() 
 			
-			Gui, 4:Show,
+			Gui, 4:Show,,Media Info
 			cfr := 1
 			vfr := 0
 		}
-		Gui, 4:+AlwaysOnTop
+		Gui, 4:+AlwaysOnTop +ToolWindow
 	}
 	else
 	{
@@ -2955,6 +2955,7 @@ run_startv:
 			StringTrimRight, loop_fpath, A_LoopFilePath, 8
 			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
 		}
+
 		GuiControl,, test_progress, 100
 		GuiControl,, test_per, 100.00 `%
 		
