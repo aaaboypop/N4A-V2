@@ -3,7 +3,7 @@ process_limit := 8
 thumbnail_max_size := 120
 
 version := "0.8.5"
-build := "20190910"
+build := "20190911"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -1673,6 +1673,10 @@ Return
 run_stop:
 {
 	stop := 1
+	GuiControl,Enabled,b_startv
+	GuiControl,Enabled,b_startv1
+	GuiControl,Disable,b_stopv
+	GuiControl,Disable,b_stopv1
 }
 return
 
@@ -2214,7 +2218,7 @@ run_startv:
 							gosub,log_console
 						}
 						
-						Msgbox,% A_WorkingDir "\w2x_cuda`r`r" run_command
+						;Msgbox,% A_WorkingDir "\w2x_cuda`r`r" run_command
 						
 						GuiControl,,s_file_processv%p_cycle%,%A_LoopFilePath%
 						s_process_countv%p_cycle% += 1
@@ -2226,16 +2230,11 @@ run_startv:
 						GuiControl,,s_percenv,%per% `%
 
 						;wait_process
-						Process, Exist, %process_name%
-						while (!ErrorLevel= 1)
+						Process, Wait, %process_name% , 10
+						If (ErrorLevel=0)
 						{
-						;tooltip,% process_name "`r A_index " A_Index
-							If(A_Index > 100)
-							{
-								MsgBox, Error
-								Return
-							}
-							sleep,100
+							Msgbox, Error Process Not Found.
+							Return
 						}
 						
 						goto,buffer
@@ -2278,8 +2277,8 @@ run_startv:
 			
 			if (w2x_mode = 1)
 			{
-			run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
-			run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
+				run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+				run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
 			}
 			else
 			{						
