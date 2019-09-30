@@ -2,8 +2,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.8.5"
-build := "20190911"
+version := "0.8.7"
+build := "20191001"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -177,21 +177,24 @@ Gui, Add, Edit, x112 y29 w180 h20 vin_pathv ggui_update, %in_path%
 Gui, Add, Text, x22 y49 w80 h20 , Output Folder :
 Gui, Add, Edit, x112 y49 w180 h20 vout_pathv ggui_update, %out_path%
 Gui, Add, GroupBox, x22 y79 w310 h70 , Conversion Mode
-Gui, Add, Radio, x32 y99 w140 h20 vmodev1 Group Checked ggui_update, Denoise+Magnify
-Gui, Add, Radio, x182 y99 w140 h20 vmodev2 Hide ggui_update, Magnify
-Gui, Add, Radio, x32 y119 w140 h20 vmodev3 Hide ggui_update, Denoise
-Gui, Add, Radio, x182 y119 w140 h20 vmodev4 Hide ggui_update, Magnify+AutoDenoise
+
+Gui, Add, DropDownList, x32 y99 w140 h20 vmodev R4 Group Disabled ggui_update, Denoise and Magnify||Magnify only|Denoise only
+
+;Gui, Add, DropDownList, x32 y119 w140 h20 vby_scalev R4 Group Checked ggui_update, Scale|Specific Size
+
 
 Gui, Add, Radio, x22 y159 w80 h20 Group vby_scalev Checked ggui_update, Scale
+Gui, Add, Radio, x22 y189 w80 h20 vby_size ggui_update, Specific Size
 
-Gui, Add, Slider, x112 y159 w180 h20 vscalev Range1-2 ggui_update, 2
-Gui, Add, Text, x292 y159 w40 h20 vscalev_show, 2
+Gui, Add, Edit, x112 y159 w60 h20 vscalev ggui_update, 2
+Gui, Add, Edit, x112 y189 w60 h20 vsizew number ggui_update, 1920
+Gui, Add, Edit, x182 y189 w60 h20 vsizeh number ggui_update, 1080
 
-Gui, Add, Text, x172 y209 w80 h20 ,Batch/Process : 
-Gui, Add, Edit, x262 y209 w50 h21 vbatch_size ggui_update, 200
+Gui, Add, Text, x22 y219 w80 h20 ,Batch/Process : 
+Gui, Add, Edit, x112 y219 w50 h21 vbatch_size ggui_update, 200
 
 Gui, Add, Text, x22 y249 w70 h20 , Noise Level :
-Gui, Add, Slider, x112 y249 w180 h20 vnoise_levelv Range-1-3 ggui_update, 3
+Gui, Add, Slider, x112 y249 w180 h20 vnoise_levelv Range0-3 ggui_update, 3
 Gui, Add, Text, x292 y249 w40 h20 vnoise_levelv_show, %noise_levelv%
 Gui, Add, Text, x22 y279 w40 h20 , Model :
 Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet|models-upconv_7_anime_style_art_rgb||
@@ -199,7 +202,7 @@ Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
 Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
 Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
-Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 256
+Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 200
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
 Gui, Add, DropDownList, x112 y339 w50 h21 vwin_modev r6 ggui_update, |Max|Min|Hide||
 Gui, Add, Text, x202 y339 w40 h20 , Sleep :
@@ -231,9 +234,9 @@ Gui, Add, CheckBox, x182 y479 w20 h20 venable_processv8 ggui_update,
 Gui, Add, Text, x202 y479 w60 h20 vtconfig_gpuvv8, Process 8 :
 Gui, Add, DropDownList, x262 y479 w50 h21 vconfig_gpuv8 r8 ggui_update, 0||1|2|3|4|5|6|7
 
-Gui, Add, GroupBox, x352 y29 w280 h60 , Mode :
-Gui, Add, Radio, x382 y49 w50 h20 vw2x_mode galt_guiupdate , Cuda
-Gui, Add, Radio, x452 y49 w70 h20 Checked galt_guiupdate , Vulkan
+Gui, Add, GroupBox, x352 y29 w200 h40 , Mode :
+Gui, Add, Radio, x382 y42 w50 h20 vw2x_mode galt_guiupdate , Cuda
+Gui, Add, Radio, x452 y42 w70 h20 Checked galt_guiupdate , Vulkan
 
 
 Gui, Add, GroupBox, x342 y259 w550 h260 , Status
@@ -1122,7 +1125,6 @@ gui_update:
 		mode_select := "auto_scale"
 	}
 	
-	GuiControl,,scalev_show,%scalev%
 	GuiControl,,vp_quality_show,%vp_quality%
 	GuiControl,,noise_levelv_show,%noise_levelv%
 	
@@ -2161,6 +2163,16 @@ run_startv:
 			
 			if(A_index = f_count)
 			{
+				f_count := 0
+				Loop, Files, %in_pathv%\*.*, F
+				{
+					if A_LoopFileExt in png,jpg,jpeg,tif,tiff,bmp,tga
+					{
+						f_count += 1
+					}
+				}
+				
+
 				fill_buuffer := 0
 				while(fill_buuffer<8)
 				{
@@ -2171,7 +2183,15 @@ run_startv:
 					}
 					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
 				}
-				break
+				
+				if(A_index = f_count)
+				{
+					break
+				}
+				else
+				{
+					GuiControl,,f_totalv,%f_count%
+				}
 			}
 			
 			if(next_loop<>1)
@@ -2203,7 +2223,15 @@ run_startv:
 						
 						if (w2x_mode = 1)
 						{
-							run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+							If (by_size = 1)
+							{
+								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+							}
+							else If (by_scalev = 1)
+							{
+								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+							}
+							
 							run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
 						}
 						else
@@ -2277,7 +2305,15 @@ run_startv:
 			
 			if (w2x_mode = 1)
 			{
-				run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+				If (by_size = 1)
+				{
+					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+				}
+				else If (by_scalev = 1)
+				{
+					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+				}
+				
 				run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
 			}
 			else
