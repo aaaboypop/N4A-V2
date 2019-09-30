@@ -236,7 +236,7 @@ Gui, Add, DropDownList, x262 y479 w50 h21 vconfig_gpuv8 r8 ggui_update, 0||1|2|3
 
 Gui, Add, GroupBox, x352 y29 w200 h40 , Mode :
 Gui, Add, Radio, x382 y42 w50 h20 vw2x_mode galt_guiupdate , Cuda
-Gui, Add, Radio, x452 y42 w70 h20 Checked galt_guiupdate , Vulkan
+Gui, Add, Radio, x452 y42 w70 h20 vw2xv_mode Checked galt_guiupdate , Vulkan
 
 
 Gui, Add, GroupBox, x342 y259 w550 h260 , Status
@@ -467,7 +467,8 @@ while(i<=3)
 ;==== GUI Window ====
 Gui, Show, x413 y187 h560 w900, N4A-V2 - %version% %build%
 Menu, Tray, Tip, Version : %version% `nBuild : %build%
-goto, gui_update
+Gosub, gui_update
+Gosub, alt_guiupdate
 Return
 
 load_gui(){
@@ -1263,11 +1264,14 @@ alt_guiupdate:
 	{
 		GuiControl,,modelv,% model_list
 		GuiControl,Choose,modelv, 7
+		GuiControl,Enable,by_size
 	}
 	else
 	{
 		GuiControl,,modelv, |models-cunet|models-upconv_7_anime_style_art_rgb|
 		GuiControl,Choose,modelv, 2
+		GuiControl,Disable,by_size
+		GuiControl,,by_scalev, 1
 	}
 	
 	Gui, Submit, NoHide
