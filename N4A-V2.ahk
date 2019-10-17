@@ -362,7 +362,7 @@ Gui, Add, GroupBox, x512 y199 w370 h80 , Audio
 ;Gui, Add, ListView, x322 y309 w550 h190 vedit_script, Filter|Data
 ;Gui, Add, Button, x282 y459 w40 h20 , up
 ;Gui, Add, Button, x282 y479 w40 h20 , down
-;Gui, Add, button, x172 y519 w150 h20 ggui2 Disabled, Show Script
+Gui, Add, button, x172 y519 w150 h20 ggui2 , Show Script
 
 
 
@@ -531,7 +531,8 @@ Return
 
 load_script1()
 {
-	hybrid_path := "C:/Program Files/Hybrid/64bit"
+	filter_path := A_WorkingDir "/filter"
+	filter_path := RegExReplace(filter_path, "\\", "/")
 	source_path := StrReplace(vp_in_path, "\", "/")
 			
 	s_script := ""
@@ -539,14 +540,14 @@ load_script1()
 	s_script .= "import sys" "`n"
 	s_script .= "import vapoursynth as vs" "`n"
 	s_script .= "core = vs.get_core()" "`n"
-	s_script .= "scriptPath = '" hybrid_path "/vsscripts'" "`n"
+	s_script .= "scriptPath = '" filter_path "/vsscripts'" "`n"
 	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI3.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI2.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/fmtconv.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI3.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI2.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/fmtconv.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll"")" "`n"
 	s_script .= "import havsfunc" "`n"
 	s_script .= "import mvsfunc" "`n"
 	s_script .= "import edi_rpow2" "`n"
@@ -558,7 +559,7 @@ load_script1()
 
 load_script2()
 {
-	hybrid_path := "C:/Program Files/Hybrid/64bit"
+	filter_path := A_WorkingDir "/filter"
 	source_path := StrReplace(vp_in_path, "\", "/")
 			
 	s_script := ""
@@ -566,15 +567,15 @@ load_script2()
 	s_script .= "import sys" "`n"
 	s_script .= "import vapoursynth as vs" "`n"
 	s_script .= "core = vs.get_core()" "`n"
-	s_script .= "scriptPath = '" hybrid_path "/vsscripts'" "`n"
+	s_script .= "scriptPath = '" filter_path "/vsscripts'" "`n"
 	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI3.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/EEDI2.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/Support/fmtconv.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" hybrid_path "/vsfilters/SourceFilter/Imagemagick/libimwri.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI3.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI2.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/fmtconv.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll"")" "`n"
+	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/SourceFilter/Imagemagick/libimwri.dll"")" "`n"
 	s_script .= "import havsfunc" "`n"
 	s_script .= "import mvsfunc" "`n"
 	s_script .= "import edi_rpow2" "`n"
@@ -700,7 +701,7 @@ media_load:
 			Gui, 1:-Disabled
 		}
 	}
-	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv"||load_ext="ts")
+	else if(load_ext="mkv"||load_ext="mp4"||load_ext="mov"||load_ext="wmv"||load_ext="ts"||load_ext="m4v")
 	{
 		GuiControl,,load_text, Loading..`nMedia Infomation
 		var1 = ffprobe -v error -show_entries stream=codec_name,r_frame_rate,avg_frame_rate,nb_read_packets -of default=noprint_wrappers=1:nokey=1 -count_packets "%vp_in_path%"
@@ -2460,6 +2461,7 @@ run_startv:
 		per := (p_count/f_count)*100
 		GuiControl,,p_prov,%per%
 	}
+	stop := 1
 	goto, gui_update
 }
 return
@@ -2468,7 +2470,39 @@ return
 guiclose:
 exit:
 {
-	exitapp
+	If (stop = 0)
+	{
+		msgbox, 0x13, Exit, WOW!! Do you want to "Close" now?
+		IfMsgBox Yes
+		{
+			Process, Close, waifu2x-caffe-cui-p1.exe
+			Process, Close, waifu2x-caffe-cui-p2.exe
+			Process, Close, waifu2x-caffe-cui-p3.exe
+			Process, Close, waifu2x-caffe-cui-p4.exe
+			Process, Close, waifu2x-caffe-cui-p5.exe
+			Process, Close, waifu2x-caffe-cui-p6.exe
+			Process, Close, waifu2x-caffe-cui-p7.exe
+			Process, Close, waifu2x-caffe-cui-p8.exe
+			Process, Close, waifu2x-ncnn-vulkan-p1.exe
+			Process, Close, waifu2x-ncnn-vulkan-p2.exe
+			Process, Close, waifu2x-ncnn-vulkan-p3.exe
+			Process, Close, waifu2x-ncnn-vulkan-p4.exe
+			Process, Close, waifu2x-ncnn-vulkan-p5.exe
+			Process, Close, waifu2x-ncnn-vulkan-p6.exe
+			Process, Close, waifu2x-ncnn-vulkan-p7.exe
+			Process, Close, waifu2x-ncnn-vulkan-p8.exe
+			
+			exitapp
+		}
+		else IfMsgBox No
+		{
+			
+		}
+	}
+	else
+	{
+		ExitApp
+	}
 }
 return
 
