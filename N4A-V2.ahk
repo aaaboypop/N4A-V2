@@ -200,7 +200,7 @@ Gui, Add, Text, x22 y279 w40 h20 , Model :
 Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet|models-upconv_7_anime_style_art_rgb||
 
 Gui, Add, Text, x22 y309 w90 h20 , File Extension :
-Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||
+Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_extv r11 ggui_update, .png||.jpg
 Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
 Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_sizev ggui_update, 200
 Gui, Add, Text, x22 y339 w40 h20 , Mode :
@@ -1266,12 +1266,15 @@ alt_guiupdate:
 		GuiControl,,modelv,% model_list
 		GuiControl,Choose,modelv, 7
 		GuiControl,Enable,by_size
+		GuiControl,Enable,config_extv
 	}
 	else
 	{
 		GuiControl,,modelv, |models-cunet|models-upconv_7_anime_style_art_rgb|
+		GuiControl,Choose,config_extv, 1
 		GuiControl,Choose,modelv, 2
 		GuiControl,Disable,by_size
+		GuiControl,Disable,config_extv
 		GuiControl,,by_scalev, 1
 	}
 	
@@ -1844,7 +1847,7 @@ run_vid_to_pic:
 	}
 	if(enable_resize = 1)
 	{
-		attribute := "scale=" resize_w ":" resize_h
+		attribute := "scale=" resize_w ":" resize_h ":flags=" t_scale1
 		run_command4 .= add_filter(attribute)
 		run_command5 .= " -sws_flags " t_scale1
 	}
@@ -2230,11 +2233,11 @@ run_startv:
 						{
 							If (by_size = 1)
 							{
-								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
 							}
 							else If (by_scalev = 1)
 							{
-								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
 							}
 							
 							run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
@@ -2312,11 +2315,11 @@ run_startv:
 			{
 				If (by_size = 1)
 				{
-					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
 				}
 				else If (by_scalev = 1)
 				{
-					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale" " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
+					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_pathv """"
 				}
 				
 				run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
@@ -2365,19 +2368,19 @@ run_startv:
 	GuiControl,,tspeedv,%speed%
 	GuiControl,,s_percenv,100 `%
 
-	MsgBox, 0x1004, Media Convert, Finished do you want to Rename?,30
-	IfMsgBox, Yes
-	{
+	;MsgBox, 0x1004, Media Convert, Finished do you want to Rename?,30
+	;IfMsgBox, Yes
+	;{
+	;	fix_name := 1
+	;}
+	;else IfMsgBox, Timeout
+	;{
 		fix_name := 1
-	}
-	else IfMsgBox, Timeout
-	{
-		fix_name := 1
-	}
-	else
-	{
-		fix_name := 0
-	}
+	;}
+	;else
+	;{
+	;	fix_name := 0
+	;}
 	
 	If(fix_name=1)
 	{
@@ -2434,7 +2437,7 @@ run_startv:
 		GuiControl,, test_progress, 100
 		GuiControl,, test_per, 100.00 `%
 		
-		msgbox,0x1000, Media Convert,Finished!,5
+		;msgbox, , Media Convert,Finished!,1
 		
 		Gui, 1:Default
 		Gui, 5:Destroy
