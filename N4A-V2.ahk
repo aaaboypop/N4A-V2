@@ -312,15 +312,16 @@ Gui, Add, DropDownList, x812 y49 w50 h21 vconfig_ext2 r12 ggui_update, .jpg||.pn
 Gui, Add, button, x12 y519 w150 h20 vb_start2 grun_vid_to_pic, Start
 
 Gui, Add, GroupBox, x312 y99 w140 h90 , Deinterlace
-Gui, Add, CheckBox, x322 y114 w120 h20 venable_deinterlace ggui_update, Enable Deinterlace
+;Gui, Add, CheckBox, x322 y114 w120 h20 venable_deinterlace ggui_update, Enable Deinterlace
+;Gui, Add, Text, x322 y139 w60 h20 , Mode :
+;Gui, Add, Text, x322 y159 w60 h20 , Field :
+;Gui, Add, DropDownList, x382 y139 w60 h10 r4 vdeinter_mode ggui_update, Frame||Field
+;Gui, Add, DropDownList, x382 y159 w60 h10 r2 vdeinter_field ggui_update, Top||Bottom
 Gui, Add, CheckBox, x322 y219 w60 h20 venable_ss ggui_update, Start :
 Gui, Add, CheckBox, x322 y249 w60 h20 venable_to ggui_update, End :
 Gui, Add, Edit, x382 y219 w110 h20 vtime_ss ggui_update, 00:00:00
 Gui, Add, Edit, x382 y249 w110 h20 vtime_to ggui_update, 00:00:00
-Gui, Add, Text, x322 y139 w60 h20 , Mode :
-Gui, Add, Text, x322 y159 w60 h20 , Field :
-Gui, Add, DropDownList, x382 y139 w60 h10 r4 vdeinter_mode ggui_update, Frame||Field
-Gui, Add, DropDownList, x382 y159 w60 h10 r2 vdeinter_field ggui_update, Top||Bottom
+
 Gui, Add, CheckBox, x12 y249 w290 h20 venable_decimate ggui_update, Remove Duplicate Frame [Anime Preset 29.970 > 23.976]
 
 Gui, Add, GroupBox, x462 y99 w220 h90 , Video Encoder
@@ -362,7 +363,10 @@ Gui, Add, GroupBox, x512 y199 w370 h80 , Audio
 ;Gui, Add, ListView, x322 y309 w550 h190 vedit_script, Filter|Data
 ;Gui, Add, Button, x282 y459 w40 h20 , up
 ;Gui, Add, Button, x282 y479 w40 h20 , down
-Gui, Add, button, x172 y519 w150 h20 ggui2 , Show Script
+
+;Gui, Add, button, x172 y519 w150 h20 ggui2 , Show Script
+
+Gui, Add, button, x322 y129 w120 h40 ggui2 , Anime Deinterlace Filter
 
 
 
@@ -496,16 +500,50 @@ Return
 gui2:
 {
 	Gui, 2:destroy
-	Gui, 2:Add,Button, x2 y2 h20 w60 ggui2_r,Refresh
-	Gui, 2:Add,Edit, x2 y22 h696 w596 Readonly vshow_script,
+	Gui, 2:Add,Button, x2 y2 h20 w60 ggui2_r,Launch
+	Gui, 2:Add,Edit, x2 y22 h696 w596 Readonly vshow_script,DeinterlaceFilter(Experimental)`nUse source follow this property for Correct result`nWidth : 720`nHight : 480`nFrame Rate 29.970 (30000/1001)
 	Gui, 2:Show, h720 w600, Filter Script
 }
 Return
 
 gui2_r:
 {
+	If(vp_in_path = "")
+	{
+		MsgBox, No Input File
+		Return
+	}
+
+	If(vp_out_path = "")
+	{
+		vp_out_path := A_WorkingDir
+	}
+	else if !FileExist(vp_out_path)
+	{
+		FileCreateDir, %vp_out_path%
+	}
+
+	out_filename = %vp_out_path%\%in_name_no_ext%_Deinterlace.%load_ext%
+	if FileExist(out_filename)
+	{
+		MsgBox, Output File Exist
+		Run,"%vp_out_path%"
+		Return
+	}
+	
 	s_script := load_script0()
-	GuiControl,,show_script,% s_script
+	;GuiControl,,show_script,% s_script
+	FileDelete, %A_WorkingDir%\filter\temp\vs_script.vpy
+	FileDelete, %A_WorkingDir%\filter\temp\run_script.bat
+	Sleep, 200
+	FileAppend , %s_script%, %A_WorkingDir%\filter\temp\vs_script.vpy, UTF-8
+	
+	
+	
+	FileAppend,cd "%A_WorkingDir%\ffmpeg" `nvspipe --y4m "%A_WorkingDir%\filter\temp\vs_script.vpy" - | ffmpeg -i pipe: -i "%vp_in_path%" -c:v libx264 -qp 0 -preset ultrafast -map 0:v:0 -map 1:a:0 -codec:a copy "%out_filename%", %A_WorkingDir%\filter\temp\run_script.bat
+	RunWait %ComSpec% /c ""%A_WorkingDir%\filter\temp\run_script.bat"
+	Run,"%vp_out_path%"
+	GuiControl,,show_script,Finished~!
 }
 Return
 
@@ -531,10 +569,12 @@ Return
 
 load_script1()
 {
+	Global filter_path
 	filter_path := A_WorkingDir "/filter"
 	filter_path := RegExReplace(filter_path, "\\", "/")
 	source_path := StrReplace(vp_in_path, "\", "/")
-			
+	
+	Global s_script
 	s_script := ""
 	s_script .= "import os" "`n"
 	s_script .= "import sys" "`n"
@@ -542,26 +582,44 @@ load_script1()
 	s_script .= "core = vs.get_core()" "`n"
 	s_script .= "scriptPath = '" filter_path "/vsscripts'" "`n"
 	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI3.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI2.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/fmtconv.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll"")" "`n"
-	s_script .= "import havsfunc" "`n"
-	s_script .= "import mvsfunc" "`n"
-	s_script .= "import edi_rpow2" "`n"
-	s_script .= "import hysteria" "`n"
-	s_script .= "import G41Fun" "`n"
+	import_plugin("/vsfilters/ResizeFilter/Waifu2x/Waifu2x-w2xc.dll")
+	import_plugin("/vsfilters/GrainFilter/AddGrain/AddGrain.dll")
+	import_plugin("/vsfilters/DenoiseFilter/FFT3DFilter/fft3dfilter.dll")
+	import_plugin("/vsfilters/DeinterlaceFilter/TDeintMod/TDeintMod.dll")
+	import_plugin("/vsfilters/DenoiseFilter/DFTTest/DFTTest.dll")
+	import_plugin("/vsfilters/Support/libmvtools.dll")
+	import_plugin("/vsfilters/Support/temporalsoften.dll")
+	import_plugin("/vsfilters/Support/scenechange.dll")
+	import_plugin("/vsfilters/Support/vs_sangnommod.dll")
+	import_plugin("/vsfilters/Support/EEDI3.dll")
+	import_plugin("/vsfilters/Support/EEDI2.dll")
+	import_plugin("/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll")
+	import_plugin("/vsfilters/ResizeFilter/nnedi3/vsznedi3.dll")
+	import_plugin("/vsfilters/DeinterlaceFilter/Yadifmod/Yadifmod.dll")
+	import_plugin("/vsfilters/Support/fmtconv.dll")
+	import_plugin("/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll")
+	import_plugin("/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll")
+	import_plugin("/vsfilters/DebandFilter/Flash3kDeband/flash3kyuu_deband.dll")
+	import_plugin("/vsfilters/DenoiseFilter/KNLMeansCL/KNLMeansCL.dll")
+	import_plugin("/vsfilters/SourceFilter/Imagemagick/libimwri.dll")
+	Import_scripts("havsfunc")
+	Import_scripts("mvsfunc")
+	Import_scripts("G41Fun")
+	Import_scripts("edi_rpow2")
+	Import_scripts("hysteria")
+	Import_scripts("functools")
+	Import_scripts("kagefunc as vsutil")
 	
 	Return s_script
 }
 
 load_script2()
 {
+	Global filter_path
 	filter_path := A_WorkingDir "/filter"
 	source_path := StrReplace(vp_in_path, "\", "/")
-			
+	
+	Global s_script
 	s_script := ""
 	s_script .= "import os" "`n"
 	s_script .= "import sys" "`n"
@@ -569,22 +627,48 @@ load_script2()
 	s_script .= "core = vs.get_core()" "`n"
 	s_script .= "scriptPath = '" filter_path "/vsscripts'" "`n"
 	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/vs_sangnommod.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI3.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/EEDI2.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/Support/fmtconv.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll"")" "`n"
-	s_script .= "core.std.LoadPlugin(path=""" filter_path "/vsfilters/SourceFilter/Imagemagick/libimwri.dll"")" "`n"
-	s_script .= "import havsfunc" "`n"
-	s_script .= "import mvsfunc" "`n"
-	s_script .= "import edi_rpow2" "`n"
-	s_script .= "import hysteria" "`n"
-	s_script .= "import G41Fun" "`n"
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/ResizeFilter/Waifu2x/Waifu2x-w2xc.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/GrainFilter/AddGrain/AddGrain.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DenoiseFilter/FFT3DFilter/fft3dfilter.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DeinterlaceFilter/TDeintMod/TDeintMod.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DenoiseFilter/DFTTest/DFTTest.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/libmvtools.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/temporalsoften.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/scenechange.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/vs_sangnommod.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/EEDI3.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/EEDI2.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/ResizeFilter/nnedi3/vsznedi3.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DeinterlaceFilter/Yadifmod/Yadifmod.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/fmtconv.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DebandFilter/Flash3kDeband/flash3kyuu_deband.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DenoiseFilter/KNLMeansCL/KNLMeansCL.dll")
+	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/SourceFilter/Imagemagick/libimwri.dll")
+	Import_scripts("havsfunc")
+	Import_scripts("mvsfunc")
+	Import_scripts("G41Fun")
+	Import_scripts("edi_rpow2")
+	Import_scripts("hysteria")
+	Import_scripts("functools")
+	Import_scripts("kagefunc as vsutil")
 	
 	Return s_script
 }
 
+import_plugin(plugin)
+{
+	global s_script, filter_path
+	s_script .= "core.std.LoadPlugin(path=""" filter_path plugin """)" "`n"
+}
+
+Import_scripts(script)
+{
+	global s_script
+	s_script .= "import " script "`n"
+}
 
 load_script0()
 {
@@ -602,6 +686,14 @@ load_script0()
 	global convert_fps_den
 	global convert_enable
 	
+
+	convert_fps_num := 30000
+	convert_fps_den := 1001
+	fpsc1 := 30000
+	fpsc2 := 1001
+
+
+
 	if(media_load=1)
 	{
 		if(image_input=1)
@@ -622,11 +714,13 @@ load_script0()
 			{
 				if(convert_enable=1)
 				{
-					s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0, fpsnum=" convert_fps_num ", fpsden=" convert_fps_den ")" "`n"
+					;s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0, fpsnum=" convert_fps_num ", fpsden=" convert_fps_den ")" "`n"
+					s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0)" "`n"
 				}
 				else
 				{
-					s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0, fpsnum=" fpsc1 ", fpsden=" fpsc2 ")" "`n"
+					;s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0, fpsnum=" fpsc1 ", fpsden=" fpsc2 ")" "`n"
+					s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0)" "`n"
 				}
 			}
 			s_script .= s1_script
@@ -643,7 +737,11 @@ load_script0()
 			
 			s_script .= "clip = core.std.SetFrameProp(clip=clip, prop=""_ColorRange"", intval=1)" "`n"
 		}
-		
+		s_script .= "clip = core.vivtc.VFM(clip=clip, order=0)" "`n"
+		s_script .= "clip = havsfunc.QTGMC(Input=clip,Preset='Medium', TFF=False, opencl=True, device=0)" "`n"
+		s_script .= "clip = clip[::2]" "`n"
+		s_script .= "clip = core.vivtc.VDecimate(clip=clip)" "`n"
+		s_script .= "clip = core.resize.Bicubic(clip=clip, format=vs.YUV444P8, range_s=""limited"")" "`n"
 		s_script .= "clip.set_output()"
 		Return s_script
 	}
@@ -670,8 +768,7 @@ media_load:
 	media_load := 1
 	image_input := 0
 	load_image_count := 0
-	
-	SplitPath, vp_in_path, load_name, load_fullpath, load_ext
+	SplitPath, vp_in_path, load_name, load_fullpath, load_ext, in_name_no_ext
 	if(load_ext="png"||load_ext="jpg")
 	{
 		ifExist, %load_fullpath%\image000001.*
@@ -802,6 +899,11 @@ Return
 
 decode_test:
 {
+	If(vp_in_path = "")
+	{
+		MsgBox, No Input File
+		Return
+	}
 	run_command := ""
 	run_command1 := ""
 	run_command2 := ""
