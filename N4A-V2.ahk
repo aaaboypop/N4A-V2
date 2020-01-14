@@ -2,8 +2,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.8.7"
-build := "20191001"
+version := "0.10.0"
+build := "20200114"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -43,6 +43,12 @@ if !FileExist(A_WorkingDir "\ffmpeg\ffmpeg.exe")
 	exitapp
 }
 
+
+IM_Path = %A_WorkingDir%\ImageMagick
+Env_UserAdd("PATH", IM_Path)
+Env_SystemAdd("PATH", IM_Path)
+Env_UserRemoveDuplicates("PATH")
+Env_SystemRemoveDuplicates("PATH")
 
 
 
@@ -130,6 +136,7 @@ IniRead, mode4, %A_WorkingDir%\setting.ini, main, mode4, 0
 IniRead, t_scale, %A_WorkingDir%\setting.ini, main, t_scale, lanczos
 IniRead, log_enable, %A_WorkingDir%\setting.ini, main, log_enable, 1
 IniRead, log_limit, %A_WorkingDir%\setting.ini, main, log_limit, 26
+IniRead, first_load, %A_WorkingDir%\setting.ini, main, first_load, 1
 
 i:=0
 while(i<=3)
@@ -208,6 +215,7 @@ Gui, Add, DropDownList, x112 y339 w50 h21 vwin_modev r6 ggui_update, |Max|Min|Hi
 Gui, Add, Text, x202 y339 w40 h20 , Sleep :
 Gui, Add, DropDownList, x262 y339 w50 h21 vsleep_timev r10 ggui_update, 10|20|50|100|200|333||500|1000|2000|3000|4000|5000|10000
 Gui, Add, CheckBox, x22 y369 w90 h20 vskip_existv Checked ggui_update, Skip Exist File
+Gui, Add, CheckBox, x+10 w160 h20 vjpeg_output ggui_update, Convert to JPG *Experimental*
 Gui, Add, GroupBox, x22 y399 w310 h110 , GPU Setting
 Gui, Add, CheckBox, x32 y419 w20 h20 venable_processv1 checked ggui_update, 
 Gui, Add, Text, x52 y419 w60 h20 vtconfig_gpuvv1, Process 1 :
@@ -1133,6 +1141,8 @@ gui_update:
 	noise_level := 2
 	else if (nlv3 == 1) 
 	noise_level := 3
+
+	
 	
 	if(convert_fps=15)
 	{
@@ -2094,6 +2104,20 @@ Return
 
 run_startv:
 {
+
+	If(jpeg_output=1)
+	{
+		If(first_load=1)
+		{
+			MsgBox,0x30,Warning~!,If you use "Convert to JPG" First time, Plese "Restart Computer" before Continue this process
+			IniWrite, 0, %A_WorkingDir%\setting.ini, main, first_load
+			Return
+		}
+		
+		Goto, run_start_s
+	}
+	Return
+
 	i:=1
 	batch_count0 := 0
 	process_limitv := 8
@@ -2132,7 +2156,7 @@ run_startv:
 	
 	GuiControl,Disable,scalev
 	
-	
+
 	;w2x_mode := 1
 	if (w2x_mode = 1)
 	{
@@ -2570,6 +2594,569 @@ run_startv:
 	goto, gui_update
 }
 return
+
+
+
+
+
+
+
+
+
+;----------------------------------------------Save Space-----------------------------------------------------
+
+run_start_s:
+{
+	i:=1
+	batch_count0 := 0
+	process_limitv := 8
+	while(i<=8)
+	{
+		v_run%i% := 0
+		batch_count%i% := 0
+		copy_buffer%i% := 0
+		buffer_dir%i% := ""
+
+		s_process_countv%i% := 0
+		GuiControl,,s_file_processv%i%,-
+		GuiControl,,s_process_countv%i%,-
+		i++
+	}
+	stop := 0
+	f_count := 0
+	p_count := 0
+	p_cycle := 0
+	
+	next_loop := 0
+	gpu_select := 0
+	test_count := 0
+	last_files_svkiping := 0
+	in_len := StrLen(in_pathv)
+	GuiControl,,s_sv,Starting..
+	GuiControl,,f_totalv,Scaning..
+	GuiControl,,f_ppv,0
+	GuiControl,,tspeedv,-
+	GuiControl,Disable,b_start
+	GuiControl,Disable,b_startv
+	GuiControl,Disable,b_start1
+	GuiControl,Enabled,b_stop
+	GuiControl,Enabled,b_stopv
+	GuiControl,Enabled,b_stop1
+	
+	GuiControl,Disable,scalev
+	SplitPath, out_pathv,,,,, out_drive
+	
+	;w2x_mode := 1
+	if (w2x_mode = 1)
+	{
+		process_path := "waifu2x-caffe-cui-p"
+	}
+	else
+	{
+		process_path := "waifu2x-ncnn-vulkan-p"
+	}
+
+	FileRemoveDir, %in_pathv%\temp, 1
+
+	
+	Loop, Files, %in_pathv%\*.*, F
+	{
+		if A_LoopFileExt in png,jpg,jpeg,tif,tiff,bmp,tga
+		{
+			f_count += 1
+		}
+	}
+
+	
+	GuiControl,,f_totalv,%f_count%
+	
+	IfNotExist, %in_pathv%\temp
+	{
+		FileCreateDir, %in_pathv%\temp
+		i := 1
+		while(i<=8)
+		{
+			FileCreateDir, %in_pathv%\temp\%i%
+			i++
+		}
+	}
+	
+	IfNotExist, %out_pathv%
+	{
+		FileCreateDir, %out_pathv%
+	}
+	
+	StartTime := A_TickCount
+	
+	Loop, Files, %in_pathv%\*.*, F
+	{
+		if A_LoopFileExt in png,jpg
+		{
+			if(stop = 1)
+			{
+				break
+			}
+			
+			if A_LoopFileExt in webp
+			{
+				StringTrimRight, out_filename, A_LoopFileName, 5
+			}
+			else
+			{
+				StringTrimRight, out_filename, A_LoopFileName, 4
+			}
+			
+
+			p_count += 1
+			
+			out_file_config := """" out_pathv "\" out_filename config_extv """"
+			if skip_exist = 1
+			{
+				IfExist, %out_pathv%\%out_filename%%config_extv%.png
+				{
+					last_files_svkiping += 1
+					if(last_files_svkiping = 1)
+					{
+						GuiControl,,f_ppv,Skipping..
+					}
+					Continue
+				}
+				else IfExist, %out_pathv%\%out_filename%%config_extv%.jpg
+				{
+					last_files_svkiping += 1
+					if(last_files_svkiping = 1)
+					{
+						GuiControl,,f_ppv,Skipping..
+					}
+					Continue
+				}
+				else IfExist, %out_pathv%\%out_filename%%config_extv%
+				{
+					last_files_svkiping += 1
+					if(last_files_svkiping = 1)
+					{
+						GuiControl,,f_ppv,Skipping..
+					}
+					Continue
+				}
+				else IfExist, %out_pathv%\%out_filename%.jpg.png
+				{
+					last_files_svkiping += 1
+					if(last_files_svkiping = 1)
+					{
+						GuiControl,,f_ppv,Skipping..
+					}
+					Continue
+				}
+				else
+				{
+					last_files_svkiping := 0
+					GuiControl,,f_ppv,%p_count%
+				}
+			}
+			else
+			{
+				GuiControl,,f_ppv,%p_count%
+			}
+			
+			
+			buffer1:
+
+			fill_buuffer := 0
+			while(fill_buuffer<=7)
+			{
+				fill_buuffer++
+
+				if(enable_processv%fill_buuffer% = 0)
+				{
+					continue
+				}
+				
+				if(batch_count%fill_buuffer% = 0)
+					FileCreateDir, %in_pathv%\temp\%fill_buuffer%_buffer
+				
+				if(batch_count%fill_buuffer% < batch_size)
+				{
+					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
+					batch_count%fill_buuffer%++
+					test_count++
+					if(p_count<f_count)
+					{
+						next_loop := 1
+						break
+					}
+				}
+				else
+				{
+					next_loop := 0
+					continue
+				}
+			}
+			
+			if(A_index = f_count)
+			{
+				f_count := 0
+				Loop, Files, %in_pathv%\*.*, F
+				{
+					if A_LoopFileExt in png,jpg,jpeg,tif,tiff,bmp,tga
+					{
+						f_count += 1
+					}
+				}
+				
+
+				fill_buuffer := 0
+				while(fill_buuffer<8)
+				{
+					fill_buuffer++
+					if(enable_processv%fill_buuffer% = 0)
+					{
+						continue
+					}
+					FileCopy, %A_LoopFilePath%, %in_pathv%\temp\%fill_buuffer%_buffer
+				}
+				
+				if(A_index = f_count)
+				{
+					break
+				}
+				else
+				{
+					GuiControl,,f_totalv,%f_count%
+				}
+			}
+			
+			if(next_loop<>1)
+			{
+				Loop
+				{
+					p_cycle += 1
+					If p_cycle > %process_limitv%
+					{
+						p_cycle := 1
+					}
+					if(stop = 1)
+					{
+						break
+					}
+					if(enable_processv%p_cycle% = 0)
+					{
+						continue
+					}
+					process_name := process_path p_cycle ".exe"
+					Process, Exist, %process_name%
+					If (!ErrorLevel= 1)
+					{
+						FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
+						FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
+						batch_count%p_cycle% := 0
+
+						attribute2 := " --model_dir """ A_WorkingDir "\w2x_cuda\models\" modelv """"
+						
+						out_temp = %out_pathv%\temp\a_%p_cycle%
+						out_conv = %out_pathv%\temp\b_%p_cycle%
+						FileRemoveDir,  %out_conv%, 1
+						FileMoveDir, %out_temp%, %out_conv%, R
+						;command = ffmpeg -i "%out_conv%" -qscale:v 1 -qmin 1 -qmax 1
+						command = %out_drive% & cd "%out_conv%" & magick mogrify -compress losslessJPEG -format jpg -path "%out_pathv%" *
+						Run %ComSpec% /c %command%,,Hide
+						FileCreateDir, %out_temp%
+
+						if (w2x_mode = 1)
+						{
+							If (by_size = 1)
+							{
+								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_temp """"
+							}
+							else If (by_scalev = 1)
+							{
+								run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_temp """"
+							}
+							
+							run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
+						}
+						else
+						{						
+							run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_temp """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpuv%p_cycle%
+							run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_modev%
+						}
+						
+						
+						if(log_enable = 1)
+						{
+							gosub,log_console
+						}
+						
+						;Msgbox,% A_WorkingDir "\w2x_cuda`r`r" run_command
+						
+						GuiControl,,s_file_processv%p_cycle%,%A_LoopFilePath%
+						s_process_countv%p_cycle% += 1
+						dv := s_process_countv%p_cycle%
+						GuiControl,,s_process_countv%p_cycle%,%dv%
+						per := (p_count/f_count)*100
+						GuiControl,,p_prov,%per%
+						per := Round(per,2)
+						GuiControl,,s_percenv,%per% `%
+
+						;wait_process
+						Process, Wait, %process_name% , 10
+						If (ErrorLevel=0)
+						{
+							Msgbox, Error Process Not Found.
+							Return
+						}
+						
+						goto,buffer1
+					}
+					
+					If (p_cycle > %process_limitv%)
+					{
+						Sleep, %sleep_timev%
+					}
+				}
+			}
+		}
+	}
+	
+	Loop
+	{
+		p_cycle += 1
+		If p_cycle > %process_limitv%
+		{
+			p_cycle := 1
+		}
+		if(stop = 1)
+		{
+			break
+		}
+		if(enable_processv%p_cycle% = 0)
+		{
+			continue
+		}
+		
+		process_name := process_path p_cycle ".exe"
+		Process, Exist, %process_name%
+		If (!ErrorLevel= 1)
+		{						
+			FileRemoveDir, %in_pathv%\temp\%p_cycle%, 1
+			FileMoveDir, %in_pathv%\temp\%p_cycle%_buffer, %in_pathv%\temp\%p_cycle%, R
+
+			out_temp = %out_pathv%\temp\a_%p_cycle%
+			out_conv = %out_pathv%\temp\b_%p_cycle%
+			FileRemoveDir,  %out_conv%, 1
+			FileMoveDir, %out_temp%, %out_conv%, R
+			command = %out_drive% & cd "%out_conv%" & magick mogrify -compress losslessJPEG -format jpg -path "%out_pathv%" *
+			Run %ComSpec% /c %command%,,Hide
+			FileCreateDir, %out_temp%
+
+
+
+			batch_count%p_cycle% := 0
+			
+			attribute2 := " --model_dir """ A_WorkingDir "\w2x_cuda\models\" modelv """"
+			
+			if (w2x_mode = 1)
+			{
+				If (by_size = 1)
+				{
+					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-w " sizew " -h " sizeh " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_temp """"
+				}
+				else If (by_scalev = 1)
+				{
+					run_command := """waifu2x-caffe-cui-p" p_cycle ".exe"" --gpu " config_gpuv%p_cycle% " -p cudnn " "-s " scalev " " attribute2 " -n " noise_levelv " -m " "noise_scale -e " config_extv " -i """ in_pathv "\temp\" p_cycle """ -o """ out_temp """"
+				}
+				
+				run, %comspec% /c cd "%A_WorkingDir%\w2x_cuda" & %run_command%,,%win_modev%
+			}
+			else
+			{						
+				run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_pathv "\temp\" p_cycle """ -o """ out_temp """ -n " noise_levelv " -s " scalev " -t " config_t_sizev " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpuv%p_cycle%
+				run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_modev%
+			}
+		
+			
+			if(log_enable = 1)
+			{
+				gosub,log_console
+			}
+
+
+			sleep,200
+
+			a:=0
+			loop, Files, %in_pathv%\temp\*.*,F R
+			{
+				a++
+			}
+			
+			if(a=0)
+			{
+				Break
+			}
+			else
+			{
+				continue
+			}
+		}
+		
+		If (p_cycle > %process_limitv%)
+		{
+			Sleep, %sleep_timev%
+		}
+	}
+
+	While Process, Exist, magick.exe
+	{
+		Sleep,333
+	}
+	Sleep,500
+
+	
+	p_cycle := 1
+	While (p_cycle<=8)
+	{
+		o_path = %out_pathv%\temp\b_%p_cycle%
+		if FileExist(o_path)
+		{
+			command = %out_drive% & cd "%o_path%" & magick mogrify -compress losslessJPEG -format jpg -path "%out_pathv%" *
+			RunWait, %ComSpec% /c %command%,,Hide
+		}
+		p_cycle++
+	}
+	
+	FileRemoveDir,  %out_pathv%\temp, 1
+	
+	t_sec := (A_TickCount-StartTime)/1000
+	speed := Round(test_count/t_sec,3)
+	GuiControl,,tspeedv,%speed%
+	GuiControl,,s_percenv,100 `%
+
+	;MsgBox, 0x1004, Media Convert, Finished do you want to Rename?,30
+	;IfMsgBox, Yes
+	;{
+	;	fix_name := 1
+	;}
+	;else IfMsgBox, Timeout
+	;{
+		fix_name := 1
+	;}
+	;else
+	;{
+	;	fix_name := 0
+	;}
+	
+	If(fix_name=1)
+	{
+		Gui, 1:Show,hide
+		Gui, 5:Add, Progress, y9 x7 w640 r6 +c777777, 100
+		Gui, 5:Add, Text, y12 x10 w640 r6 vcurrent_fn +BackgroundTrans +ceeeeee, File Name : ...
+		Gui, 5:Add, Progress, y92 x7 w640 r1 border +c00dd00 vtest_progress, 0
+		Gui, 5:Add, Text, y92 x7 w640 +BackgroundTrans center r1 vtest_per,% 0.00 " %"
+		Gui, 5:Color, bbbbbb
+		Gui, 5:Default
+		Gui, 5:Show, w654,Renaming..
+		
+		StartTime := A_TickCount
+
+		
+		Loop, Files, %out_pathv%\*.png.png , F
+		{
+			e_time := (A_TickCount-StartTime)
+			If(e_time>500)
+			{
+				c_fn := A_LoopFileName
+				StartTime := A_TickCount
+				GuiControl,, current_fn,% "File Name : " A_LoopFileName
+				progress_percent := (A_Index/f_count)*100
+				progress_percent2 := Round(progress_percent,2)
+				GuiControl,, test_progress, %progress_percent%
+				GuiControl,, test_per, %progress_percent2% `%
+			}
+			loop_ext := SubStr(A_LoopFileName, -7)
+			StringTrimLeft, loop_ext, loop_ext, 4
+			StringTrimRight, loop_fpath, A_LoopFilePath, 8
+			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
+		}
+		
+		Loop, Files, %out_pathv%\*.jpg.png , F
+		{
+			e_time := (A_TickCount-StartTime)
+			If(e_time>500)
+			{
+				c_fn := A_LoopFileName
+				StartTime := A_TickCount
+				GuiControl,, current_fn,% "File Name : " A_LoopFileName
+				progress_percent := (A_Index/f_count)*100
+				progress_percent2 := Round(progress_percent,2)
+				GuiControl,, test_progress, %progress_percent%
+				GuiControl,, test_per, %progress_percent2% `%
+			}
+			loop_ext := SubStr(A_LoopFileName, -7)
+			StringTrimLeft, loop_ext, loop_ext, 4
+			StringTrimRight, loop_fpath, A_LoopFilePath, 8
+			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
+		}
+
+		Loop, Files, %out_pathv%\*.png.jpg , F
+		{
+			e_time := (A_TickCount-StartTime)
+			If(e_time>500)
+			{
+				c_fn := A_LoopFileName
+				StartTime := A_TickCount
+				GuiControl,, current_fn,% "File Name : " A_LoopFileName
+				progress_percent := (A_Index/f_count)*100
+				progress_percent2 := Round(progress_percent,2)
+				GuiControl,, test_progress, %progress_percent%
+				GuiControl,, test_per, %progress_percent2% `%
+			}
+			loop_ext := SubStr(A_LoopFileName, -7)
+			StringTrimLeft, loop_ext, loop_ext, 4
+			StringTrimRight, loop_fpath, A_LoopFilePath, 8
+			FileMove, %A_LoopFilePath%, %loop_fpath%%loop_ext%
+		}
+
+		GuiControl,, test_progress, 100
+		GuiControl,, test_per, 100.00 `%
+		
+		;msgbox, , Media Convert,Finished!,1
+		
+		Gui, 1:Default
+		Gui, 5:Destroy
+		Gui, 1:Show
+	}
+	
+	FileRemoveDir, %in_pathv%\temp, 1
+	GuiControl,,f_ppv,%p_count%
+	GuiControl,Enabled,b_start
+	GuiControl,Enabled,b_startv
+	GuiControl,Enabled,b_startv1
+	GuiControl,Enabled,scalev
+	GuiControl,Disable,b_stop
+	GuiControl,Disable,b_stopv
+	GuiControl,Disable,b_stopv1
+	
+	if(stop = 1)
+	{
+		GuiControl,,s_sv,Stopped
+	}
+	else
+	{
+		GuiControl,,s_sv,Finished
+		per := (p_count/f_count)*100
+		GuiControl,,p_prov,%per%
+	}
+	stop := 1
+	goto, gui_update
+}
+return
+
+
+
+
+;-----------------------------------------------------------------------------------------------------------
+
+
 
 
 guiclose:
@@ -5397,3 +5984,244 @@ StdoutToVar(sCmd, sEncoding:="CP0", sDir:="", ByRef nExitCode:=0) {
 ;============================================================
 
 
+
+
+
+
+
+
+; Script:    Environment.ahk
+; Author:    iseahound
+; License:   MIT License
+; Target:    AutoHotkey v1
+; Version:   2017-02-11
+; Updated:   2019-12-06
+;
+; ExpandEnvironmentStrings(), RefreshEnvironment()   by NoobSawce + DavidBiesack (modified by BatRamboZPM)
+;   https://autohotkey.com/board/topic/63312-reload-systemuser-environment-variables/
+;
+; Global Error Values
+;   0 - Success.
+;  -1 - Error when writing value to registry.
+;  -2 - Value already added or value already deleted.
+;  -3 - Need to Run As Administrator.
+;
+; Notes
+;   SendMessage 0x1A,0,"Environment",, ahk_id 0xFFFF ; 0x1A is WM_SETTINGCHANGE
+;      - The above code will broadcast a message stating there has been a change of environment variables.
+;      - Some programs have not implemented this message.
+;   RefreshEnvironment()
+;      - This function will update the environment variables within AutoHotkey.
+;      - Command prompts launched by AutoHotkey inherit AutoHotkey's environment.
+;   Any command prompts currently open will not have their environment variables changed.
+;      - Please use the RefreshEnv.cmd batch script found at:
+;        https://github.com/chocolatey-archive/chocolatey/blob/master/src/redirects/RefreshEnv.cmd
+
+Env_UserAdd(name, value, type := "", location := ""){
+   value    := (value ~= "^\.\.\\") ? GetFullPathName(value)          : value
+   location := (location == "")     ? "HKEY_CURRENT_USER\Environment" : location
+
+   RegRead registry, % location, % name
+   if (!ErrorLevel) {
+      Loop Parse, registry, `;
+      {
+         if (A_LoopField == value)
+            return -2
+      }
+      registry .= (registry ~= "(;$|^$)") ? "" : ";"
+      value := registry . value
+   }
+   type := (type) ? type : (value ~= "%") ? "REG_EXPAND_SZ" : "REG_SZ"
+   RegWrite % type , % location, % name, % value
+   SendMessage 0x1A,0,"Environment",, ahk_id 0xFFFF ; 0x1A is WM_SETTINGCHANGE
+   RefreshEnvironment()
+   return (ErrorLevel) ? -1 : 0
+}
+
+Env_SystemAdd(name, value, type := ""){
+   return (A_IsAdmin) ? Env_UserAdd(name, value, type, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment") : -3
+}
+
+Env_UserSub(name, value, type := "", location := ""){
+   value    := (value ~= "^\.\.\\") ? GetFullPathName(value)          : value
+   location := (location == "")     ? "HKEY_CURRENT_USER\Environment" : location
+
+   RegRead registry, % location, % name
+   if ErrorLevel
+      return -2
+
+   Loop Parse, registry, `;
+   {
+      if (A_LoopField != value) {
+         output .= (A_Index > 1 && output != "") ? ";" : ""
+         output .= A_LoopField
+      }
+   }
+
+   if (output != "") {
+      type := (type) ? type : (output ~= "%") ? "REG_EXPAND_SZ" : "REG_SZ"
+      RegWrite % type , % location, % name, % output
+   }
+   else
+      RegDelete % location, % name
+   SendMessage 0x1A,0,"Environment",, ahk_id 0xFFFF ; 0x1A is WM_SETTINGCHANGE
+   RefreshEnvironment()
+   return (ErrorLevel) ? -1 : 0
+}
+
+Env_SystemSub(name, value, type := ""){
+   return (A_IsAdmin) ? Env_UserSub(name, value, type, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment") : -3
+}
+
+Env_UserNew(name, value := "", type := "", location := ""){
+   type := (type) ? type : (value ~= "%") ? "REG_EXPAND_SZ" : "REG_SZ"
+   RegWrite % type , % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name, % value
+   SendMessage 0x1A,0,"Environment",, ahk_id 0xFFFF ; 0x1A is WM_SETTINGCHANGE
+   RefreshEnvironment()
+   return (ErrorLevel) ? -1 : 0
+}
+
+Env_SystemNew(name, value := "", type := ""){
+   return (A_IsAdmin) ? Env_UserNew(name, value, type, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment") : -3
+}
+
+; Value does nothing except let me easily change between functions.
+Env_UserDel(name, value := "", location := ""){
+   RegDelete % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name
+   SendMessage 0x1A,0,"Environment",, ahk_id 0xFFFF ; 0x1A is WM_SETTINGCHANGE
+   RefreshEnvironment()
+   return 0
+}
+
+Env_SystemDel(name, value := ""){
+   return (A_IsAdmin) ? Env_UserDel(name, value, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment") : -3
+}
+
+Env_UserRead(name, value := "", location := ""){
+   RegRead registry, % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name
+   if (value) {
+      Loop Parse, registry, `;
+      {
+         if (A_LoopField = value) {
+            return A_LoopField
+         }
+      }
+      return ; Value not found
+   }
+   return registry
+}
+
+Env_SystemRead(name, value := ""){
+   return Env_UserRead(name, value, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+}
+
+; Value does nothing except let me easily change between functions.
+Env_UserSort(name, value := "", location := ""){
+   RegRead registry, % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name
+   Sort registry, D`;
+   type := (type) ? type : (registry ~= "%") ? "REG_EXPAND_SZ" : "REG_SZ"
+   RegWrite % type , % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name, % registry
+   return (ErrorLevel) ? -1 : 0
+}
+
+Env_SystemSort(name, value := ""){
+   return (A_IsAdmin) ? Env_UserSort(name, value, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment") : -3
+}
+
+; Value does nothing except let me easily change between functions.
+Env_UserRemoveDuplicates(name, value := "", location := ""){
+   RegRead registry, % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name
+   Sort registry, U D`;
+   type := (type) ? type : (registry ~= "%") ? "REG_EXPAND_SZ" : "REG_SZ"
+   RegWrite % type , % (location == "") ? "HKEY_CURRENT_USER\Environment" : location, % name, % registry
+   return (ErrorLevel) ? -1 : 0
+}
+
+Env_SystemRemoveDuplicates(name, value := ""){
+   return (A_IsAdmin) ? Env_UserRemoveDuplicates(name, value, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment") : -3
+}
+
+Env_UserBackup(fileName := "UserEnvironment.reg", location := ""){
+   _cmd .= (A_Is64bitOS <> A_PtrSize >> 3)    ? A_WinDir "\SysNative\cmd.exe"   : ComSpec
+   _cmd .= " /K " Chr(0x22) "reg export " Chr(0x22)
+   _cmd .= (location == "")                   ? "HKEY_CURRENT_USER\Environment" : location
+   _cmd .= Chr(0x22) " " Chr(0x22)
+   _cmd .= fileName
+   _cmd .= Chr(0x22) . Chr(0x22) . " && pause && exit"
+   try RunWait % _cmd
+   catch
+      return "FAIL"
+   return "SUCCESS"
+}
+
+Env_SystemBackup(fileName := "SystemEnvironment.reg"){
+   return Env_UserBackup(fileName, "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment")
+}
+
+Env_UserRestore(fileName := "UserEnvironment.reg"){
+   try RunWait % fileName
+   catch
+      return "FAIL"
+   return "SUCCESS"
+}
+
+Env_SystemRestore(fileName := "SystemEnvironment.reg"){
+   try RunWait % fileName
+   catch
+      return "FAIL"
+   return "SUCCESS"
+}
+
+
+RefreshEnvironment()
+{
+   Path := ""
+   PathExt := ""
+   RegKeys := "HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Environment,HKCU\Environment"
+   Loop Parse, RegKeys, CSV
+   {
+      Loop, Reg, %A_LoopField%, V
+      {
+         RegRead, Value
+         If (A_LoopRegType == "REG_EXPAND_SZ" && !ExpandEnvironmentStrings(Value))
+            Continue
+         If (A_LoopRegName = "PATH")
+            Path .= Value . ";"
+         Else If (A_LoopRegName = "PATHEXT")
+            PathExt .= Value . ";"
+         Else
+            EnvSet %A_LoopRegName%, %Value%
+      }
+   }
+   EnvSet PATH, %Path%
+   EnvSet PATHEXT, %PathExt%
+}
+
+ExpandEnvironmentStrings(ByRef vInputString)
+{
+   ; get the required size for the expanded string
+   vSizeNeeded := DllCall("ExpandEnvironmentStrings", "Str", vInputString, "Int", 0, "Int", 0)
+   If (vSizeNeeded == "" || vSizeNeeded <= 0)
+      return False ; unable to get the size for the expanded string for some reason
+
+   vByteSize := vSizeNeeded + 1
+   If (A_IsUnicode) { ; Only 64-Bit builds of AHK_L will return 8, all others will be 4 or blank
+      vByteSize *= 2 ; need to expand to wide character sizes
+   }
+   VarSetCapacity(vTempValue, vByteSize, 0)
+
+   ; attempt to expand the environment string
+   If (!DllCall("ExpandEnvironmentStrings", "Str", vInputString, "Str", vTempValue, "Int", vSizeNeeded))
+      return False ; unable to expand the environment string
+   vInputString := vTempValue
+
+   ; return success
+   Return True
+}
+
+GetFullPathName(path) {
+    cc := DllCall("GetFullPathName", "str", path, "uint", 0, "ptr", 0, "ptr", 0, "uint")
+    VarSetCapacity(buf, cc*(A_IsUnicode?2:1))
+    DllCall("GetFullPathName", "str", path, "uint", cc, "str", buf, "ptr", 0, "uint")
+    return buf
+}
