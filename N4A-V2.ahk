@@ -2116,7 +2116,6 @@ run_startv:
 		
 		Goto, run_start_s
 	}
-	Return
 
 	i:=1
 	batch_count0 := 0
