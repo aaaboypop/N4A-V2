@@ -794,8 +794,8 @@ media_load:
 			LV_Add("", "Frame", load_image_count)
 
 			LV_ModifyCol() 
-			
-			Gui, 4:Show,
+			Gui, 4:-Resize -MaximizeBox -MinimizeBox +ToolWindow
+			Gui, 4:Show,, Media Info
 			
 			
 		}
