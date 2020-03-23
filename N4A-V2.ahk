@@ -4,8 +4,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.10.1"
-build := "20200321"
+version := "0.10.2"
+build := "20200324"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -307,9 +307,12 @@ Gui, Add, Button, x272 y29 w30 h20 gvid_to_pic_in_folder, ...
 Gui, Add, Button, x312 y29 w80 h20 gdecode_test, Decode Test
 Gui, Add, Button, x272 y49 w30 h20 gvid_to_pic_out_folder, ...
 Gui, Add, CheckBox, x12 y99 w190 h20 vconvert_enable ggui_update, Convert to Constant Frame Rate
-Gui, Add, DropDownList, x212 y99 w60 h20 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120|Custom
-Gui, Add, Text, x29 y124 w190 h20 vconvert_custom ggui_update, Custom Frame Rate
-Gui, Add, Edit, x212 y124 w60 h20 Number Limit3 vconvert_fps_custom ggui_update, 30
+Gui, Add, DropDownList, x212 y99 w60 h20 vconvert_fps r8 ggui_update, 15|23.976||24|25|29.97|30|50|59.94|60|100|120|Custom|Advanced|
+Gui, Add, Text, x29 y124 w100 h20 vconvert_custom ggui_update, Custom Frame Rate
+Gui, Add, Edit, x212 y124 w60 h20 Number Limit3 vcustom_fps ggui_update, 30
+
+Gui, Add, Edit, x142 y124 w60 h20 Number vcustom_fps_num ggui_update, 30000
+Gui, Add, Edit, x212 y124 w60 h20 Number vcustom_fps_den ggui_update, 1001
 
 Gui, Add, Text, x272 y159 w20 h20 vvp_quality_show, 1
 Gui, Add, CheckBox, x12 y189 w80 h20 venable_th_mode ggui_update, Thumbnail :
@@ -426,7 +429,9 @@ GuiControl,,nlv%noise_level%, 1
 GuiControl,,log_enable,% log_enable
 GuiControl, Hide,mgpu_text
 GuiControl, Hide,convert_custom
-GuiControl, Hide,convert_fps_custom
+GuiControl, Hide,custom_fps
+GuiControl, Hide,custom_fps_num
+GuiControl, Hide,custom_fps_den
 GuiControl, ChooseString, config_ext, %config_ext%
 GuiControl, ChooseString, model, %model%
 GuiControl, ChooseString, sleep_time, %sleep_time%
@@ -1095,15 +1100,28 @@ gui_update:
 	
 	if(convert_fps="Custom")
 	{
-		convert_fps_num := convert_fps_custom*1000
+		convert_fps_num := custom_fps*1000
 		convert_fps_den := 1000
 		GuiControl, Show,convert_custom
-		GuiControl, Show,convert_fps_custom
+		GuiControl, Hide,custom_fps_num
+		GuiControl, Hide,custom_fps_den	
+		GuiControl, Show,custom_fps
+	}
+	else if(convert_fps="Advanced")
+	{
+		convert_fps_num := custom_fps_num
+		convert_fps_den := custom_fps_den
+		GuiControl, Show,convert_custom
+		GuiControl, Show,custom_fps_num
+		GuiControl, Show,custom_fps_den	
+		GuiControl, Hide,custom_fps
 	}
 	else
 	{
 		GuiControl, Hide,convert_custom
-		GuiControl, Hide,convert_fps_custom
+		GuiControl, Hide,custom_fps_num
+		GuiControl, Hide,custom_fps_den	
+		GuiControl, Hide,custom_fps
 	}
 	
 	if(convert_fps=15)
