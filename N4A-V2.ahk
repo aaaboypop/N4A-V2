@@ -4,8 +4,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.10.2"
-build := "20200324"
+version := "0.10.3"
+build := "20200425"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -521,7 +521,7 @@ gui2:
 {
 	Gui, 2:destroy
 	Gui, 2:Add,Button, x2 y2 h20 w60 ggui2_r,Launch
-	Gui, 2:Add,Edit, x2 y22 h696 w596 Readonly vshow_script,DeinterlaceFilter(Experimental)`nUse source follow this property for Correct result`nWidth : 720`nHight : 480`nFrame Rate 29.970 (30000/1001)
+	Gui, 2:Add,Edit, x2 y22 h696 w596 Readonly vshow_script,DeinterlaceFilter(Experimental)`n
 	Gui, 2:Show, h720 w600, Filter Script
 }
 Return
@@ -590,18 +590,26 @@ Return
 load_script1()
 {
 	Global filter_path
+	Global vp_in_path
 	filter_path := A_WorkingDir "/filter"
 	filter_path := RegExReplace(filter_path, "\\", "/")
 	source_path := StrReplace(vp_in_path, "\", "/")
-	
+
 	Global s_script
 	s_script := ""
 	s_script .= "import os" "`n"
 	s_script .= "import sys" "`n"
+	s_script .= "import ctypes" "`n"
+	s_script .= "Dllref = ctypes.windll.LoadLibrary(""" filter_path "/vsfilters/Support/libfftw3f-3.dll"")" "`n"
+	s_script .= "Dllref = ctypes.windll.LoadLibrary(""" filter_path "/vsfilters/ResizeFilter/Waifu2x/w2xc.dll"")" "`n"
+	
 	s_script .= "import vapoursynth as vs" "`n"
 	s_script .= "core = vs.get_core()" "`n"
+
 	s_script .= "scriptPath = '" filter_path "/vsscripts'" "`n"
 	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
+	
+	import_plugin("/vsfilters/DenoiseFilter/TTempSmooth/TTempSmooth.dll")
 	import_plugin("/vsfilters/ResizeFilter/Waifu2x/Waifu2x-w2xc.dll")
 	import_plugin("/vsfilters/GrainFilter/AddGrain/AddGrain.dll")
 	import_plugin("/vsfilters/DenoiseFilter/FFT3DFilter/fft3dfilter.dll")
@@ -624,59 +632,17 @@ load_script1()
 	import_plugin("/vsfilters/SourceFilter/Imagemagick/libimwri.dll")
 	Import_scripts("havsfunc")
 	Import_scripts("mvsfunc")
+	Import_scripts("muvsfunc")
 	Import_scripts("G41Fun")
 	Import_scripts("edi_rpow2")
 	Import_scripts("hysteria")
 	Import_scripts("functools")
 	Import_scripts("kagefunc as vsutil")
+	
 	
 	Return s_script
 }
 
-load_script2()
-{
-	Global filter_path
-	filter_path := A_WorkingDir "/filter"
-	source_path := StrReplace(vp_in_path, "\", "/")
-	
-	Global s_script
-	s_script := ""
-	s_script .= "import os" "`n"
-	s_script .= "import sys" "`n"
-	s_script .= "import vapoursynth as vs" "`n"
-	s_script .= "core = vs.get_core()" "`n"
-	s_script .= "scriptPath = '" filter_path "/vsscripts'" "`n"
-	s_script .= "sys.path.append(os.path.abspath(scriptPath))" "`n"
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/ResizeFilter/Waifu2x/Waifu2x-w2xc.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/GrainFilter/AddGrain/AddGrain.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DenoiseFilter/FFT3DFilter/fft3dfilter.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DeinterlaceFilter/TDeintMod/TDeintMod.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DenoiseFilter/DFTTest/DFTTest.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/libmvtools.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/temporalsoften.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/scenechange.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/vs_sangnommod.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/EEDI3.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/EEDI2.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/ResizeFilter/nnedi3/NNEDI3CL.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/ResizeFilter/nnedi3/vsznedi3.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DeinterlaceFilter/Yadifmod/Yadifmod.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/Support/fmtconv.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/SourceFilter/LSmashSource/vslsmashsource.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DebandFilter/Flash3kDeband/flash3kyuu_deband.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/DenoiseFilter/KNLMeansCL/KNLMeansCL.dll")
-	import_plugin("C:/Users/PONDX/Desktop/waifu2x/filter/vsfilters/SourceFilter/Imagemagick/libimwri.dll")
-	Import_scripts("havsfunc")
-	Import_scripts("mvsfunc")
-	Import_scripts("G41Fun")
-	Import_scripts("edi_rpow2")
-	Import_scripts("hysteria")
-	Import_scripts("functools")
-	Import_scripts("kagefunc as vsutil")
-	
-	Return s_script
-}
 
 import_plugin(plugin)
 {
@@ -702,38 +668,37 @@ load_script0()
 	global convert_fps_den
 	global convert_enable
 	
+	Global vp_in_path
 
-	convert_fps_num := 30000
-	convert_fps_den := 1001
-	fpsc1 := 30000
-	fpsc2 := 1001
-
-
+	s_path := StrReplace(vp_in_path, "\","/")
 
 	if(media_load=1)
 	{
-		if(image_input=1)
-		{
-			s_script := load_script2()
-			s_path_dir := StrReplace(load_fullpath, "\","/")
-			s_script .= "clip = core.imwri.Read(""" s_path_dir "/image%06d." load_ext """, firstnum=1)" "`n"
-			s_script .= "clip = core.std.AssumeFPS(clip, fpsnum=" convert_fps_num ", fpsden=" convert_fps_den ")" "`n"
-		}
-		else
-		{
-			s_script := load_script1()
-			
-			s1_script := "clip = core.lsmas.LWLibavSource(source=""" s_path """, format=""YUV420P8"", cache=0)" "`n"
 
-			s_script .= s1_script
-			s_script .= "clip = core.resize.Point(clip, matrix_in_s=""unspec"",range_s=""limited"")" "`n"
-			
-			s_script .= "clip = core.std.SetFrameProp(clip=clip, prop=""_ColorRange"", intval=1)" "`n"
+		s_script := load_script1()
+		
+		s_script .= "clip = core.lsmas.LWLibavSource(source=""" s_path """, cache=0)" "`n"
+
+		MsgBox, 4, , Interlace is NOT "Store" Type? (default: YES)
+		IfMsgBox No
+		{
+			MsgBox, 4, , Top Field First? (default: YES)
+				IfMsgBox Yes
+				{
+					s_script .= "clip = core.vivtc.VFM(clip=clip, order=0)" "`n"
+				}
+				else
+				{
+					s_script .= "clip = core.vivtc.VFM(clip=clip, order=1)" "`n"
+				}
 		}
-		s_script .= "clip = core.vivtc.VFM(clip=clip, order=0)" "`n"
-		s_script .= "clip = havsfunc.QTGMC(Input=clip,Preset='Medium', TFF=False, opencl=True, device=0)" "`n"
-		s_script .= "clip = clip[::2]" "`n"
-		s_script .= "clip = core.vivtc.VDecimate(clip=clip)" "`n"
+		IfMsgBox Yes
+		{
+			s_script .= "clip = core.vivtc.VFM(clip=clip, order=0)" "`n"
+			s_script .= "clip = havsfunc.QTGMC(Input=clip,Preset='Placebo', TFF=False, opencl=True, device=0)" "`n"
+			s_script .= "clip = clip[::2]" "`n"
+		}
+
 		s_script .= "clip = core.resize.Bicubic(clip=clip, format=vs.YUV444P8, range_s=""limited"")" "`n"
 		s_script .= "clip.set_output()"
 		Return s_script
