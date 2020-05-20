@@ -4,8 +4,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.10.3"
-build := "20200425"
+version := "0.10.4"
+build := "20200516"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -555,7 +555,7 @@ gui2_r:
 	;GuiControl,,show_script,% s_script
 	FileDelete, %A_WorkingDir%\filter\temp\vs_script.vpy
 	FileDelete, %A_WorkingDir%\filter\temp\run_script.bat
-	Sleep, 200
+	Sleep, 1000
 	FileAppend , %s_script%, %A_WorkingDir%\filter\temp\vs_script.vpy, UTF-8
 	
 	
@@ -629,7 +629,7 @@ load_script1()
 	import_plugin("/vsfilters/SharpenFilter/AWarpSharp2/libawarpsharp2.dll")
 	import_plugin("/vsfilters/DebandFilter/Flash3kDeband/flash3kyuu_deband.dll")
 	import_plugin("/vsfilters/DenoiseFilter/KNLMeansCL/KNLMeansCL.dll")
-	import_plugin("/vsfilters/SourceFilter/Imagemagick/libimwri.dll")
+	;import_plugin("/vsfilters/SourceFilter/Imagemagick/libimwri.dll")
 	Import_scripts("havsfunc")
 	Import_scripts("mvsfunc")
 	Import_scripts("muvsfunc")
