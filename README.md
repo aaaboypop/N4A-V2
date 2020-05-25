@@ -1,7 +1,8 @@
 # N4A-V2
 N4A Video Tools
 
-This GUI Tools for video/picture
+This GUI Tools for Windows
+packs everything you need for video or picture Waifu2X upscaling.
 
 ### Feature
  - Extension support
@@ -15,8 +16,10 @@ This GUI Tools for video/picture
    - Remove Duplicate Frame
    - Create Thumbnail
    - Resize Video
-   - Deinterlace
+   - ~~Deinterlace~~
    - Trim
+ - VSFilter
+   - Deinterlace
  - Image Upscale with Waifu2X (CUDA & Vulkan)
     - Support Multi GPU
 
@@ -30,3 +33,4 @@ This GUI Tools for video/picture
  - Waifu2X Vulkan : https://github.com/nihui/waifu2x-ncnn-vulkan
  - Waifu2X CUDA : https://github.com/lltcggie/waifu2x-caffe
  - Autohotkey : https://www.autohotkey.com/
+ - Hybrid http://www.selur.de/
