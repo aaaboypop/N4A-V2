@@ -23,7 +23,7 @@ packs everything you need for video or picture Waifu2X upscaling.
  - Image Upscale with Waifu2X (CUDA & Vulkan)
     - Support Multi GPU
 
-### Download Release Version : https://github.com/aaaboypop/N4A-V2/releases
+# Download Release Version : https://github.com/aaaboypop/N4A-V2/releases
 
 ### Sample / Guide
 ![1](https://files.catbox.moe/ajt32t.png)
