@@ -4,8 +4,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.10.4"
-build := "20200516"
+version := "0.10.5"
+build := "20200718"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -185,70 +185,56 @@ Gui, Add, Text, x22 y29 w80 h20 , Input Folder :
 Gui, Add, Edit, x112 y29 w180 h20 vin_path ggui_update, %in_path%
 Gui, Add, Text, x22 y49 w80 h20 , Output Folder :
 Gui, Add, Edit, x112 y49 w180 h20 vout_path ggui_update, %out_path%
-Gui, Add, GroupBox, x22 y79 w310 h70 , Conversion Mode
-
-Gui, Add, DropDownList, x32 y99 w140 h20 vmodev R4 Group Disabled ggui_update, Denoise and Magnify||Magnify only|Denoise only
-
-;Gui, Add, DropDownList, x32 y119 w140 h20 vby_scale R4 Group Checked ggui_update, Scale|Specific Size
-
-
-Gui, Add, Radio, x22 y159 w80 h20 Group vby_scale Checked ggui_update, Scale
-Gui, Add, Radio, x22 y189 w80 h20 vby_size ggui_update, Specific Size
-
-Gui, Add, Edit, x112 y159 w60 h20 vscale ggui_update, 2
-Gui, Add, Edit, x112 y189 w60 h20 vsizew number ggui_update, 1920
-Gui, Add, Edit, x182 y189 w60 h20 vsizeh number ggui_update, 1080
-
-Gui, Add, Text, x22 y219 w80 h20 ,Batch/Process : 
-Gui, Add, Edit, x112 y219 w50 h21 vbatch_size ggui_update, 200
-
-Gui, Add, Text, x22 y249 w70 h20 , Noise Level :
-Gui, Add, Slider, x112 y249 w180 h20 vnoise_level Range0-3 ggui_update, 3
-Gui, Add, Text, x292 y249 w40 h20 vnoise_level_show, %noise_level%
-Gui, Add, Text, x22 y279 w40 h20 , Model :
-Gui, Add, DropDownList, x112 y279 w180 h21 vmodelv r10 ggui_update, models-cunet||models-upconv_7_anime_style_art_rgb|models-upconv_7_photo|
-
-Gui, Add, Text, x22 y309 w90 h20 , File Extension :
-Gui, Add, DropDownList, x112 y309 w50 h21 vconfig_ext r11 ggui_update, .png||.jpg
-Gui, Add, Text, x202 y309 w90 h20 , Tile Size :
-Gui, Add, Edit, x262 y309 w50 h21 vconfig_t_size ggui_update, 200
-Gui, Add, Text, x22 y339 w40 h20 , Mode :
-Gui, Add, DropDownList, x112 y339 w50 h21 vwin_mode r6 ggui_update, |Max|Min|Hide||
-Gui, Add, Text, x202 y339 w40 h20 , Sleep :
-Gui, Add, DropDownList, x262 y339 w50 h21 vsleep_time r10 ggui_update, 10|20|50|100|200|333||500|1000|2000|3000|4000|5000|10000
-Gui, Add, CheckBox, x22 y369 w90 h20 vskip_existv Checked ggui_update, Skip Exist File
-Gui, Add, CheckBox, x+10 w160 h20 vjpeg_output ggui_update, Convert to JPG *Experimental*
+Gui, Add, Radio, x22 y89 w80 h20 Group vby_scale Checked ggui_update, Scale
+Gui, Add, Radio, x22 y119 w80 h20 vby_size ggui_update, Specific Size
+Gui, Add, Edit, x112 y89 w60 h20 vscale ggui_update, 2
+Gui, Add, Edit, x112 y119 w60 h20 vsizew number ggui_update, 1920
+Gui, Add, Edit, x182 y119 w60 h20 vsizeh number ggui_update, 1080
+Gui, Add, Text, x22 y149 w80 h20 , Batch/Process :
+Gui, Add, Edit, x112 y149 w50 h20 vbatch_size ggui_update, 200
+Gui, Add, Text, x22 y179 w70 h20 , Noise Level :
+Gui, Add, Slider, x112 y179 w180 h20 vnoise_level Range0-3 ggui_update, 3
+Gui, Add, Text, x292 y179 w40 h20 vnoise_level_show, %noise_level%
+Gui, Add, Text, x22 y209 w40 h20 , Model :
+Gui, Add, DropDownList, x112 y209 w180 h21 vmodelv r10 ggui_update, models-cunet||models-upconv_7_anime_style_art_rgb|models-upconv_7_photo|
+Gui, Add, Text, x22 y239 w90 h20 , File Extension :
+Gui, Add, DropDownList, x112 y239 w50 h21 vconfig_ext r11 ggui_update, .png||.jpg
+Gui, Add, Text, x202 y239 w90 h20 , Tile Size :
+Gui, Add, Edit, x262 y239 w50 h21 vconfig_t_size ggui_update, 240
+Gui, Add, Text, x22 y269 w40 h20 , Mode :
+Gui, Add, DropDownList, x112 y269 w50 h21 vwin_mode r6 ggui_update, |Max|Min|Hide||
+Gui, Add, Text, x202 y269 w40 h20 , Sleep :
+Gui, Add, DropDownList, x262 y269 w50 h21 vsleep_time r10 ggui_update, 10|20|50|100|200|333||500|1000|2000|3000|4000|5000|10000
+Gui, Add, CheckBox, x22 y299 w90 h20 vskip_existv Checked ggui_update, Skip Exist File
+Gui, Add, CheckBox, x132 y299 w160 h20 vjpeg_output ggui_update, Convert to JPG *Experimental*
 Gui, Add, GroupBox, x22 y399 w310 h110 , GPU Setting
 Gui, Add, CheckBox, x32 y419 w20 h20 venable_process1 checked ggui_update, 
-Gui, Add, Text, x52 y419 w60 h20, Process 1 :
+Gui, Add, Text, x52 y419 w60 h20 , Process 1 :
 Gui, Add, DropDownList, x112 y419 w50 h21 vconfig_gpu1 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x32 y439 w20 h20 venable_process2 ggui_update, 
-Gui, Add, Text, x52 y439 w60 h20, Process 2 :
+Gui, Add, Text, x52 y439 w60 h20 , Process 2 :
 Gui, Add, DropDownList, x112 y439 w50 h21 vconfig_gpu2 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x32 y459 w20 h20 venable_process3 ggui_update, 
-Gui, Add, Text, x52 y459 w60 h20, Process 3 :
+Gui, Add, Text, x52 y459 w60 h20 , Process 3 :
 Gui, Add, DropDownList, x112 y459 w50 h21 vconfig_gpu3 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x32 y479 w20 h20 venable_process4 ggui_update, 
-Gui, Add, Text, x52 y479 w60 h20, Process 4 :
+Gui, Add, Text, x52 y479 w60 h20 , Process 4 :
 Gui, Add, DropDownList, x112 y479 w50 h21 vconfig_gpu4 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y419 w20 h20 venable_process5 ggui_update, 
-Gui, Add, Text, x202 y419 w60 h20, Process 5 :
+Gui, Add, Text, x202 y419 w60 h20 , Process 5 :
 Gui, Add, DropDownList, x262 y419 w50 h21 vconfig_gpu5 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y439 w20 h20 venable_process6 ggui_update, 
-Gui, Add, Text, x202 y439 w60 h20, Process 6 :
+Gui, Add, Text, x202 y439 w60 h20 , Process 6 :
 Gui, Add, DropDownList, x262 y439 w50 h21 vconfig_gpu6 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y459 w20 h20 venable_process7 ggui_update, 
-Gui, Add, Text, x202 y459 w60 h20, Process 7 :
+Gui, Add, Text, x202 y459 w60 h20 , Process 7 :
 Gui, Add, DropDownList, x262 y459 w50 h21 vconfig_gpu7 r8 ggui_update, 0||1|2|3|4|5|6|7
 Gui, Add, CheckBox, x182 y479 w20 h20 venable_process8 ggui_update, 
-Gui, Add, Text, x202 y479 w60 h20, Process 8 :
+Gui, Add, Text, x202 y479 w60 h20 , Process 8 :
 Gui, Add, DropDownList, x262 y479 w50 h21 vconfig_gpu8 r8 ggui_update, 0||1|2|3|4|5|6|7
-
 Gui, Add, GroupBox, x352 y29 w200 h40 , Mode :
-Gui, Add, Radio, x382 y42 w50 h20 vw2x_mode galt_guiupdate , Cuda
-Gui, Add, Radio, x452 y42 w70 h20 vw2xv_mode Checked galt_guiupdate , Vulkan
-
-
+Gui, Add, Radio, x382 y42 w50 h20 vw2x_mode galt_guiupdate, Cuda
+Gui, Add, Radio, x452 y42 w70 h20 vw2xv_mode Checked galt_guiupdate, Vulkan
 Gui, Add, GroupBox, x342 y259 w550 h260 , Status
 Gui, Add, Text, x352 y289 w60 h20 , Total Files :
 Gui, Add, Text, x442 y289 w70 h20 vf_totalv, -
@@ -283,13 +269,16 @@ Gui, Add, Text, x832 y469 w50 h20 vs_process_countv7, -
 Gui, Add, Text, x352 y489 w80 h20 , Process 8 :
 Gui, Add, Text, x442 y489 w380 h20 vs_file_processv8, -
 Gui, Add, Text, x832 y489 w50 h20 vs_process_countv8, -
-
 Gui, Add, Button, x292 y29 w30 h20 gin_folderv, ...
 Gui, Add, Button, x292 y49 w30 h20 gout_folderv, ...
 Gui, Add, button, x22 y529 w80 h20 vb_startv grun_startv, Start
 Gui, Add, button, x102 y529 w80 h20 vb_stopv grun_stop Disabled, Stop
 Gui, Add, button, x262 y529 w70 h20 gsave, Save Setting
 Gui, Add, Text, x22 y509 w70 h20 vs_sv, Ready ..
+Gui, Add, Text, x22 y329 w70 h20 , Thread :
+Gui, Add, Edit, x112 y329 w60 h20 vJ1 ggui_update, 1
+Gui, Add, Edit, x182 y329 w60 h20 vJ2 ggui_update, 2
+Gui, Add, Edit, x252 y329 w60 h20 vJ3 ggui_update, 2
 
 
 
@@ -749,6 +738,26 @@ media_load:
 			
 			
 		}
+		else If (FileExist(load_fullpath "\000001.*")) 
+		{
+			Loop, Files, %load_fullpath%\*.* , F
+			{
+				load_image_count++
+			}
+			image_input := 2
+			video_n_frame := load_image_count
+			
+			Gui, 4:Add, ListView,, General|Info
+			Gui, 4:Default			
+			LV_Add("", "Input Type", load_ext)
+			LV_Add("", "Frame", load_image_count)
+
+			LV_ModifyCol() 
+			Gui, 4:-Resize -MaximizeBox -MinimizeBox +ToolWindow
+			Gui, 4:Show,, Media Info
+			
+			
+		}
 		else
 		{
 			msgbox,0x2000, Media Info,% "Not Found Image Format ""image%06d"""
@@ -846,6 +855,10 @@ decode_test:
 	if(image_input=1)
 	{
 		run_command2 .= " -i """ in_dir "\image%06d." in_ext """"
+	}
+	else if(image_input=2)
+	{
+		run_command2 .= " -i """ in_dir "\%06d." in_ext """"
 	}
 	else
 	{
@@ -1323,6 +1336,7 @@ alt_guiupdate:
 		GuiControl,Choose,modelv, 7
 		GuiControl,Enable,by_size
 		GuiControl,Enable,config_ext
+		gui_d("J1,J2,J3")
 	}
 	else
 	{
@@ -1332,6 +1346,7 @@ alt_guiupdate:
 		GuiControl,Disable,by_size
 		GuiControl,Disable,config_ext
 		GuiControl,,by_scale, 1
+		gui_e("J1,J2,J3")
 	}
 	
 	Gui, Submit, NoHide
@@ -1856,6 +1871,10 @@ run_vid_to_pic:
 	{
 		run_command2 .= " -i """ in_dir "\image%06d." in_ext """"
 	}
+	else if(image_input=2)
+	{
+		run_command2 .= " -i """ in_dir "\%06d." in_ext """"
+	}
 	else
 	{
 		run_command2 .= " -i """ vp_in_path """"
@@ -2004,7 +2023,14 @@ run_vid_to_pic:
 		
 		if(output_pic=1)
 		{
-			run_command6 .= in_name "\image%06d" config_ext2 """"
+			if(image_input=1)
+			{
+				run_command6 .= in_name "\image%06d" config_ext2 """"
+			}
+			else if(image_input=2)
+			{
+				run_command6 .= in_name "\%06d" config_ext2 """"
+			}
 		}
 		else if(output_vid=1)
 		{
@@ -2313,7 +2339,7 @@ run_startv:
 						}
 						else
 						{						
-							run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_path """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle%
+							run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_path """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle% " -j " J1 ":" J2 ":" J3
 							run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_mode%
 						}
 						
@@ -2395,7 +2421,7 @@ run_startv:
 			}
 			else
 			{						
-				run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_path """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle%
+				run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_path """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle% " -j " J1 ":" J2 ":" J3
 				run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_mode%
 			}
 		
@@ -2820,7 +2846,7 @@ run_start_s:
 						}
 						else
 						{						
-							run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_temp """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle%
+							run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_temp """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle% " -j " J1 ":" J2 ":" J3
 							run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_mode%
 						}
 						
@@ -2913,7 +2939,7 @@ run_start_s:
 			}
 			else
 			{						
-				run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_temp """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle%
+				run_command := """waifu2x-ncnn-vulkan-p" p_cycle ".exe"" -i """ in_path "\temp\" p_cycle """ -o """ out_temp """ -n " noise_level " -s " scale " -t " config_t_size " -m """ A_WorkingDir "\w2x_vulkan\" modelv """ -g " config_gpu%p_cycle% " -j " J1 ":" J2 ":" J3
 				run, %comspec% /c cd "%A_WorkingDir%\w2x_vulkan" & %run_command%,,%win_mode%
 			}
 		
