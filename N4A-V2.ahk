@@ -4,8 +4,8 @@
 process_limit := 8
 thumbnail_max_size := 120
 
-version := "0.10.5"
-build := "20200718"
+version := "0.10.6"
+build := "20201202"
 ;FormatTime,today,,yyyyMMdd
 
 model_name1 := "anime_style_art"
@@ -1331,8 +1331,8 @@ alt_guiupdate:
 	
 	if(w2x_mode=1)
 	{
-		GuiControl,,modelv,% model_list
-		GuiControl,Choose,modelv, 7
+		GuiControl,,modelv,% "|" model_list
+		GuiControl,Choose,modelv, 5
 		GuiControl,Enable,by_size
 		GuiControl,Enable,config_ext
 		gui_d("J1,J2,J3")
