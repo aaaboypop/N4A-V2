@@ -45,13 +45,13 @@ if !FileExist(A_WorkingDir "\ffmpeg\ffmpeg.exe")
 	exitapp
 }
 
-
+/*
 IM_Path = %A_WorkingDir%\ImageMagick
 Env_UserAdd("PATH", IM_Path)
 Env_SystemAdd("PATH", IM_Path)
 Env_UserRemoveDuplicates("PATH")
 Env_SystemRemoveDuplicates("PATH")
-
+*/
 
 
 if (FileExist(A_WorkingDir "\update.ini")) || (!FileExist(A_WorkingDir "\w2x_cuda\waifu2x-caffe-cui-p*.exe")) || (!FileExist(A_WorkingDir "\w2x_vulkan\waifu2x-ncnn-vulkan-p*.exe") || !FileExist(A_WorkingDir "\ffmpeg\ffmpeg_p1.exe"))
