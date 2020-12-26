@@ -251,6 +251,14 @@ gui_s(var1)
 alt_guiupdate:
 {
 	Gui, Submit, NoHide
+	if(model1<>"RIFE")
+	{
+		gui_d("Modelfi")
+	}
+	Else
+	{
+		gui_e("Modelfi")
+	}
 	if(output_vid=1)
 	{
 		GuiControl,,config_ext2,|.avi|.mp4||.mkv
