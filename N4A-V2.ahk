@@ -4,8 +4,8 @@ SetWorkingDir %A_ScriptDir%
 FileInstall, lib\lib.ahk, lib\lib.ahk, 1
 FileInstall, lib\load_env.ahk, lib\load_env.ahk, 1
 
-version := "0.12.0"
-build := "20201224"
+version := "0.12.1"
+build := "20201226"
 
 model_name1 := "anime_style_art"
 model_name2 := "anime_style_art_rgb"
@@ -249,23 +249,6 @@ load_script0()
 #Include, lib\r_ffmpeg.ahk
 #Include, lib\r_w2x.ahk
 #Include, lib\save_setting.ahk
-
-add_filter(var1)
-{
-	global filter_count
-	if(filter_count=0)
-	{
-		var2 := " -filter_complex """ var1
-		filter_count++
-		return var2
-	}
-	else
-	{
-		var2 := "[vid" filter_count "];[vid" filter_count "]" var1
-		filter_count++
-		return var2
-	}
-}
 
 
 in_folder:
