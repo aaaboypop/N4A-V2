@@ -254,10 +254,20 @@ alt_guiupdate:
 	if(model1<>"RIFE")
 	{
 		gui_d("Modelfi")
+		gui_d("UHD_Mode")
+		gui_d("TTA_Mode")
+		gui_d("Use_CPU")
+		gui_d("config_model")
+		gui_e("config_t_size1")
 	}
 	Else
 	{
 		gui_e("Modelfi")
+		gui_e("UHD_Mode")
+		gui_e("TTA_Mode")
+		gui_e("Use_CPU")
+		gui_e("config_model")
+		gui_d("config_t_size1")
 	}
 	if(output_vid=1)
 	{
