@@ -1,3 +1,22 @@
+add_filter(var1)
+{
+	global filter_count
+	if(filter_count=0)
+	{
+		var2 := " -filter_complex """ var1
+		filter_count++
+		return var2
+	}
+	else
+	{
+		var2 := "[vid" filter_count "];[vid" filter_count "]" var1
+		filter_count++
+		return var2
+	}
+}
+
+
+
 run_ffmpeg:
 {
 	filter_count := 0
@@ -101,7 +120,7 @@ run_ffmpeg:
 	}
 	
 	
-	if(image_input=1)
+	if(image_input>=1)
 	{
 		run_command1 .= " -framerate " convert_fps_num "/" convert_fps_den
 		attribute := "fps=" convert_fps_num "/" convert_fps_den
