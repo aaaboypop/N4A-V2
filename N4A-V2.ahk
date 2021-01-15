@@ -4,8 +4,8 @@ SetWorkingDir %A_ScriptDir%
 FileInstall, lib\lib.ahk, lib\lib.ahk, 1
 FileInstall, lib\load_env.ahk, lib\load_env.ahk, 1
 
-version := "0.12.1"
-build := "20201226"
+version := "0.12.2"
+build := "20210115"
 
 model_name1 := "anime_style_art"
 model_name2 := "anime_style_art_rgb"
@@ -248,6 +248,7 @@ load_script0()
 #Include, lib\test_check.ahk
 #Include, lib\r_ffmpeg.ahk
 #Include, lib\r_w2x.ahk
+#Include, lib\r_framei.ahk
 #Include, lib\save_setting.ahk
 
 
@@ -370,30 +371,6 @@ add_audio_file:
 	if(add_audio_path<>"")
 		GuiControl,,add_audio_path,%add_audio_path%
 }
-Return
-
-
-run_starti:
-Gosub, gui_update
-If (model1 = "CAIN")
-{
-	command = -i "%in_path1%" -o "%out_path1%" -t %config_t_size1% -g %config_gpu_fi% -f %config_ext1%
-	run_command = cain-ncnn-vulkan.exe %command%
-	run, %comspec% /c cd "%A_WorkingDir%\frame_Interpolation\cain-ncnn" & %run_command%,,
-}
-else If (model1 = "DAIN")
-{
-	command = -i "%in_path1%" -o "%out_path1%" -t %config_t_size1% -g %config_gpu_fi% -f %config_ext1%
-	run_command = dain-ncnn-vulkan.exe %command%
-	run, %comspec% /c cd "%A_WorkingDir%\frame_Interpolation\dain-ncnn" & %run_command%,,
-}
-else
-{
-	command = -i "%in_path1%" -o "%out_path1%" -m "%config_model%" -g %config_gpu_fi% -f %config_ext1%
-	run_command = rife-ncnn-vulkan.exe %command%
-	run, %comspec% /c cd "%A_WorkingDir%\frame_Interpolation\rife-ncnn" & %run_command%,,
-}
-gosub,log_console
 Return
 
 
